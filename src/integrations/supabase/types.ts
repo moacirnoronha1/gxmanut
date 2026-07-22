@@ -648,34 +648,75 @@ export type Database = {
         Row: {
           ativo: boolean
           avatar_url: string | null
+          bloqueado: boolean
+          bloqueado_ate: string | null
           created_at: string
+          criado_por: string | null
           email: string | null
+          funcao: string | null
           id: string
+          is_master: boolean
+          must_change_password: boolean
           nome: string
+          nome_completo: string | null
+          setor_id: string | null
           telefone: string | null
+          tentativas_falhas: number
+          ultimo_acesso: string | null
           updated_at: string
+          username: string | null
         }
         Insert: {
           ativo?: boolean
           avatar_url?: string | null
+          bloqueado?: boolean
+          bloqueado_ate?: string | null
           created_at?: string
+          criado_por?: string | null
           email?: string | null
+          funcao?: string | null
           id: string
+          is_master?: boolean
+          must_change_password?: boolean
           nome?: string
+          nome_completo?: string | null
+          setor_id?: string | null
           telefone?: string | null
+          tentativas_falhas?: number
+          ultimo_acesso?: string | null
           updated_at?: string
+          username?: string | null
         }
         Update: {
           ativo?: boolean
           avatar_url?: string | null
+          bloqueado?: boolean
+          bloqueado_ate?: string | null
           created_at?: string
+          criado_por?: string | null
           email?: string | null
+          funcao?: string | null
           id?: string
+          is_master?: boolean
+          must_change_password?: boolean
           nome?: string
+          nome_completo?: string | null
+          setor_id?: string | null
           telefone?: string | null
+          tentativas_falhas?: number
+          ultimo_acesso?: string | null
           updated_at?: string
+          username?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_setor_id_fkey"
+            columns: ["setor_id"]
+            isOneToOne: false
+            referencedRelation: "setores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       setores: {
         Row: {
@@ -805,6 +846,33 @@ export type Database = {
         }
         Relationships: []
       }
+      usuarios_auditoria: {
+        Row: {
+          acao: string
+          alvo_id: string | null
+          ator_id: string | null
+          created_at: string
+          detalhes: Json | null
+          id: string
+        }
+        Insert: {
+          acao: string
+          alvo_id?: string | null
+          ator_id?: string | null
+          created_at?: string
+          detalhes?: Json | null
+          id?: string
+        }
+        Update: {
+          acao?: string
+          alvo_id?: string | null
+          ator_id?: string | null
+          created_at?: string
+          detalhes?: Json | null
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -819,13 +887,14 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_gestor_or_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_mestre: { Args: { _user_id: string }; Returns: boolean }
       pode_ver_os: {
         Args: { _os_id: string; _user_id: string }
         Returns: boolean
       }
     }
     Enums: {
-      app_role: "admin" | "gestor" | "responsavel" | "tecnico"
+      app_role: "admin" | "gestor" | "responsavel" | "tecnico" | "mestre"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -953,7 +1022,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "gestor", "responsavel", "tecnico"],
+      app_role: ["admin", "gestor", "responsavel", "tecnico", "mestre"],
     },
   },
 } as const

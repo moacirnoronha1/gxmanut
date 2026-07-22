@@ -4,11 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
+import { useServerFn } from "@tanstack/react-start";
+import { ensureMasterUser, resolveLoginEmail } from "@/lib/users.functions";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -22,107 +23,87 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const ensureMaster = useServerFn(ensureMasterUser);
+  const resolve = useServerFn(resolveLoginEmail);
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [nome, setNome] = useState("");
+  const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    ensureMaster({}).catch((e) => console.warn("bootstrap:", e));
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) navigate({ to: "/", replace: true });
     });
-  }, [navigate]);
+  }, [ensureMaster, navigate]);
 
-  async function signIn(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    navigate({ to: "/", replace: true });
-  }
-
-  async function signUp(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: window.location.origin,
-        data: { nome },
-      },
-    });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Conta criada! Você já pode entrar.");
-  }
-
-  async function signInGoogle() {
-    setLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    setLoading(false);
-    if (result.error) return toast.error(String(result.error.message ?? "Falha no login com Google"));
-    if (!result.redirected) navigate({ to: "/", replace: true });
+    try {
+      const { email } = await resolve({ data: { username } });
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw new Error("Usuário ou senha inválidos.");
+      navigate({ to: "/", replace: true });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Falha ao entrar");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <div className="min-h-screen grid place-items-center bg-gradient-to-br from-background to-muted p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-sm">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold tracking-tight">Manutenção Xica da Silva</h1>
           <p className="text-sm text-muted-foreground mt-1">Sistema de controle de manutenção</p>
         </div>
         <Card>
           <CardHeader>
-            <CardTitle>Acesse sua conta</CardTitle>
-            <CardDescription>Entre com e-mail e senha ou use sua conta Google.</CardDescription>
+            <CardTitle>Entrar</CardTitle>
+            <CardDescription>Acesse com seu nome de usuário e senha.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="signin">
-              <TabsList className="grid grid-cols-2 w-full mb-4">
-                <TabsTrigger value="signin">Entrar</TabsTrigger>
-                <TabsTrigger value="signup">Cadastrar</TabsTrigger>
-              </TabsList>
-              <TabsContent value="signin">
-                <form onSubmit={signIn} className="space-y-3">
-                  <div>
-                    <Label htmlFor="email-in">E-mail</Label>
-                    <Input id="email-in" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-                  </div>
-                  <div>
-                    <Label htmlFor="pass-in">Senha</Label>
-                    <Input id="pass-in" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>Entrar</Button>
-                </form>
-              </TabsContent>
-              <TabsContent value="signup">
-                <form onSubmit={signUp} className="space-y-3">
-                  <div>
-                    <Label htmlFor="nome">Nome</Label>
-                    <Input id="nome" required value={nome} onChange={(e) => setNome(e.target.value)} />
-                  </div>
-                  <div>
-                    <Label htmlFor="email-up">E-mail</Label>
-                    <Input id="email-up" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-                  </div>
-                  <div>
-                    <Label htmlFor="pass-up">Senha</Label>
-                    <Input id="pass-up" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>Criar conta</Button>
-                </form>
-              </TabsContent>
-            </Tabs>
-            <div className="my-4 flex items-center gap-3 text-xs text-muted-foreground">
-              <div className="flex-1 h-px bg-border" />
-              ou
-              <div className="flex-1 h-px bg-border" />
-            </div>
-            <Button variant="outline" className="w-full" onClick={signInGoogle} disabled={loading}>
-              Entrar com Google
-            </Button>
+            <form onSubmit={onSubmit} className="space-y-3">
+              <div>
+                <Label htmlFor="username">Usuário</Label>
+                <Input
+                  id="username"
+                  autoComplete="username"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="password">Senha</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPass ? "text" : "password"}
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass((v) => !v)}
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                    aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
+                  >
+                    {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Entrando..." : "Entrar"}
+              </Button>
+            </form>
+            <p className="text-xs text-muted-foreground text-center mt-4">
+              Esqueceu sua senha? Solicite ao Usuário Mestre.
+            </p>
           </CardContent>
         </Card>
       </div>
