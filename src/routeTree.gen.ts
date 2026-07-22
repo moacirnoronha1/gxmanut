@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedOrdensIndexRouteImport } from './routes/_authenticated/ordens.index'
+import { Route as AuthenticatedEquipamentosIndexRouteImport } from './routes/_authenticated/equipamentos.index'
 import { Route as AuthenticatedOrdensNovaRouteImport } from './routes/_authenticated/ordens.nova'
 import { Route as AuthenticatedOrdensIdRouteImport } from './routes/_authenticated/ordens.$id'
 
@@ -36,6 +37,12 @@ const AuthenticatedOrdensIndexRoute =
     path: '/ordens/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedEquipamentosIndexRoute =
+  AuthenticatedEquipamentosIndexRouteImport.update({
+    id: '/equipamentos/',
+    path: '/equipamentos/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOrdensNovaRoute = AuthenticatedOrdensNovaRouteImport.update({
   id: '/ordens/nova',
   path: '/ordens/nova',
@@ -52,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/ordens/nova': typeof AuthenticatedOrdensNovaRoute
+  '/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
   '/ordens/': typeof AuthenticatedOrdensIndexRoute
 }
 export interface FileRoutesByTo {
@@ -59,6 +67,7 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/ordens/nova': typeof AuthenticatedOrdensNovaRoute
+  '/equipamentos': typeof AuthenticatedEquipamentosIndexRoute
   '/ordens': typeof AuthenticatedOrdensIndexRoute
 }
 export interface FileRoutesById {
@@ -68,13 +77,26 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/_authenticated/ordens/nova': typeof AuthenticatedOrdensNovaRoute
+  '/_authenticated/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
   '/_authenticated/ordens/': typeof AuthenticatedOrdensIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/ordens/$id' | '/ordens/nova' | '/ordens/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/ordens/$id'
+    | '/ordens/nova'
+    | '/equipamentos/'
+    | '/ordens/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/' | '/ordens/$id' | '/ordens/nova' | '/ordens'
+  to:
+    | '/auth'
+    | '/'
+    | '/ordens/$id'
+    | '/ordens/nova'
+    | '/equipamentos'
+    | '/ordens'
   id:
     | '__root__'
     | '/_authenticated'
@@ -82,6 +104,7 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/ordens/$id'
     | '/_authenticated/ordens/nova'
+    | '/_authenticated/equipamentos/'
     | '/_authenticated/ordens/'
   fileRoutesById: FileRoutesById
 }
@@ -120,6 +143,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdensIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/equipamentos/': {
+      id: '/_authenticated/equipamentos/'
+      path: '/equipamentos'
+      fullPath: '/equipamentos/'
+      preLoaderRoute: typeof AuthenticatedEquipamentosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/ordens/nova': {
       id: '/_authenticated/ordens/nova'
       path: '/ordens/nova'
@@ -141,6 +171,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedOrdensIdRoute: typeof AuthenticatedOrdensIdRoute
   AuthenticatedOrdensNovaRoute: typeof AuthenticatedOrdensNovaRoute
+  AuthenticatedEquipamentosIndexRoute: typeof AuthenticatedEquipamentosIndexRoute
   AuthenticatedOrdensIndexRoute: typeof AuthenticatedOrdensIndexRoute
 }
 
@@ -148,6 +179,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedOrdensIdRoute: AuthenticatedOrdensIdRoute,
   AuthenticatedOrdensNovaRoute: AuthenticatedOrdensNovaRoute,
+  AuthenticatedEquipamentosIndexRoute: AuthenticatedEquipamentosIndexRoute,
   AuthenticatedOrdensIndexRoute: AuthenticatedOrdensIndexRoute,
 }
 
