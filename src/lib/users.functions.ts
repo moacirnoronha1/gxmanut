@@ -10,13 +10,14 @@ function usernameToEmail(username: string): string {
   return `${username.trim().toLowerCase()}@${USER_DOMAIN}`;
 }
 
-const usernameSchema = z
-  .string()
-  .trim()
-  .transform((v) => v.toLowerCase().replace(/\s+/g, ""))
-  .min(3, "Nome de usuário muito curto")
-  .max(30)
-  .regex(/^[a-zA-Z0-9._-]+$/, "Use apenas letras, números, . _ -");
+const usernameSchema = z.preprocess(
+  (v) => (typeof v === "string" ? v.trim().toLowerCase().replace(/\s+/g, "") : v),
+  z
+    .string()
+    .min(3, "Nome de usuário muito curto")
+    .max(30)
+    .regex(/^[a-z0-9._-]+$/, "Use apenas letras, números, . _ -"),
+);
 
 // Public bootstrap: creates MOACIR if missing. Idempotent.
 export const ensureMasterUser = createServerFn({ method: "POST" }).handler(async () => {
