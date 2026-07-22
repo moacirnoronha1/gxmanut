@@ -13,6 +13,7 @@ function usernameToEmail(username: string): string {
 const usernameSchema = z
   .string()
   .trim()
+  .transform((v) => v.toLowerCase().replace(/\s+/g, ""))
   .min(3, "Nome de usuário muito curto")
   .max(30)
   .regex(/^[a-zA-Z0-9._-]+$/, "Use apenas letras, números, . _ -");
