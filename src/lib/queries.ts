@@ -1,21 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type {
-  AppRole,
-  Setor,
-  Urgencia,
-  StatusOS,
-  CategoriaProblema,
-  Equipamento,
-  Fornecedor,
-  Profile,
-  OS,
-  OSCusto,
-  OSComentario,
-  OSHistorico,
-} from "./db-types";
+import type { AppRole, Setor, Urgencia, StatusOS, CategoriaProblema, Equipamento, Fornecedor, Profile, OS, OSCusto, OSComentario, OSHistorico } from "./db-types";
 
-function throwIfError<T>(res: { data: T | null; error: { message: string } | null }): T {
+function throwIfError<T>(res: { data: unknown; error: { message: string } | null }): T {
   if (res.error) throw new Error(res.error.message);
   return res.data as T;
 }
