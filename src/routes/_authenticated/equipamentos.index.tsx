@@ -33,7 +33,17 @@ function Equipamentos() {
 
   async function save() {
     if (!form.nome) return toast.error("Informe o nome.");
-    const payload = { ...form, setor_id: form.setor_id === "none" ? null : form.setor_id };
+    const nn = (v: string) => (v.trim() === "" ? null : v.trim());
+    const payload = {
+      nome: form.nome.trim(),
+      patrimonio: nn(form.patrimonio),
+      categoria: nn(form.categoria),
+      marca: nn(form.marca),
+      modelo: nn(form.modelo),
+      localizacao: nn(form.localizacao),
+      observacoes: nn(form.observacoes),
+      setor_id: form.setor_id === "none" ? null : form.setor_id,
+    };
     const { error } = await supabase.from("equipamentos").insert(payload);
     if (error) return toast.error(error.message);
     setOpen(false);
