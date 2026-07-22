@@ -209,10 +209,12 @@ export const deleteUserAccount = createServerFn({ method: "POST" })
     if (!target) throw new Error("Usuário não encontrado");
     if (target.is_master) throw new Error("O Usuário Mestre não pode ser excluído.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    // Exclusão lógica: desativa e revoga papéis, mantém auditoria.
-    await supabaseAdmin.from("profiles").update({ ativo: false, bloqueado: true }).eq("id", data.user_id);
+    // Auditoria antes de excluir (o alvo deixa de existir).
+    await audit(context.userId, data.user_id, "usuario_excluido", { username: target.username });
     await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
-    await audit(context.userId, data.user_id, "usuario_excluido");
+    await supabaseAdmin.from("profiles").delete().eq("id", data.user_id);
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.user_id);
+    if (error) throw new Error(error.message);
     return { ok: true };
   });
 
