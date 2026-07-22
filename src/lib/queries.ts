@@ -13,8 +13,8 @@ export const userRolesQuery = () =>
     queryFn: async (): Promise<AppRole[]> => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return [];
-      const res = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
-      return throwIfError(res).map((r: { role: AppRole }) => r.role);
+      const rows = throwIfError<{ role: AppRole }[]>(await supabase.from("user_roles").select("role").eq("user_id", u.user.id));
+      return rows.map((r) => r.role);
     },
   });
 
