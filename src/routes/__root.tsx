@@ -81,10 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Sistema de controle de manutenção da Xica da Silva — equipamentos, ordens de serviço, custos e relatórios." },
       { name: "author", content: "Xica da Silva" },
       { property: "og:title", content: "Manutenção Xica da Silva" },
-      { property: "og:description", content: "Sistema de controle de manutenção — equipamentos, OS, custos e relatórios." },
+      { property: "og:description", content: "Sistema de controle de manutenção da Xica da Silva — equipamentos, ordens de serviço, custos e relatórios." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Manutenção Xica da Silva" },
+      { name: "twitter:description", content: "Sistema de controle de manutenção da Xica da Silva — equipamentos, ordens de serviço, custos e relatórios." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/209c45a3-7286-4a6f-8d5e-758c736ea65f/id-preview-2309036c--51278692-a19c-4686-9c50-fcc040b7dbed.lovable.app-1784732172022.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/209c45a3-7286-4a6f-8d5e-758c736ea65f/id-preview-2309036c--51278692-a19c-4686-9c50-fcc040b7dbed.lovable.app-1784732172022.png" },
     ],
     links: [
       {
