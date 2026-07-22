@@ -55,7 +55,7 @@ function OSDetail() {
   const cat = categorias.find((c) => c.id === os.categoria_id);
 
   async function updateOS(patch: Record<string, unknown>, ok = "Atualizado.") {
-    const { error } = await supabase.from("ordens_servico").update(patch).eq("id", id);
+    const { error } = await supabase.from("ordens_servico").update(patch as never).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(ok);
     await qc.invalidateQueries({ queryKey: ["os", id] });
