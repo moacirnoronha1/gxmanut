@@ -8,6 +8,16 @@ export interface Profile {
   telefone: string | null;
   avatar_url: string | null;
   ativo: boolean;
+  username?: string | null;
+  nome_completo?: string | null;
+  funcao?: string | null;
+  setor_id?: string | null;
+  is_master?: boolean;
+  must_change_password?: boolean;
+  bloqueado?: boolean;
+  bloqueado_ate?: string | null;
+  tentativas_falhas?: number;
+  ultimo_acesso?: string | null;
 }
 
 export interface Setor {

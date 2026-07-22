@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedUsuariosIndexRouteImport } from './routes/_authenticated/usuarios.index'
 import { Route as AuthenticatedSetoresIndexRouteImport } from './routes/_authenticated/setores.index'
 import { Route as AuthenticatedOrdensIndexRouteImport } from './routes/_authenticated/ordens.index'
 import { Route as AuthenticatedFornecedoresIndexRouteImport } from './routes/_authenticated/fornecedores.index'
@@ -34,6 +35,12 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedUsuariosIndexRoute =
+  AuthenticatedUsuariosIndexRouteImport.update({
+    id: '/usuarios/',
+    path: '/usuarios/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSetoresIndexRoute =
   AuthenticatedSetoresIndexRouteImport.update({
     id: '/setores/',
@@ -85,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/fornecedores/': typeof AuthenticatedFornecedoresIndexRoute
   '/ordens/': typeof AuthenticatedOrdensIndexRoute
   '/setores/': typeof AuthenticatedSetoresIndexRoute
+  '/usuarios/': typeof AuthenticatedUsuariosIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -96,6 +104,7 @@ export interface FileRoutesByTo {
   '/fornecedores': typeof AuthenticatedFornecedoresIndexRoute
   '/ordens': typeof AuthenticatedOrdensIndexRoute
   '/setores': typeof AuthenticatedSetoresIndexRoute
+  '/usuarios': typeof AuthenticatedUsuariosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -109,6 +118,7 @@ export interface FileRoutesById {
   '/_authenticated/fornecedores/': typeof AuthenticatedFornecedoresIndexRoute
   '/_authenticated/ordens/': typeof AuthenticatedOrdensIndexRoute
   '/_authenticated/setores/': typeof AuthenticatedSetoresIndexRoute
+  '/_authenticated/usuarios/': typeof AuthenticatedUsuariosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/fornecedores/'
     | '/ordens/'
     | '/setores/'
+    | '/usuarios/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/fornecedores'
     | '/ordens'
     | '/setores'
+    | '/usuarios'
   id:
     | '__root__'
     | '/_authenticated'
@@ -145,6 +157,7 @@ export interface FileRouteTypes {
     | '/_authenticated/fornecedores/'
     | '/_authenticated/ordens/'
     | '/_authenticated/setores/'
+    | '/_authenticated/usuarios/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -173,6 +186,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/usuarios/': {
+      id: '/_authenticated/usuarios/'
+      path: '/usuarios'
+      fullPath: '/usuarios/'
+      preLoaderRoute: typeof AuthenticatedUsuariosIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/setores/': {
@@ -236,6 +256,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFornecedoresIndexRoute: typeof AuthenticatedFornecedoresIndexRoute
   AuthenticatedOrdensIndexRoute: typeof AuthenticatedOrdensIndexRoute
   AuthenticatedSetoresIndexRoute: typeof AuthenticatedSetoresIndexRoute
+  AuthenticatedUsuariosIndexRoute: typeof AuthenticatedUsuariosIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -247,6 +268,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFornecedoresIndexRoute: AuthenticatedFornecedoresIndexRoute,
   AuthenticatedOrdensIndexRoute: AuthenticatedOrdensIndexRoute,
   AuthenticatedSetoresIndexRoute: AuthenticatedSetoresIndexRoute,
+  AuthenticatedUsuariosIndexRoute: AuthenticatedUsuariosIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
