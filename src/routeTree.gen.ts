@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedSetoresIndexRouteImport } from './routes/_authenticated/setores.index'
 import { Route as AuthenticatedOrdensIndexRouteImport } from './routes/_authenticated/ordens.index'
+import { Route as AuthenticatedFornecedoresIndexRouteImport } from './routes/_authenticated/fornecedores.index'
 import { Route as AuthenticatedEquipamentosIndexRouteImport } from './routes/_authenticated/equipamentos.index'
 import { Route as AuthenticatedOrdensNovaRouteImport } from './routes/_authenticated/ordens.nova'
 import { Route as AuthenticatedOrdensIdRouteImport } from './routes/_authenticated/ordens.$id'
@@ -44,6 +45,12 @@ const AuthenticatedOrdensIndexRoute =
     path: '/ordens/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedFornecedoresIndexRoute =
+  AuthenticatedFornecedoresIndexRouteImport.update({
+    id: '/fornecedores/',
+    path: '/fornecedores/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEquipamentosIndexRoute =
   AuthenticatedEquipamentosIndexRouteImport.update({
     id: '/equipamentos/',
@@ -67,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/ordens/nova': typeof AuthenticatedOrdensNovaRoute
   '/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
+  '/fornecedores/': typeof AuthenticatedFornecedoresIndexRoute
   '/ordens/': typeof AuthenticatedOrdensIndexRoute
   '/setores/': typeof AuthenticatedSetoresIndexRoute
 }
@@ -76,6 +84,7 @@ export interface FileRoutesByTo {
   '/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/ordens/nova': typeof AuthenticatedOrdensNovaRoute
   '/equipamentos': typeof AuthenticatedEquipamentosIndexRoute
+  '/fornecedores': typeof AuthenticatedFornecedoresIndexRoute
   '/ordens': typeof AuthenticatedOrdensIndexRoute
   '/setores': typeof AuthenticatedSetoresIndexRoute
 }
@@ -87,6 +96,7 @@ export interface FileRoutesById {
   '/_authenticated/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/_authenticated/ordens/nova': typeof AuthenticatedOrdensNovaRoute
   '/_authenticated/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
+  '/_authenticated/fornecedores/': typeof AuthenticatedFornecedoresIndexRoute
   '/_authenticated/ordens/': typeof AuthenticatedOrdensIndexRoute
   '/_authenticated/setores/': typeof AuthenticatedSetoresIndexRoute
 }
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/ordens/$id'
     | '/ordens/nova'
     | '/equipamentos/'
+    | '/fornecedores/'
     | '/ordens/'
     | '/setores/'
   fileRoutesByTo: FileRoutesByTo
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/ordens/$id'
     | '/ordens/nova'
     | '/equipamentos'
+    | '/fornecedores'
     | '/ordens'
     | '/setores'
   id:
@@ -117,6 +129,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ordens/$id'
     | '/_authenticated/ordens/nova'
     | '/_authenticated/equipamentos/'
+    | '/_authenticated/fornecedores/'
     | '/_authenticated/ordens/'
     | '/_authenticated/setores/'
   fileRoutesById: FileRoutesById
@@ -163,6 +176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdensIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/fornecedores/': {
+      id: '/_authenticated/fornecedores/'
+      path: '/fornecedores'
+      fullPath: '/fornecedores/'
+      preLoaderRoute: typeof AuthenticatedFornecedoresIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/equipamentos/': {
       id: '/_authenticated/equipamentos/'
       path: '/equipamentos'
@@ -192,6 +212,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOrdensIdRoute: typeof AuthenticatedOrdensIdRoute
   AuthenticatedOrdensNovaRoute: typeof AuthenticatedOrdensNovaRoute
   AuthenticatedEquipamentosIndexRoute: typeof AuthenticatedEquipamentosIndexRoute
+  AuthenticatedFornecedoresIndexRoute: typeof AuthenticatedFornecedoresIndexRoute
   AuthenticatedOrdensIndexRoute: typeof AuthenticatedOrdensIndexRoute
   AuthenticatedSetoresIndexRoute: typeof AuthenticatedSetoresIndexRoute
 }
@@ -201,6 +222,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOrdensIdRoute: AuthenticatedOrdensIdRoute,
   AuthenticatedOrdensNovaRoute: AuthenticatedOrdensNovaRoute,
   AuthenticatedEquipamentosIndexRoute: AuthenticatedEquipamentosIndexRoute,
+  AuthenticatedFornecedoresIndexRoute: AuthenticatedFornecedoresIndexRoute,
   AuthenticatedOrdensIndexRoute: AuthenticatedOrdensIndexRoute,
   AuthenticatedSetoresIndexRoute: AuthenticatedSetoresIndexRoute,
 }
