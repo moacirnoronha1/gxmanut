@@ -61,7 +61,7 @@ async function assertMestre(context: { supabase: import("@supabase/supabase-js")
 
 async function audit(actorId: string, alvoId: string | null, acao: string, detalhes: Record<string, unknown> = {}) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  await supabaseAdmin.from("usuarios_auditoria").insert({ ator_id: actorId, alvo_id: alvoId, acao, detalhes });
+  await supabaseAdmin.from("usuarios_auditoria").insert({ ator_id: actorId, alvo_id: alvoId, acao, detalhes: detalhes as never });
 }
 
 export const createUserAccount = createServerFn({ method: "POST" })
