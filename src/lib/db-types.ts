@@ -1,5 +1,5 @@
 // Tipos auxiliares para o domínio (o Database é gerado automaticamente)
-export type AppRole = "admin" | "gestor" | "responsavel" | "tecnico";
+export type AppRole = "mestre" | "admin" | "gestor" | "responsavel" | "tecnico";
 
 export interface Profile {
   id: string;
