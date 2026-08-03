@@ -64,7 +64,10 @@ function OSDetail() {
   }
 
   async function iniciar() {
-    const em = status.find((x) => x.nome.toLowerCase().includes("execução") || x.nome.toLowerCase().includes("execucao"));
+    const em = status.find((x) => {
+      const n = x.nome.toLowerCase();
+      return n.includes("andamento") || n.includes("execu");
+    });
     await updateOS({ status_id: em?.id ?? os!.status_id, iniciada_em: new Date().toISOString() }, "OS iniciada.");
   }
   async function concluir(form: { diagnostico: string; correcao: string; materiais: string; testes: string; resultado: string }) {

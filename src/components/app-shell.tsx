@@ -13,7 +13,6 @@ import {
   Sun,
   Plus,
 } from "lucide-react";
-import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -126,7 +125,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           <main className="flex-1 p-4 md:p-6 overflow-x-hidden">{children}</main>
         </div>
       </div>
-      <Toaster richColors position="top-right" />
     </SidebarProvider>
   );
 }
