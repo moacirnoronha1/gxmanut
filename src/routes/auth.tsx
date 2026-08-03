@@ -8,10 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { ensureMasterUser, resolveLoginEmail } from "@/lib/users.functions";
 import { toast } from "sonner";
-import { Toaster } from "@/components/ui/sonner";
 import { Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
+  // Session lives in localStorage; skip SSR to avoid hydration mismatches.
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Entrar — Manutenção Xica da Silva" },
@@ -107,7 +108,6 @@ function AuthPage() {
           </CardContent>
         </Card>
       </div>
-      <Toaster richColors position="top-right" />
     </div>
   );
 }
