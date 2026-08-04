@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   ClipboardList,
   Wrench,
+  CalendarClock,
   Building2,
   Users,
   Truck,
@@ -33,6 +34,7 @@ import { supabase } from "@/integrations/supabase/client";
 const items = [
   { to: "/", label: "Painel", icon: LayoutDashboard },
   { to: "/ordens", label: "Ordens de Serviço", icon: ClipboardList },
+  { to: "/manutencoes", label: "Manutenções Periódicas", icon: CalendarClock },
   { to: "/equipamentos", label: "Equipamentos", icon: Wrench },
   { to: "/setores", label: "Setores", icon: Building2 },
   { to: "/fornecedores", label: "Fornecedores", icon: Truck },
