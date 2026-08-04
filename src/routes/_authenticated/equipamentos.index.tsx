@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { equipamentosQuery, setoresQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { showDbError } from "@/lib/db-error";
 
 export const Route = createFileRoute("/_authenticated/equipamentos/")({
   head: () => ({ meta: [{ title: "Equipamentos — Manutenção Xica da Silva" }] }),
@@ -45,7 +46,7 @@ function Equipamentos() {
       setor_id: form.setor_id === "none" ? null : form.setor_id,
     };
     const { error } = await supabase.from("equipamentos").insert(payload);
-    if (error) return toast.error(error.message);
+    if (error) return showDbError(error);
     setOpen(false);
     setForm({ nome: "", patrimonio: "", categoria: "", marca: "", modelo: "", setor_id: "none", localizacao: "", observacoes: "" });
     await qc.invalidateQueries({ queryKey: ["equipamentos"] });

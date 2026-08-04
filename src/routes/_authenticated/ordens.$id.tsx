@@ -18,6 +18,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { formatBRL, formatDateTime, TIPO_CUSTO_OPTIONS } from "@/lib/db-types";
 import { toast } from "sonner";
+import { showDbError } from "@/lib/db-error";
 import { ArrowLeft, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/ordens/$id")({
@@ -56,7 +57,7 @@ function OSDetail() {
 
   async function updateOS(patch: Record<string, unknown>, ok = "Atualizado.") {
     const { error } = await supabase.from("ordens_servico").update(patch as never).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return showDbError(error);
     toast.success(ok);
     await qc.invalidateQueries({ queryKey: ["os", id] });
     await qc.invalidateQueries({ queryKey: ["ordens_servico"] });
@@ -292,14 +293,14 @@ function CustosCard({
       fornecedor_id: fornId === "none" ? null : fornId,
     });
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) return showDbError(error);
     setDescricao(""); setQtd("1"); setValor("0"); setFornId("none");
     await qc.invalidateQueries({ queryKey: ["os_custos", osId] });
     toast.success("Custo adicionado.");
   }
   async function remove(cid: string) {
     const { error } = await supabase.from("os_custos").delete().eq("id", cid);
-    if (error) return toast.error(error.message);
+    if (error) return showDbError(error);
     await qc.invalidateQueries({ queryKey: ["os_custos", osId] });
   }
 
@@ -359,7 +360,7 @@ function ComentariosCard({
     const { error } = await supabase.from("os_comentarios").insert({
       os_id: osId, autor_id: u.user.id, mensagem: msg.trim(), interno,
     });
-    if (error) return toast.error(error.message);
+    if (error) return showDbError(error);
     setMsg("");
     await qc.invalidateQueries({ queryKey: ["os_coment", osId] });
   }

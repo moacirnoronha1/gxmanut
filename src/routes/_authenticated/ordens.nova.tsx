@@ -12,6 +12,7 @@ import { setoresQuery, equipamentosQuery, urgenciasQuery, statusOsQuery, categor
 import { supabase } from "@/integrations/supabase/client";
 import { RISCO_OPTIONS } from "@/lib/db-types";
 import { toast } from "sonner";
+import { showDbError } from "@/lib/db-error";
 
 export const Route = createFileRoute("/_authenticated/ordens/nova")({
   head: () => ({ meta: [{ title: "Nova OS — Manutenção Xica da Silva" }] }),
@@ -72,7 +73,7 @@ function NovaOS() {
     };
     const { data, error } = await supabase.from("ordens_servico").insert(payload).select("id").single();
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) return showDbError(error);
     toast.success("OS aberta com sucesso!");
     navigate({ to: "/ordens/$id", params: { id: data.id } });
   }

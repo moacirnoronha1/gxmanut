@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { setoresQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { showDbError } from "@/lib/db-error";
 import type { Setor } from "@/lib/db-types";
 
 export const Route = createFileRoute("/_authenticated/setores/")({
@@ -40,7 +41,7 @@ function Setores() {
     const { error } = editing
       ? await supabase.from("setores").update(payload).eq("id", editing.id)
       : await supabase.from("setores").insert(payload);
-    if (error) return toast.error(error.message);
+    if (error) return showDbError(error);
     setOpen(false); setEditing(null); setNome(""); setDescricao("");
     await qc.invalidateQueries({ queryKey: ["setores"] });
     toast.success(editing ? "Setor atualizado." : "Setor criado.");
@@ -48,7 +49,7 @@ function Setores() {
 
   async function toggleAtivo(s: Setor) {
     const { error } = await supabase.from("setores").update({ ativo: !s.ativo }).eq("id", s.id);
-    if (error) return toast.error(error.message);
+    if (error) return showDbError(error);
     await qc.invalidateQueries({ queryKey: ["setores"] });
     toast.success(!s.ativo ? "Setor ativado." : "Setor desativado.");
   }
@@ -56,7 +57,7 @@ function Setores() {
   async function remove(s: Setor) {
     if (!confirm(`Excluir o setor "${s.nome}"? Esta ação não pode ser desfeita.`)) return;
     const { error } = await supabase.from("setores").delete().eq("id", s.id);
-    if (error) return toast.error(error.message);
+    if (error) return showDbError(error);
     await qc.invalidateQueries({ queryKey: ["setores"] });
     toast.success("Setor excluído.");
   }
