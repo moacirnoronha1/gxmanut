@@ -33,18 +33,47 @@ function AuthPage() {
 
   useEffect(() => {
     ensureMaster({}).catch((e) => console.warn("bootstrap:", e));
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: "/", replace: true });
-    });
+    // Sessão local: evita erro de rede/refresh token inválido travando a tela.
+    supabase.auth
+      .getSession()
+      .then(async ({ data }) => {
+        if (!data.session) return;
+        const { error } = await supabase.auth.getUser();
+        if (error) {
+          // Token velho/corrompido: limpa e deixa o usuário entrar de novo.
+          await supabase.auth.signOut().catch(() => {});
+          return;
+        }
+        navigate({ to: "/", replace: true });
+      })
+      .catch(() => {});
   }, [ensureMaster, navigate]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     try {
+      // Limpa qualquer sessão inválida antes de tentar entrar.
+      const { data: current } = await supabase.auth.getSession();
+      if (current.session) await supabase.auth.signOut().catch(() => {});
+
       const { email } = await resolve({ data: { username } });
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw new Error("Usuário ou senha inválidos.");
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        throw new Error(
+          /invalid login/i.test(error.message)
+            ? "Usuário ou senha inválidos."
+            : `Falha ao entrar: ${error.message}`,
+        );
+      }
+      if (!data.session) throw new Error("Não foi possível iniciar a sessão. Tente novamente.");
+
+      // Garante que a sessão já está persistida antes de navegar (evita voltar ao login).
+      for (let i = 0; i < 20; i++) {
+        const { data: s } = await supabase.auth.getSession();
+        if (s.session) break;
+        await new Promise((r) => setTimeout(r, 100));
+      }
       navigate({ to: "/", replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Falha ao entrar");
