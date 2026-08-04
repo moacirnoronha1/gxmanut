@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ordensQuery, statusOsQuery, urgenciasQuery, equipamentosQuery } from "@/lib/queries";
+import { manutencoesQuery, mpExecucoesTodasQuery } from "@/lib/mp-queries";
+import { diffDias, hojeISO, statusManutencao } from "@/lib/mp-types";
 import { formatDateTime } from "@/lib/db-types";
 import { ClipboardList, AlertTriangle, CheckCircle2, Wrench } from "lucide-react";
 
@@ -17,6 +19,8 @@ function Dashboard() {
   const { data: status = [] } = useQuery(statusOsQuery());
   const { data: urgencias = [] } = useQuery(urgenciasQuery());
   const { data: equipamentos = [] } = useQuery(equipamentosQuery());
+  const { data: manutencoes = [] } = useQuery(manutencoesQuery());
+  const { data: execucoes = [] } = useQuery(mpExecucoesTodasQuery());
 
   const statusMap = new Map(status.map((s) => [s.id, s]));
   const urgMap = new Map(urgencias.map((u) => [u.id, u]));
@@ -30,6 +34,29 @@ function Dashboard() {
   }).length;
 
   const recentes = ordens.slice(0, 8);
+
+  const dentro = (m: { proxima_execucao: string | null }, max: number) =>
+    !!m.proxima_execucao && diffDias(m.proxima_execucao, hojeISO()) >= 0 && diffDias(m.proxima_execucao, hojeISO()) <= max;
+  const mpHoje = manutencoes.filter((m) => statusManutencao(m) === "hoje").length;
+  const mpAtrasadas = manutencoes.filter((m) => statusManutencao(m) === "atrasada").length;
+  const mpSemana = manutencoes.filter((m) => dentro(m, 7)).length;
+  const mpMes = manutencoes.filter((m) => dentro(m, 31)).length;
+  const concluidas = execucoes.filter((e) => e.status === "concluida");
+  const noPrazo = concluidas.filter((e) => !!e.concluida_em && diffDias(e.concluida_em.slice(0, 10), e.data_programada) <= 0).length;
+  const cumprimento = concluidas.length ? Math.round((noPrazo / concluidas.length) * 100) : 0;
+  const custoMp = concluidas.reduce((s, e) => s + Number(e.custo_total ?? 0), 0);
+  const geraramCorretiva = concluidas.filter((e) => e.gerou_corretiva).length;
+
+  const mpCards = [
+    { label: "Periódicas hoje", value: mpHoje },
+    { label: "Nesta semana", value: mpSemana },
+    { label: "Neste mês", value: mpMes },
+    { label: "Atrasadas", value: mpAtrasadas, danger: true },
+    { label: "Concluídas no prazo", value: noPrazo },
+    { label: "Cumprimento", value: `${cumprimento}%` },
+    { label: "Custo das periódicas", value: custoMp.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) },
+    { label: "Geraram corretiva", value: geraramCorretiva },
+  ];
 
   const cards = [
     { label: "OS abertas", value: abertas, icon: ClipboardList, color: "text-primary" },
@@ -63,6 +90,21 @@ function Dashboard() {
           </Card>
         ))}
       </div>
+
+      <Card>
+        <CardHeader className="flex-row items-center justify-between py-3">
+          <CardTitle className="text-base">Manutenções periódicas</CardTitle>
+          <Button asChild size="sm" variant="outline"><Link to="/manutencoes">Ver todas</Link></Button>
+        </CardHeader>
+        <CardContent className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+          {mpCards.map((c) => (
+            <div key={c.label} className="rounded-md border p-3">
+              <div className={`text-xl font-bold ${c.danger && Number(c.value) > 0 ? "text-red-600" : ""}`}>{c.value}</div>
+              <div className="text-xs text-muted-foreground">{c.label}</div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader><CardTitle>Últimas OS</CardTitle></CardHeader>
