@@ -23,8 +23,16 @@ function Fornecedores() {
   const [form, setForm] = useState({ nome: "", documento: "", telefone: "", email: "", especialidade: "", contato: "" });
 
   async function save() {
-    if (!form.nome) return toast.error("Informe o nome.");
-    const { error } = await supabase.from("fornecedores").insert(form);
+    if (!form.nome.trim()) return toast.error("Informe o nome.");
+    const nn = (v: string) => (v.trim() === "" ? null : v.trim());
+    const { error } = await supabase.from("fornecedores").insert({
+      nome: form.nome.trim(),
+      documento: nn(form.documento),
+      telefone: nn(form.telefone),
+      email: nn(form.email),
+      especialidade: nn(form.especialidade),
+      contato: nn(form.contato),
+    });
     if (error) return showDbError(error);
     setOpen(false);
     setForm({ nome: "", documento: "", telefone: "", email: "", especialidade: "", contato: "" });
