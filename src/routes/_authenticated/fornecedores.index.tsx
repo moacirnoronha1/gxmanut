@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { fornecedoresQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { showDbError } from "@/lib/db-error";
 
 export const Route = createFileRoute("/_authenticated/fornecedores/")({
   head: () => ({ meta: [{ title: "Fornecedores — Manutenção Xica da Silva" }] }),
@@ -22,9 +23,17 @@ function Fornecedores() {
   const [form, setForm] = useState({ nome: "", documento: "", telefone: "", email: "", especialidade: "", contato: "" });
 
   async function save() {
-    if (!form.nome) return toast.error("Informe o nome.");
-    const { error } = await supabase.from("fornecedores").insert(form);
-    if (error) return toast.error(error.message);
+    if (!form.nome.trim()) return toast.error("Informe o nome.");
+    const nn = (v: string) => (v.trim() === "" ? null : v.trim());
+    const { error } = await supabase.from("fornecedores").insert({
+      nome: form.nome.trim(),
+      documento: nn(form.documento),
+      telefone: nn(form.telefone),
+      email: nn(form.email),
+      especialidade: nn(form.especialidade),
+      contato: nn(form.contato),
+    });
+    if (error) return showDbError(error);
     setOpen(false);
     setForm({ nome: "", documento: "", telefone: "", email: "", especialidade: "", contato: "" });
     await qc.invalidateQueries({ queryKey: ["fornecedores"] });
