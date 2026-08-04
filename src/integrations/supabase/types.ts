@@ -184,6 +184,451 @@ export type Database = {
         }
         Relationships: []
       }
+      manutencoes_periodicas: {
+        Row: {
+          categoria_id: string | null
+          checklist: Json
+          created_at: string
+          criado_por: string | null
+          data_inicio: string | null
+          descricao: string | null
+          dia_mes: number | null
+          dias_semana: number[] | null
+          documentos: Json
+          equipamento_id: string | null
+          escalacao: Json
+          ferramentas: string | null
+          fornecedor_id: string | null
+          geracao_os: string
+          horario_preferencial: string | null
+          id: string
+          intervalo_custom: number | null
+          localizacao: string | null
+          materiais: string | null
+          mes_ano: number | null
+          nome: string
+          observacoes: string | null
+          periodicidade_id: string | null
+          primeira_execucao: string | null
+          prioridade: string
+          procedimento: string | null
+          proxima_execucao: string | null
+          regra_mensal: string | null
+          responsavel_id: string | null
+          setor_id: string | null
+          situacao: string
+          tecnico_id: string | null
+          tecnico_substituto_id: string | null
+          tempo_estimado_min: number | null
+          ultima_execucao: string | null
+          updated_at: string
+        }
+        Insert: {
+          categoria_id?: string | null
+          checklist?: Json
+          created_at?: string
+          criado_por?: string | null
+          data_inicio?: string | null
+          descricao?: string | null
+          dia_mes?: number | null
+          dias_semana?: number[] | null
+          documentos?: Json
+          equipamento_id?: string | null
+          escalacao?: Json
+          ferramentas?: string | null
+          fornecedor_id?: string | null
+          geracao_os?: string
+          horario_preferencial?: string | null
+          id?: string
+          intervalo_custom?: number | null
+          localizacao?: string | null
+          materiais?: string | null
+          mes_ano?: number | null
+          nome: string
+          observacoes?: string | null
+          periodicidade_id?: string | null
+          primeira_execucao?: string | null
+          prioridade?: string
+          procedimento?: string | null
+          proxima_execucao?: string | null
+          regra_mensal?: string | null
+          responsavel_id?: string | null
+          setor_id?: string | null
+          situacao?: string
+          tecnico_id?: string | null
+          tecnico_substituto_id?: string | null
+          tempo_estimado_min?: number | null
+          ultima_execucao?: string | null
+          updated_at?: string
+        }
+        Update: {
+          categoria_id?: string | null
+          checklist?: Json
+          created_at?: string
+          criado_por?: string | null
+          data_inicio?: string | null
+          descricao?: string | null
+          dia_mes?: number | null
+          dias_semana?: number[] | null
+          documentos?: Json
+          equipamento_id?: string | null
+          escalacao?: Json
+          ferramentas?: string | null
+          fornecedor_id?: string | null
+          geracao_os?: string
+          horario_preferencial?: string | null
+          id?: string
+          intervalo_custom?: number | null
+          localizacao?: string | null
+          materiais?: string | null
+          mes_ano?: number | null
+          nome?: string
+          observacoes?: string | null
+          periodicidade_id?: string | null
+          primeira_execucao?: string | null
+          prioridade?: string
+          procedimento?: string | null
+          proxima_execucao?: string | null
+          regra_mensal?: string | null
+          responsavel_id?: string | null
+          setor_id?: string | null
+          situacao?: string
+          tecnico_id?: string | null
+          tecnico_substituto_id?: string | null
+          tempo_estimado_min?: number | null
+          ultima_execucao?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manutencoes_periodicas_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias_problema"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manutencoes_periodicas_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manutencoes_periodicas_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manutencoes_periodicas_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manutencoes_periodicas_periodicidade_id_fkey"
+            columns: ["periodicidade_id"]
+            isOneToOne: false
+            referencedRelation: "periodicidades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manutencoes_periodicas_responsavel_id_fkey"
+            columns: ["responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manutencoes_periodicas_setor_id_fkey"
+            columns: ["setor_id"]
+            isOneToOne: false
+            referencedRelation: "setores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manutencoes_periodicas_tecnico_id_fkey"
+            columns: ["tecnico_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manutencoes_periodicas_tecnico_substituto_id_fkey"
+            columns: ["tecnico_substituto_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mp_execucoes: {
+        Row: {
+          checklist_respostas: Json
+          concluida_em: string | null
+          correcao: string | null
+          created_at: string
+          custo_total: number
+          data_programada: string
+          diagnostico: string | null
+          encontrou_irregularidade: boolean | null
+          executada_completa: boolean | null
+          fotos_antes: Json
+          fotos_depois: Json
+          gerou_corretiva: boolean
+          id: string
+          iniciada_em: string | null
+          irregularidades: string | null
+          manutencao_id: string
+          materiais_utilizados: string | null
+          os_corretiva_id: string | null
+          os_id: string | null
+          proxima_data: string | null
+          recomendacoes: string | null
+          servico_realizado: string | null
+          status: string
+          tecnico_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          checklist_respostas?: Json
+          concluida_em?: string | null
+          correcao?: string | null
+          created_at?: string
+          custo_total?: number
+          data_programada: string
+          diagnostico?: string | null
+          encontrou_irregularidade?: boolean | null
+          executada_completa?: boolean | null
+          fotos_antes?: Json
+          fotos_depois?: Json
+          gerou_corretiva?: boolean
+          id?: string
+          iniciada_em?: string | null
+          irregularidades?: string | null
+          manutencao_id: string
+          materiais_utilizados?: string | null
+          os_corretiva_id?: string | null
+          os_id?: string | null
+          proxima_data?: string | null
+          recomendacoes?: string | null
+          servico_realizado?: string | null
+          status?: string
+          tecnico_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          checklist_respostas?: Json
+          concluida_em?: string | null
+          correcao?: string | null
+          created_at?: string
+          custo_total?: number
+          data_programada?: string
+          diagnostico?: string | null
+          encontrou_irregularidade?: boolean | null
+          executada_completa?: boolean | null
+          fotos_antes?: Json
+          fotos_depois?: Json
+          gerou_corretiva?: boolean
+          id?: string
+          iniciada_em?: string | null
+          irregularidades?: string | null
+          manutencao_id?: string
+          materiais_utilizados?: string | null
+          os_corretiva_id?: string | null
+          os_id?: string | null
+          proxima_data?: string | null
+          recomendacoes?: string | null
+          servico_realizado?: string | null
+          status?: string
+          tecnico_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mp_execucoes_manutencao_id_fkey"
+            columns: ["manutencao_id"]
+            isOneToOne: false
+            referencedRelation: "manutencoes_periodicas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mp_execucoes_os_corretiva_id_fkey"
+            columns: ["os_corretiva_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mp_execucoes_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mp_execucoes_tecnico_id_fkey"
+            columns: ["tecnico_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mp_lembrete_eventos: {
+        Row: {
+          created_at: string
+          data_referencia: string | null
+          id: string
+          lembrete_id: string | null
+          manutencao_id: string
+          tipo: string
+          usuario_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data_referencia?: string | null
+          id?: string
+          lembrete_id?: string | null
+          manutencao_id: string
+          tipo: string
+          usuario_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data_referencia?: string | null
+          id?: string
+          lembrete_id?: string | null
+          manutencao_id?: string
+          tipo?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mp_lembrete_eventos_lembrete_id_fkey"
+            columns: ["lembrete_id"]
+            isOneToOne: false
+            referencedRelation: "mp_lembretes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mp_lembrete_eventos_manutencao_id_fkey"
+            columns: ["manutencao_id"]
+            isOneToOne: false
+            referencedRelation: "manutencoes_periodicas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mp_lembrete_eventos_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mp_lembretes: {
+        Row: {
+          ativo: boolean
+          canais: string[]
+          created_at: string
+          destinatarios: string[]
+          dias_antes: number
+          id: string
+          manutencao_id: string
+          usuarios_extra: string[]
+        }
+        Insert: {
+          ativo?: boolean
+          canais?: string[]
+          created_at?: string
+          destinatarios?: string[]
+          dias_antes?: number
+          id?: string
+          manutencao_id: string
+          usuarios_extra?: string[]
+        }
+        Update: {
+          ativo?: boolean
+          canais?: string[]
+          created_at?: string
+          destinatarios?: string[]
+          dias_antes?: number
+          id?: string
+          manutencao_id?: string
+          usuarios_extra?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mp_lembretes_manutencao_id_fkey"
+            columns: ["manutencao_id"]
+            isOneToOne: false
+            referencedRelation: "manutencoes_periodicas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mp_reagendamentos: {
+        Row: {
+          created_at: string
+          data_original: string | null
+          execucao_id: string | null
+          id: string
+          manutencao_id: string
+          motivo: string
+          nova_data: string
+          observacao: string | null
+          usuario_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data_original?: string | null
+          execucao_id?: string | null
+          id?: string
+          manutencao_id: string
+          motivo: string
+          nova_data: string
+          observacao?: string | null
+          usuario_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data_original?: string | null
+          execucao_id?: string | null
+          id?: string
+          manutencao_id?: string
+          motivo?: string
+          nova_data?: string
+          observacao?: string | null
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mp_reagendamentos_execucao_id_fkey"
+            columns: ["execucao_id"]
+            isOneToOne: false
+            referencedRelation: "mp_execucoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mp_reagendamentos_manutencao_id_fkey"
+            columns: ["manutencao_id"]
+            isOneToOne: false
+            referencedRelation: "manutencoes_periodicas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mp_reagendamentos_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ordens_servico: {
         Row: {
           avaliacao: number | null
@@ -205,7 +650,9 @@ export type Database = {
           id: string
           iniciada_em: string | null
           local: string | null
+          manutencao_periodica_id: string | null
           materiais_utilizados: string | null
+          mp_execucao_id: string | null
           numero: number
           previsao_atendimento: string | null
           reaberta_de: string | null
@@ -246,7 +693,9 @@ export type Database = {
           id?: string
           iniciada_em?: string | null
           local?: string | null
+          manutencao_periodica_id?: string | null
           materiais_utilizados?: string | null
+          mp_execucao_id?: string | null
           numero?: number
           previsao_atendimento?: string | null
           reaberta_de?: string | null
@@ -287,7 +736,9 @@ export type Database = {
           id?: string
           iniciada_em?: string | null
           local?: string | null
+          manutencao_periodica_id?: string | null
           materiais_utilizados?: string | null
+          mp_execucao_id?: string | null
           numero?: number
           previsao_atendimento?: string | null
           reaberta_de?: string | null
@@ -321,6 +772,20 @@ export type Database = {
             columns: ["equipamento_id"]
             isOneToOne: false
             referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ordens_servico_manutencao_periodica_id_fkey"
+            columns: ["manutencao_periodica_id"]
+            isOneToOne: false
+            referencedRelation: "manutencoes_periodicas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ordens_servico_mp_execucao_id_fkey"
+            columns: ["mp_execucao_id"]
+            isOneToOne: false
+            referencedRelation: "mp_execucoes"
             referencedColumns: ["id"]
           },
           {
@@ -577,6 +1042,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      periodicidades: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          id: string
+          intervalo: number | null
+          nome: string
+          ordem: number
+          sistema: boolean
+          tipo: string
+          unidade: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          intervalo?: number | null
+          nome: string
+          ordem?: number
+          sistema?: boolean
+          tipo?: string
+          unidade?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          intervalo?: number | null
+          nome?: string
+          ordem?: number
+          sistema?: boolean
+          tipo?: string
+          unidade?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       planos_preventivos: {
         Row: {
