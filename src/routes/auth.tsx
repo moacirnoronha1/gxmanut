@@ -11,8 +11,8 @@ import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
-  // Session lives in localStorage; skip SSR to avoid hydration mismatches.
-  ssr: false,
+  // A tela é estática no primeiro render (sessão é lida só em efeito),
+  // então pode ser renderizada no servidor sem divergência de hidratação.
   head: () => ({
     meta: [
       { title: "Entrar — Manutenção Xica da Silva" },
