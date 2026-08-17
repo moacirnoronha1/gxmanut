@@ -35,6 +35,42 @@ export type Database = {
         }
         Relationships: []
       }
+      custo_categorias: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          grupo: string
+          id: string
+          natureza_padrao: string
+          nome: string
+          ordem: number
+          sistema: boolean
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          grupo?: string
+          id?: string
+          natureza_padrao?: string
+          nome: string
+          ordem?: number
+          sistema?: boolean
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          grupo?: string
+          id?: string
+          natureza_padrao?: string
+          nome?: string
+          ordem?: number
+          sistema?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       equipamentos: {
         Row: {
           ativo: boolean
@@ -60,6 +96,7 @@ export type Database = {
           situacao: string
           tecnico_id: string | null
           updated_at: string
+          valor_aquisicao: number | null
         }
         Insert: {
           ativo?: boolean
@@ -85,6 +122,7 @@ export type Database = {
           situacao?: string
           tecnico_id?: string | null
           updated_at?: string
+          valor_aquisicao?: number | null
         }
         Update: {
           ativo?: boolean
@@ -110,6 +148,7 @@ export type Database = {
           situacao?: string
           tecnico_id?: string | null
           updated_at?: string
+          valor_aquisicao?: number | null
         }
         Relationships: [
           {
@@ -922,62 +961,164 @@ export type Database = {
           },
         ]
       }
+      os_custo_evidencias: {
+        Row: {
+          autor_id: string | null
+          created_at: string
+          custo_id: string
+          id: string
+          nome: string
+          observacao: string | null
+          tipo: string
+          url: string
+        }
+        Insert: {
+          autor_id?: string | null
+          created_at?: string
+          custo_id: string
+          id?: string
+          nome: string
+          observacao?: string | null
+          tipo?: string
+          url: string
+        }
+        Update: {
+          autor_id?: string | null
+          created_at?: string
+          custo_id?: string
+          id?: string
+          nome?: string
+          observacao?: string | null
+          tipo?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_custo_evidencias_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_custo_evidencias_custo_id_fkey"
+            columns: ["custo_id"]
+            isOneToOne: false
+            referencedRelation: "os_custos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       os_custos: {
         Row: {
+          categoria_id: string | null
+          comprador_id: string | null
+          comprovacao: string
           comprovante_url: string | null
           created_at: string
           data_compra: string | null
           descricao: string
+          equipamento_id: string | null
           forma_pagamento: string | null
           fornecedor_id: string | null
+          hora_fim: string | null
+          hora_inicio: string | null
           id: string
+          natureza: string
           nota_numero: string | null
           observacao: string | null
+          origem: string
           os_id: string
+          prestador: string | null
+          previsto: boolean
           quantidade: number
           registrado_por: string | null
+          tecnico_id: string | null
           tipo: string
           unidade: string | null
           valor_total: number | null
           valor_unitario: number
         }
         Insert: {
+          categoria_id?: string | null
+          comprador_id?: string | null
+          comprovacao?: string
           comprovante_url?: string | null
           created_at?: string
           data_compra?: string | null
           descricao: string
+          equipamento_id?: string | null
           forma_pagamento?: string | null
           fornecedor_id?: string | null
+          hora_fim?: string | null
+          hora_inicio?: string | null
           id?: string
+          natureza?: string
           nota_numero?: string | null
           observacao?: string | null
+          origem?: string
           os_id: string
+          prestador?: string | null
+          previsto?: boolean
           quantidade?: number
           registrado_por?: string | null
+          tecnico_id?: string | null
           tipo: string
           unidade?: string | null
           valor_total?: number | null
           valor_unitario?: number
         }
         Update: {
+          categoria_id?: string | null
+          comprador_id?: string | null
+          comprovacao?: string
           comprovante_url?: string | null
           created_at?: string
           data_compra?: string | null
           descricao?: string
+          equipamento_id?: string | null
           forma_pagamento?: string | null
           fornecedor_id?: string | null
+          hora_fim?: string | null
+          hora_inicio?: string | null
           id?: string
+          natureza?: string
           nota_numero?: string | null
           observacao?: string | null
+          origem?: string
           os_id?: string
+          prestador?: string | null
+          previsto?: boolean
           quantidade?: number
           registrado_por?: string | null
+          tecnico_id?: string | null
           tipo?: string
           unidade?: string | null
           valor_total?: number | null
           valor_unitario?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "os_custos_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "custo_categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_custos_comprador_id_fkey"
+            columns: ["comprador_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_custos_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "os_custos_fornecedor_id_fkey"
             columns: ["fornecedor_id"]
@@ -995,6 +1136,13 @@ export type Database = {
           {
             foreignKeyName: "os_custos_registrado_por_fkey"
             columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_custos_tecnico_id_fkey"
+            columns: ["tecnico_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
