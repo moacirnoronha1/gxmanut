@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   osQuery, osCustosDetalhadosQuery, osComentariosQuery, osHistoricoQuery,
   statusOsQuery, urgenciasQuery, setoresQuery, equipamentosQuery,
-  profilesQuery, fornecedoresQuery, categoriasQuery, custoCategoriasQuery,
+  profilesQuery, categoriasQuery, custoCategoriasQuery,
 } from "@/lib/queries";
 import { CustosOSPanel, IndicadorFinanceiroOS } from "@/components/custos-os";
 import { resumirCustos } from "@/lib/custos";
@@ -21,7 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatBRL, formatDateTime } from "@/lib/db-types";
 import { toast } from "sonner";
 import { showDbError } from "@/lib/db-error";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/ordens/$id")({
   head: () => ({ meta: [{ title: "OS — Manutenção Xica da Silva" }] }),
@@ -42,7 +42,6 @@ function OSDetail() {
   const { data: setores = [] } = useQuery(setoresQuery());
   const { data: equipamentos = [] } = useQuery(equipamentosQuery());
   const { data: profiles = [] } = useQuery(profilesQuery());
-  const { data: fornecedores = [] } = useQuery(fornecedoresQuery());
   const { data: categorias = [] } = useQuery(categoriasQuery());
   const { data: custoCategorias = [] } = useQuery(custoCategoriasQuery());
 
