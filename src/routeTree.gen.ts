@@ -22,6 +22,7 @@ import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_a
 import { Route as AuthenticatedOrdensNovaRouteImport } from './routes/_authenticated/ordens.nova'
 import { Route as AuthenticatedOrdensIdRouteImport } from './routes/_authenticated/ordens.$id'
 import { Route as AuthenticatedManutencoesIdRouteImport } from './routes/_authenticated/manutencoes.$id'
+import { Route as AuthenticatedEquipamentosIdRouteImport } from './routes/_authenticated/equipamentos.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -95,10 +96,17 @@ const AuthenticatedManutencoesIdRoute =
     path: '/manutencoes/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedEquipamentosIdRoute =
+  AuthenticatedEquipamentosIdRouteImport.update({
+    id: '/equipamentos/$id',
+    path: '/equipamentos/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/equipamentos/$id': typeof AuthenticatedEquipamentosIdRoute
   '/manutencoes/$id': typeof AuthenticatedManutencoesIdRoute
   '/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/ordens/nova': typeof AuthenticatedOrdensNovaRoute
@@ -113,6 +121,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/': typeof AuthenticatedIndexRoute
+  '/equipamentos/$id': typeof AuthenticatedEquipamentosIdRoute
   '/manutencoes/$id': typeof AuthenticatedManutencoesIdRoute
   '/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/ordens/nova': typeof AuthenticatedOrdensNovaRoute
@@ -129,6 +138,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/equipamentos/$id': typeof AuthenticatedEquipamentosIdRoute
   '/_authenticated/manutencoes/$id': typeof AuthenticatedManutencoesIdRoute
   '/_authenticated/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/_authenticated/ordens/nova': typeof AuthenticatedOrdensNovaRoute
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/equipamentos/$id'
     | '/manutencoes/$id'
     | '/ordens/$id'
     | '/ordens/nova'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/'
+    | '/equipamentos/$id'
     | '/manutencoes/$id'
     | '/ordens/$id'
     | '/ordens/nova'
@@ -174,6 +186,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/'
+    | '/_authenticated/equipamentos/$id'
     | '/_authenticated/manutencoes/$id'
     | '/_authenticated/ordens/$id'
     | '/_authenticated/ordens/nova'
@@ -284,11 +297,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManutencoesIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/equipamentos/$id': {
+      id: '/_authenticated/equipamentos/$id'
+      path: '/equipamentos/$id'
+      fullPath: '/equipamentos/$id'
+      preLoaderRoute: typeof AuthenticatedEquipamentosIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedEquipamentosIdRoute: typeof AuthenticatedEquipamentosIdRoute
   AuthenticatedManutencoesIdRoute: typeof AuthenticatedManutencoesIdRoute
   AuthenticatedOrdensIdRoute: typeof AuthenticatedOrdensIdRoute
   AuthenticatedOrdensNovaRoute: typeof AuthenticatedOrdensNovaRoute
@@ -303,6 +324,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedEquipamentosIdRoute: AuthenticatedEquipamentosIdRoute,
   AuthenticatedManutencoesIdRoute: AuthenticatedManutencoesIdRoute,
   AuthenticatedOrdensIdRoute: AuthenticatedOrdensIdRoute,
   AuthenticatedOrdensNovaRoute: AuthenticatedOrdensNovaRoute,
