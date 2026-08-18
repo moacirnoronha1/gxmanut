@@ -78,6 +78,7 @@ export interface Equipamento {
   setor_id: string | null;
   localizacao: string | null;
   data_aquisicao: string | null;
+  valor_aquisicao?: number | null;
   data_instalacao: string | null;
   fornecedor_id: string | null;
   garantia_ate: string | null;
