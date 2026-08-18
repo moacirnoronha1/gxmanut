@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { urgenciasQuery, statusOsQuery, categoriasQuery } from "@/lib/queries";
+import { urgenciasQuery, statusOsQuery, categoriasQuery, custoCategoriasQuery } from "@/lib/queries";
+import { CategoriasCustoCard } from "@/components/categorias-custo";
 
 export const Route = createFileRoute("/_authenticated/configuracoes/")({
   head: () => ({ meta: [{ title: "Configurações — Manutenção Xica da Silva" }] }),
@@ -13,6 +14,7 @@ function Config() {
   const { data: urgencias = [] } = useQuery(urgenciasQuery());
   const { data: status = [] } = useQuery(statusOsQuery());
   const { data: categorias = [] } = useQuery(categoriasQuery());
+  const { data: custoCategorias = [] } = useQuery(custoCategoriasQuery());
   return (
     <div className="space-y-4 max-w-4xl">
       <div>
@@ -51,6 +53,7 @@ function Config() {
             {categorias.map((c) => <Badge key={c.id} variant="secondary">{c.nome}</Badge>)}
           </CardContent>
         </Card>
+        <CategoriasCustoCard categorias={custoCategorias} />
       </div>
     </div>
   );

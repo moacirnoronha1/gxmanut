@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -97,7 +97,7 @@ function Equipamentos() {
           {filtered.map((e) => {
             const set = setores.find((s) => s.id === e.setor_id);
             return (
-              <div key={e.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-3">
+              <Link key={e.id} to="/equipamentos/$id" params={{ id: e.id }} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-3 hover:bg-muted/50">
                 <div className="min-w-0">
                   <div className="font-medium truncate">{e.nome} {e.patrimonio && <span className="text-xs text-muted-foreground">· {e.patrimonio}</span>}</div>
                   <div className="text-xs text-muted-foreground truncate">
@@ -105,7 +105,7 @@ function Equipamentos() {
                   </div>
                 </div>
                 <Badge variant={e.situacao === "ativo" ? "default" : "outline"}>{e.situacao}</Badge>
-              </div>
+              </Link>
             );
           })}
         </CardContent>

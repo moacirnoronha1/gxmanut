@@ -11,15 +11,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
-  osQuery, osCustosQuery, osComentariosQuery, osHistoricoQuery,
+  osQuery, osCustosDetalhadosQuery, osComentariosQuery, osHistoricoQuery,
   statusOsQuery, urgenciasQuery, setoresQuery, equipamentosQuery,
-  profilesQuery, fornecedoresQuery, categoriasQuery,
+  profilesQuery, categoriasQuery, custoCategoriasQuery,
 } from "@/lib/queries";
+import { CustosOSPanel, IndicadorFinanceiroOS } from "@/components/custos-os";
+import { resumirCustos } from "@/lib/custos";
 import { supabase } from "@/integrations/supabase/client";
-import { formatBRL, formatDateTime, TIPO_CUSTO_OPTIONS } from "@/lib/db-types";
+import { formatBRL, formatDateTime } from "@/lib/db-types";
 import { toast } from "sonner";
 import { showDbError } from "@/lib/db-error";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/ordens/$id")({
   head: () => ({ meta: [{ title: "OS — Manutenção Xica da Silva" }] }),
@@ -32,7 +34,7 @@ function OSDetail() {
   const qc = useQueryClient();
 
   const { data: os } = useQuery(osQuery(id));
-  const { data: custos = [] } = useQuery(osCustosQuery(id));
+  const { data: custos = [] } = useQuery(osCustosDetalhadosQuery(id));
   const { data: coments = [] } = useQuery(osComentariosQuery(id));
   const { data: hist = [] } = useQuery(osHistoricoQuery(id));
   const { data: status = [] } = useQuery(statusOsQuery());
@@ -40,10 +42,12 @@ function OSDetail() {
   const { data: setores = [] } = useQuery(setoresQuery());
   const { data: equipamentos = [] } = useQuery(equipamentosQuery());
   const { data: profiles = [] } = useQuery(profilesQuery());
-  const { data: fornecedores = [] } = useQuery(fornecedoresQuery());
   const { data: categorias = [] } = useQuery(categoriasQuery());
+  const { data: custoCategorias = [] } = useQuery(custoCategoriasQuery());
 
-  const totalCustos = useMemo(() => custos.reduce((s, c) => s + Number(c.valor_total ?? 0), 0), [custos]);
+  const resumo = useMemo(() => resumirCustos(custos, custoCategorias), [custos, custoCategorias]);
+  const totalCustos = resumo.total;
+  const [tab, setTab] = useState("exec");
 
   if (!os) return <div className="text-sm text-muted-foreground">Carregando…</div>;
 
@@ -104,6 +108,8 @@ function OSDetail() {
         </div>
       </div>
 
+      <IndicadorFinanceiroOS custos={custos} categorias={custoCategorias} onVerDetalhes={() => setTab("custos")} />
+
       <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-4">
           <Card>
@@ -126,7 +132,7 @@ function OSDetail() {
             </CardContent>
           </Card>
 
-          <Tabs defaultValue="exec">
+          <Tabs value={tab} onValueChange={setTab}>
             <TabsList className="grid grid-cols-4 w-full">
               <TabsTrigger value="exec">Execução</TabsTrigger>
               <TabsTrigger value="custos">Custos</TabsTrigger>
@@ -139,7 +145,7 @@ function OSDetail() {
             </TabsContent>
 
             <TabsContent value="custos">
-              <CustosCard osId={id} custos={custos} total={totalCustos} fornecedores={fornecedores} qc={qc} />
+              <CustosOSPanel osId={id} equipamentoId={os.equipamento_id} custos={custos} />
             </TabsContent>
 
             <TabsContent value="coment">
@@ -210,7 +216,13 @@ function OSDetail() {
             <CardHeader><CardTitle>Resumo financeiro</CardTitle></CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{formatBRL(totalCustos)}</div>
-              <div className="text-xs text-muted-foreground">{custos.length} lançamento(s)</div>
+              <div className="text-xs text-muted-foreground">{resumo.lancamentos} lançamento(s)</div>
+              <div className="mt-3 space-y-1 text-sm">
+                <div className="flex justify-between"><span className="text-muted-foreground">Desembolso</span><span>{formatBRL(resumo.desembolso)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Custo interno</span><span>{formatBRL(resumo.interno)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Comprovado</span><span>{formatBRL(resumo.comprovado)}</span></div>
+              </div>
+              <Button variant="outline" size="sm" className="w-full mt-3" onClick={() => setTab("custos")}>Ver composição</Button>
             </CardContent>
           </Card>
         </div>
@@ -263,81 +275,6 @@ function ExecucaoCard({
             {os.concluida_em ? "Já concluída" : "Concluir OS"}
           </Button>
         </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function CustosCard({
-  osId, custos, total, fornecedores, qc,
-}: {
-  osId: string;
-  custos: Array<{ id: string; tipo: string; descricao: string; quantidade: number; valor_unitario: number; valor_total: number; fornecedor_id: string | null }>;
-  total: number;
-  fornecedores: Array<{ id: string; nome: string }>;
-  qc: ReturnType<typeof useQueryClient>;
-}) {
-  const [tipo, setTipo] = useState<string>("peca");
-  const [descricao, setDescricao] = useState("");
-  const [qtd, setQtd] = useState("1");
-  const [valor, setValor] = useState("0");
-  const [fornId, setFornId] = useState<string>("none");
-  const [saving, setSaving] = useState(false);
-
-  async function add() {
-    if (!descricao) return toast.error("Descreva o custo.");
-    setSaving(true);
-    const { error } = await supabase.from("os_custos").insert({
-      os_id: osId, tipo, descricao,
-      quantidade: Number(qtd), valor_unitario: Number(valor),
-      fornecedor_id: fornId === "none" ? null : fornId,
-    });
-    setSaving(false);
-    if (error) return showDbError(error);
-    setDescricao(""); setQtd("1"); setValor("0"); setFornId("none");
-    await qc.invalidateQueries({ queryKey: ["os_custos", osId] });
-    toast.success("Custo adicionado.");
-  }
-  async function remove(cid: string) {
-    const { error } = await supabase.from("os_custos").delete().eq("id", cid);
-    if (error) return showDbError(error);
-    await qc.invalidateQueries({ queryKey: ["os_custos", osId] });
-  }
-
-  return (
-    <Card>
-      <CardContent className="p-4 space-y-3">
-        <div className="grid gap-2 md:grid-cols-[1fr_2fr_80px_120px_1fr_auto]">
-          <Select value={tipo} onValueChange={setTipo}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>{TIPO_CUSTO_OPTIONS.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
-          </Select>
-          <Input placeholder="Descrição" value={descricao} onChange={(e) => setDescricao(e.target.value)} />
-          <Input type="number" step="0.01" min="0" value={qtd} onChange={(e) => setQtd(e.target.value)} />
-          <Input type="number" step="0.01" min="0" placeholder="Valor un." value={valor} onChange={(e) => setValor(e.target.value)} />
-          <Select value={fornId} onValueChange={setFornId}>
-            <SelectTrigger><SelectValue placeholder="Fornecedor" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Sem fornecedor</SelectItem>
-              {fornecedores.map((f) => <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Button onClick={add} disabled={saving}>Adicionar</Button>
-        </div>
-        <Separator />
-        <div className="divide-y">
-          {custos.length === 0 && <div className="text-sm text-muted-foreground p-3">Sem custos lançados.</div>}
-          {custos.map((c) => (
-            <div key={c.id} className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-3 py-2 text-sm">
-              <Badge variant="outline">{TIPO_CUSTO_OPTIONS.find((t) => t.value === c.tipo)?.label ?? c.tipo}</Badge>
-              <div className="min-w-0 truncate">{c.descricao} <span className="text-muted-foreground">({c.quantidade} × {formatBRL(c.valor_unitario)})</span></div>
-              <div className="font-semibold">{formatBRL(c.valor_total)}</div>
-              <Button variant="ghost" size="icon" onClick={() => remove(c.id)}><Trash2 className="size-4" /></Button>
-            </div>
-          ))}
-        </div>
-        <Separator />
-        <div className="flex justify-end text-sm">Total: <span className="font-bold ml-2">{formatBRL(total)}</span></div>
       </CardContent>
     </Card>
   );

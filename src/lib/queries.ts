@@ -119,3 +119,55 @@ export const osHistoricoQuery = (osId: string) =>
     queryFn: async (): Promise<OSHistorico[]> =>
       throwIfError(await supabase.from("os_historico").select("*").eq("os_id", osId).order("created_at", { ascending: false })),
   });
+// ---------- Custos reais ----------
+import type { CustoCategoria, CustoLancamento, CustoEvidencia } from "./custos";
+
+export const custoCategoriasQuery = () =>
+  queryOptions({
+    queryKey: ["custo_categorias"],
+    queryFn: async (): Promise<CustoCategoria[]> =>
+      throwIfError(await supabase.from("custo_categorias").select("*").order("ordem").order("nome")),
+  });
+
+export const osCustosDetalhadosQuery = (osId: string) =>
+  queryOptions({
+    queryKey: ["os_custos", osId],
+    queryFn: async (): Promise<CustoLancamento[]> =>
+      throwIfError(await supabase.from("os_custos").select("*").eq("os_id", osId).order("created_at")),
+  });
+
+export const custoEvidenciasQuery = (osId: string) =>
+  queryOptions({
+    queryKey: ["custo_evidencias", osId],
+    queryFn: async (): Promise<CustoEvidencia[]> => {
+      const ids = throwIfError<{ id: string }[]>(await supabase.from("os_custos").select("id").eq("os_id", osId));
+      if (ids.length === 0) return [];
+      return throwIfError(
+        await supabase.from("os_custo_evidencias").select("*").in("custo_id", ids.map((r) => r.id)).order("created_at"),
+      );
+    },
+  });
+
+export const custosDoEquipamentoQuery = (equipamentoId: string) =>
+  queryOptions({
+    queryKey: ["custos_equipamento", equipamentoId],
+    queryFn: async (): Promise<CustoLancamento[]> => {
+      const oss = throwIfError<{ id: string }[]>(
+        await supabase.from("ordens_servico").select("id").eq("equipamento_id", equipamentoId),
+      );
+      const osIds = oss.map((o) => o.id);
+      const filtro = osIds.length
+        ? `equipamento_id.eq.${equipamentoId},os_id.in.(${osIds.join(",")})`
+        : `equipamento_id.eq.${equipamentoId}`;
+      return throwIfError(await supabase.from("os_custos").select("*").or(filtro).order("created_at"));
+    },
+  });
+
+export const ordensDoEquipamentoQuery = (equipamentoId: string) =>
+  queryOptions({
+    queryKey: ["ordens_equipamento", equipamentoId],
+    queryFn: async (): Promise<OS[]> =>
+      throwIfError(
+        await supabase.from("ordens_servico").select("*").eq("equipamento_id", equipamentoId).order("numero", { ascending: false }),
+      ),
+  });

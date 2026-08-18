@@ -1,0 +1,1 @@
+DELETE FROM public.os_custos WHERE descricao IN ('Rolamento 6204','Serviço do técnico');
