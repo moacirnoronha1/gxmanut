@@ -1,0 +1,1 @@
+CREATE POLICY "auditoria propria leitura" ON public.usuarios_auditoria FOR SELECT TO authenticated USING (ator_id = auth.uid() OR alvo_id = auth.uid());
