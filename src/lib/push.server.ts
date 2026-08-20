@@ -121,7 +121,7 @@ export async function enviarPushParaUsuario(
         subscription,
         vapid,
       );
-      const res = await fetch(device.endpoint, req);
+      const res = await fetch(device.endpoint, req as unknown as RequestInit);
       const ok = res.status >= 200 && res.status < 300;
       const erroTexto = ok ? null : `${res.status} ${await res.text().catch(() => "")}`.slice(0, 500);
 
@@ -207,7 +207,7 @@ export async function notificarUsuarios(userIds: string[], n: NovaNotificacao) {
         url: n.url ?? null,
         os_id: n.os_id ?? null,
         manutencao_id: n.manutencao_id ?? null,
-        dados: n.dados ?? {},
+        dados: (n.dados ?? {}) as never,
       })
       .select("id,tentativas")
       .single();

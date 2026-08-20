@@ -12,6 +12,8 @@ import { setoresQuery, equipamentosQuery, urgenciasQuery, statusOsQuery, categor
 import { supabase } from "@/integrations/supabase/client";
 import { RISCO_OPTIONS } from "@/lib/db-types";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { notificarOS } from "@/lib/push.functions";
 import { showDbError } from "@/lib/db-error";
 
 export const Route = createFileRoute("/_authenticated/ordens/nova")({
@@ -21,6 +23,7 @@ export const Route = createFileRoute("/_authenticated/ordens/nova")({
 
 function NovaOS() {
   const navigate = useNavigate();
+  const notificar = useServerFn(notificarOS);
   const { data: setores = [] } = useQuery(setoresQuery());
   const { data: equipamentos = [] } = useQuery(equipamentosQuery());
   const { data: urgencias = [] } = useQuery(urgenciasQuery());
@@ -74,6 +77,11 @@ function NovaOS() {
     const { data, error } = await supabase.from("ordens_servico").insert(payload).select("id").single();
     setSaving(false);
     if (error) return showDbError(error);
+    try {
+      await notificar({ data: { osId: data.id } });
+    } catch {
+      toast.warning("OS criada, mas não foi possível enviar as notificações agora.");
+    }
     toast.success("OS aberta com sucesso!");
     navigate({ to: "/ordens/$id", params: { id: data.id } });
   }

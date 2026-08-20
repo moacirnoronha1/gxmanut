@@ -15,6 +15,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedUsuariosIndexRouteImport } from './routes/_authenticated/usuarios.index'
 import { Route as AuthenticatedSetoresIndexRouteImport } from './routes/_authenticated/setores.index'
 import { Route as AuthenticatedOrdensIndexRouteImport } from './routes/_authenticated/ordens.index'
+import { Route as AuthenticatedNotificacoesIndexRouteImport } from './routes/_authenticated/notificacoes.index'
 import { Route as AuthenticatedManutencoesIndexRouteImport } from './routes/_authenticated/manutencoes.index'
 import { Route as AuthenticatedFornecedoresIndexRouteImport } from './routes/_authenticated/fornecedores.index'
 import { Route as AuthenticatedEquipamentosIndexRouteImport } from './routes/_authenticated/equipamentos.index'
@@ -23,6 +24,8 @@ import { Route as AuthenticatedOrdensNovaRouteImport } from './routes/_authentic
 import { Route as AuthenticatedOrdensIdRouteImport } from './routes/_authenticated/ordens.$id'
 import { Route as AuthenticatedManutencoesIdRouteImport } from './routes/_authenticated/manutencoes.$id'
 import { Route as AuthenticatedEquipamentosIdRouteImport } from './routes/_authenticated/equipamentos.$id'
+import { Route as AuthenticatedConfiguracoesNotificacoesRouteImport } from './routes/_authenticated/configuracoes.notificacoes'
+import { Route as ApiPublicHooksNotificacoesRouteImport } from './routes/api/public/hooks/notificacoes'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -54,6 +57,12 @@ const AuthenticatedOrdensIndexRoute =
   AuthenticatedOrdensIndexRouteImport.update({
     id: '/ordens/',
     path: '/ordens/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedNotificacoesIndexRoute =
+  AuthenticatedNotificacoesIndexRouteImport.update({
+    id: '/notificacoes/',
+    path: '/notificacoes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedManutencoesIndexRoute =
@@ -102,10 +111,23 @@ const AuthenticatedEquipamentosIdRoute =
     path: '/equipamentos/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedConfiguracoesNotificacoesRoute =
+  AuthenticatedConfiguracoesNotificacoesRouteImport.update({
+    id: '/configuracoes/notificacoes',
+    path: '/configuracoes/notificacoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const ApiPublicHooksNotificacoesRoute =
+  ApiPublicHooksNotificacoesRouteImport.update({
+    id: '/api/public/hooks/notificacoes',
+    path: '/api/public/hooks/notificacoes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/configuracoes/notificacoes': typeof AuthenticatedConfiguracoesNotificacoesRoute
   '/equipamentos/$id': typeof AuthenticatedEquipamentosIdRoute
   '/manutencoes/$id': typeof AuthenticatedManutencoesIdRoute
   '/ordens/$id': typeof AuthenticatedOrdensIdRoute
@@ -114,13 +136,16 @@ export interface FileRoutesByFullPath {
   '/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
   '/fornecedores/': typeof AuthenticatedFornecedoresIndexRoute
   '/manutencoes/': typeof AuthenticatedManutencoesIndexRoute
+  '/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
   '/ordens/': typeof AuthenticatedOrdensIndexRoute
   '/setores/': typeof AuthenticatedSetoresIndexRoute
   '/usuarios/': typeof AuthenticatedUsuariosIndexRoute
+  '/api/public/hooks/notificacoes': typeof ApiPublicHooksNotificacoesRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/': typeof AuthenticatedIndexRoute
+  '/configuracoes/notificacoes': typeof AuthenticatedConfiguracoesNotificacoesRoute
   '/equipamentos/$id': typeof AuthenticatedEquipamentosIdRoute
   '/manutencoes/$id': typeof AuthenticatedManutencoesIdRoute
   '/ordens/$id': typeof AuthenticatedOrdensIdRoute
@@ -129,15 +154,18 @@ export interface FileRoutesByTo {
   '/equipamentos': typeof AuthenticatedEquipamentosIndexRoute
   '/fornecedores': typeof AuthenticatedFornecedoresIndexRoute
   '/manutencoes': typeof AuthenticatedManutencoesIndexRoute
+  '/notificacoes': typeof AuthenticatedNotificacoesIndexRoute
   '/ordens': typeof AuthenticatedOrdensIndexRoute
   '/setores': typeof AuthenticatedSetoresIndexRoute
   '/usuarios': typeof AuthenticatedUsuariosIndexRoute
+  '/api/public/hooks/notificacoes': typeof ApiPublicHooksNotificacoesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/configuracoes/notificacoes': typeof AuthenticatedConfiguracoesNotificacoesRoute
   '/_authenticated/equipamentos/$id': typeof AuthenticatedEquipamentosIdRoute
   '/_authenticated/manutencoes/$id': typeof AuthenticatedManutencoesIdRoute
   '/_authenticated/ordens/$id': typeof AuthenticatedOrdensIdRoute
@@ -146,15 +174,18 @@ export interface FileRoutesById {
   '/_authenticated/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
   '/_authenticated/fornecedores/': typeof AuthenticatedFornecedoresIndexRoute
   '/_authenticated/manutencoes/': typeof AuthenticatedManutencoesIndexRoute
+  '/_authenticated/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
   '/_authenticated/ordens/': typeof AuthenticatedOrdensIndexRoute
   '/_authenticated/setores/': typeof AuthenticatedSetoresIndexRoute
   '/_authenticated/usuarios/': typeof AuthenticatedUsuariosIndexRoute
+  '/api/public/hooks/notificacoes': typeof ApiPublicHooksNotificacoesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
+    | '/configuracoes/notificacoes'
     | '/equipamentos/$id'
     | '/manutencoes/$id'
     | '/ordens/$id'
@@ -163,13 +194,16 @@ export interface FileRouteTypes {
     | '/equipamentos/'
     | '/fornecedores/'
     | '/manutencoes/'
+    | '/notificacoes/'
     | '/ordens/'
     | '/setores/'
     | '/usuarios/'
+    | '/api/public/hooks/notificacoes'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
     | '/'
+    | '/configuracoes/notificacoes'
     | '/equipamentos/$id'
     | '/manutencoes/$id'
     | '/ordens/$id'
@@ -178,14 +212,17 @@ export interface FileRouteTypes {
     | '/equipamentos'
     | '/fornecedores'
     | '/manutencoes'
+    | '/notificacoes'
     | '/ordens'
     | '/setores'
     | '/usuarios'
+    | '/api/public/hooks/notificacoes'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/'
+    | '/_authenticated/configuracoes/notificacoes'
     | '/_authenticated/equipamentos/$id'
     | '/_authenticated/manutencoes/$id'
     | '/_authenticated/ordens/$id'
@@ -194,14 +231,17 @@ export interface FileRouteTypes {
     | '/_authenticated/equipamentos/'
     | '/_authenticated/fornecedores/'
     | '/_authenticated/manutencoes/'
+    | '/_authenticated/notificacoes/'
     | '/_authenticated/ordens/'
     | '/_authenticated/setores/'
     | '/_authenticated/usuarios/'
+    | '/api/public/hooks/notificacoes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicHooksNotificacoesRoute: typeof ApiPublicHooksNotificacoesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -246,6 +286,13 @@ declare module '@tanstack/react-router' {
       path: '/ordens'
       fullPath: '/ordens/'
       preLoaderRoute: typeof AuthenticatedOrdensIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notificacoes/': {
+      id: '/_authenticated/notificacoes/'
+      path: '/notificacoes'
+      fullPath: '/notificacoes/'
+      preLoaderRoute: typeof AuthenticatedNotificacoesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/manutencoes/': {
@@ -304,11 +351,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEquipamentosIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/configuracoes/notificacoes': {
+      id: '/_authenticated/configuracoes/notificacoes'
+      path: '/configuracoes/notificacoes'
+      fullPath: '/configuracoes/notificacoes'
+      preLoaderRoute: typeof AuthenticatedConfiguracoesNotificacoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/hooks/notificacoes': {
+      id: '/api/public/hooks/notificacoes'
+      path: '/api/public/hooks/notificacoes'
+      fullPath: '/api/public/hooks/notificacoes'
+      preLoaderRoute: typeof ApiPublicHooksNotificacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedConfiguracoesNotificacoesRoute: typeof AuthenticatedConfiguracoesNotificacoesRoute
   AuthenticatedEquipamentosIdRoute: typeof AuthenticatedEquipamentosIdRoute
   AuthenticatedManutencoesIdRoute: typeof AuthenticatedManutencoesIdRoute
   AuthenticatedOrdensIdRoute: typeof AuthenticatedOrdensIdRoute
@@ -317,6 +379,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEquipamentosIndexRoute: typeof AuthenticatedEquipamentosIndexRoute
   AuthenticatedFornecedoresIndexRoute: typeof AuthenticatedFornecedoresIndexRoute
   AuthenticatedManutencoesIndexRoute: typeof AuthenticatedManutencoesIndexRoute
+  AuthenticatedNotificacoesIndexRoute: typeof AuthenticatedNotificacoesIndexRoute
   AuthenticatedOrdensIndexRoute: typeof AuthenticatedOrdensIndexRoute
   AuthenticatedSetoresIndexRoute: typeof AuthenticatedSetoresIndexRoute
   AuthenticatedUsuariosIndexRoute: typeof AuthenticatedUsuariosIndexRoute
@@ -324,6 +387,8 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedConfiguracoesNotificacoesRoute:
+    AuthenticatedConfiguracoesNotificacoesRoute,
   AuthenticatedEquipamentosIdRoute: AuthenticatedEquipamentosIdRoute,
   AuthenticatedManutencoesIdRoute: AuthenticatedManutencoesIdRoute,
   AuthenticatedOrdensIdRoute: AuthenticatedOrdensIdRoute,
@@ -332,6 +397,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEquipamentosIndexRoute: AuthenticatedEquipamentosIndexRoute,
   AuthenticatedFornecedoresIndexRoute: AuthenticatedFornecedoresIndexRoute,
   AuthenticatedManutencoesIndexRoute: AuthenticatedManutencoesIndexRoute,
+  AuthenticatedNotificacoesIndexRoute: AuthenticatedNotificacoesIndexRoute,
   AuthenticatedOrdensIndexRoute: AuthenticatedOrdensIndexRoute,
   AuthenticatedSetoresIndexRoute: AuthenticatedSetoresIndexRoute,
   AuthenticatedUsuariosIndexRoute: AuthenticatedUsuariosIndexRoute,
@@ -343,6 +409,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicHooksNotificacoesRoute: ApiPublicHooksNotificacoesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
