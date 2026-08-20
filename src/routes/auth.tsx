@@ -26,6 +26,7 @@ function AuthPage() {
   const navigate = useNavigate();
   const ensureMaster = useServerFn(ensureMasterUser);
   const resolve = useServerFn(resolveLoginEmail);
+  const registrarAcessoFn = useServerFn(registrarAcesso);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
