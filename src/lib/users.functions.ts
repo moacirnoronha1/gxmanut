@@ -254,3 +254,28 @@ export const registrarAcesso = createServerFn({ method: "POST" })
     await audit(context.userId, context.userId, "login", { username: perfil?.username ?? null });
     return { ok: true };
   });
+
+// Define os setores pelos quais um usuário é responsável (múltiplos).
+export const setUserSetores = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({ user_id: z.string().uuid(), setor_ids: z.array(z.string().uuid()) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertMestre(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error: delErr } = await supabaseAdmin.from("profile_setores").delete().eq("user_id", data.user_id);
+    if (delErr) throw new Error(delErr.message);
+    if (data.setor_ids.length) {
+      const { error } = await supabaseAdmin
+        .from("profile_setores")
+        .insert(data.setor_ids.map((setor_id) => ({ user_id: data.user_id, setor_id })));
+      if (error) throw new Error(error.message);
+    }
+    await supabaseAdmin
+      .from("profiles")
+      .update({ setor_id: data.setor_ids[0] ?? null })
+      .eq("id", data.user_id);
+    await audit(context.userId, data.user_id, "setores_responsaveis_atualizados", { setor_ids: data.setor_ids });
+    return { ok: true };
+  });

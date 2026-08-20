@@ -171,3 +171,25 @@ export const ordensDoEquipamentoQuery = (equipamentoId: string) =>
         await supabase.from("ordens_servico").select("*").eq("equipamento_id", equipamentoId).order("numero", { ascending: false }),
       ),
   });
+
+export interface ProfileSetor { user_id: string; setor_id: string }
+
+export const profileSetoresQuery = () =>
+  queryOptions({
+    queryKey: ["profile_setores"],
+    queryFn: async (): Promise<ProfileSetor[]> =>
+      throwIfError(await supabase.from("profile_setores").select("user_id, setor_id")),
+  });
+
+export const meusSetoresQuery = () =>
+  queryOptions({
+    queryKey: ["profile_setores", "me"],
+    queryFn: async (): Promise<string[]> => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return [];
+      const rows = throwIfError<{ setor_id: string }[]>(
+        await supabase.from("profile_setores").select("setor_id").eq("user_id", u.user.id),
+      );
+      return rows.map((r) => r.setor_id);
+    },
+  });
