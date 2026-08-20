@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { ensureMasterUser, resolveLoginEmail } from "@/lib/users.functions";
+import { ensureMasterUser, resolveLoginEmail, registrarAcesso } from "@/lib/users.functions";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -26,6 +26,7 @@ function AuthPage() {
   const navigate = useNavigate();
   const ensureMaster = useServerFn(ensureMasterUser);
   const resolve = useServerFn(resolveLoginEmail);
+  const registrarAcessoFn = useServerFn(registrarAcesso);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -73,6 +74,11 @@ function AuthPage() {
         const { data: s } = await supabase.auth.getSession();
         if (s.session) break;
         await new Promise((r) => setTimeout(r, 100));
+      }
+      try {
+        await registrarAcessoFn({});
+      } catch {
+        // auditoria de acesso não deve impedir a entrada
       }
       navigate({ to: "/", replace: true });
     } catch (err) {

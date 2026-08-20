@@ -231,3 +231,21 @@ export const changeMyPassword = createServerFn({ method: "POST" })
     await audit(context.userId, context.userId, "senha_alterada");
     return { ok: true };
   });
+
+// Registra o acesso do usuário autenticado (auditoria por ID real da sessão).
+export const registrarAcesso = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: perfil } = await supabaseAdmin
+      .from("profiles")
+      .select("username")
+      .eq("id", context.userId)
+      .maybeSingle();
+    await supabaseAdmin
+      .from("profiles")
+      .update({ ultimo_acesso: new Date().toISOString(), tentativas_falhas: 0 })
+      .eq("id", context.userId);
+    await audit(context.userId, context.userId, "login", { username: perfil?.username ?? null });
+    return { ok: true };
+  });
