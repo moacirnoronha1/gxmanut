@@ -1,6 +1,6 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { myProfileQuery, userRolesQuery, setoresQuery } from "@/lib/queries";
+import { myProfileQuery, userRolesQuery, setoresQuery, meusSetoresQuery } from "@/lib/queries";
 import type { AppRole } from "@/lib/db-types";
 
 export const ROLE_LABEL: Record<AppRole, string> = {
@@ -43,13 +43,15 @@ export function useSessaoUsuario() {
   const { data: perfil, isLoading: carregandoPerfil } = useQuery(myProfileQuery());
   const { data: roles = [] } = useQuery(userRolesQuery());
   const { data: setores = [] } = useQuery(setoresQuery());
+  const { data: meusSetoresIds = [] } = useQuery(meusSetoresQuery());
 
   const mestre = !!perfil?.is_master || roles.includes("mestre");
   const principal: AppRole | null = mestre
     ? "mestre"
     : (ROLE_ORDER.find((r) => roles.includes(r)) ?? null);
 
-  const setor = perfil?.setor_id ? (setores.find((s) => s.id === perfil.setor_id) ?? null) : null;
+  const meusSetores = setores.filter((s) => meusSetoresIds.includes(s.id));
+  const setor = meusSetores[0] ?? (perfil?.setor_id ? (setores.find((s) => s.id === perfil.setor_id) ?? null) : null);
   const username = (perfil?.username ?? "").toUpperCase();
   const nomeCompleto = perfil?.nome_completo || perfil?.nome || username || "Usuário";
 
@@ -59,6 +61,7 @@ export function useSessaoUsuario() {
     mestre,
     perfilLabel: principal ? ROLE_LABEL[principal] : "Sem perfil definido",
     setor,
+    meusSetores,
     username,
     nomeCompleto,
     iniciais: nomeCompleto
