@@ -80,6 +80,7 @@ export const createUserAccount = createServerFn({ method: "POST" })
       nome_completo: z.string().trim().min(1).max(120),
       funcao: z.string().trim().max(80).optional().nullable(),
       setor_id: z.string().uuid().optional().nullable(),
+      setor_ids: z.array(z.string().uuid()).optional().default([]),
       role: z.enum(["admin", "gestor", "responsavel", "tecnico"]),
       must_change_password: z.boolean().optional().default(true),
     }).parse(input),
@@ -112,7 +113,14 @@ export const createUserAccount = createServerFn({ method: "POST" })
       criado_por: context.userId,
     }).eq("id", created.user.id);
     await supabaseAdmin.from("user_roles").insert({ user_id: created.user.id, role: data.role });
-    await audit(context.userId, created.user.id, "usuario_criado", { username: data.username, role: data.role });
+    const setoresIniciais = data.setor_ids?.length ? data.setor_ids : data.setor_id ? [data.setor_id] : [];
+    if (setoresIniciais.length) {
+      await supabaseAdmin
+        .from("profile_setores")
+        .insert(setoresIniciais.map((setor_id) => ({ user_id: created.user!.id, setor_id })));
+      await supabaseAdmin.from("profiles").update({ setor_id: setoresIniciais[0] }).eq("id", created.user.id);
+    }
+    await audit(context.userId, created.user.id, "usuario_criado", { username: data.username, role: data.role, setor_ids: setoresIniciais });
     return { ok: true, id: created.user.id };
   });
 
