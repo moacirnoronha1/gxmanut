@@ -1,9 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { urgenciasQuery, statusOsQuery, categoriasQuery, custoCategoriasQuery } from "@/lib/queries";
 import { CategoriasCustoCard } from "@/components/categorias-custo";
+import { Button } from "@/components/ui/button";
+import { BellRing } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/configuracoes/")({
   head: () => ({ meta: [{ title: "Configurações — Manutenção Xica da Silva" }] }),
@@ -21,6 +23,17 @@ function Config() {
         <h1 className="text-2xl font-bold">Configurações</h1>
         <p className="text-sm text-muted-foreground">Parâmetros do sistema.</p>
       </div>
+      <Card>
+        <CardHeader><CardTitle>Notificações do meu dispositivo</CardTitle></CardHeader>
+        <CardContent className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            Ative os alertas push neste celular, envie uma notificação de teste e veja o diagnóstico.
+          </p>
+          <Button asChild>
+            <Link to="/configuracoes/notificacoes"><BellRing className="size-4" /> Abrir notificações</Link>
+          </Button>
+        </CardContent>
+      </Card>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader><CardTitle>Níveis de urgência</CardTitle></CardHeader>

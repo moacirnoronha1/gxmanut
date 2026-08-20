@@ -12,6 +12,8 @@ import { setoresQuery, equipamentosQuery, urgenciasQuery, statusOsQuery, categor
 import { supabase } from "@/integrations/supabase/client";
 import { RISCO_OPTIONS } from "@/lib/db-types";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { notificarOS } from "@/lib/push.functions";
 import { showDbError } from "@/lib/db-error";
 
 export const Route = createFileRoute("/_authenticated/ordens/nova")({
@@ -21,6 +23,7 @@ export const Route = createFileRoute("/_authenticated/ordens/nova")({
 
 function NovaOS() {
   const navigate = useNavigate();
+  const notificar = useServerFn(notificarOS);
   const { data: setores = [] } = useQuery(setoresQuery());
   const { data: equipamentos = [] } = useQuery(equipamentosQuery());
   const { data: urgencias = [] } = useQuery(urgenciasQuery());
