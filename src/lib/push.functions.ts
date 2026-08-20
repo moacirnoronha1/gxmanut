@@ -55,7 +55,7 @@ export const removerDispositivo = createServerFn({ method: "POST" })
 
 export const enviarNotificacaoTeste = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({ endpoint: z.string().url().optional() }).parse(input ?? {}))
+  .inputValidator((input: { endpoint?: string } | undefined) => input ?? {})
   .handler(async ({ context }) => {
     const { enviarPushParaUsuario, getAdmin } = await import("./push.server");
     const admin = await getAdmin();
@@ -219,8 +219,12 @@ export const salvarConfigEscalonamento = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { data: mestre } = await context.supabase.rpc("is_mestre", { _user_id: context.userId });
-    if (!mestre) throw new Error("Apenas o Usuário Mestre pode alterar o escalonamento.");
+    const { data: perfil } = await context.supabase
+      .from("profiles")
+      .select("is_master")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (!perfil?.is_master) throw new Error("Apenas o Usuário Mestre pode alterar o escalonamento.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("notificacao_config")
@@ -232,6 +236,7 @@ export const salvarConfigEscalonamento = createServerFn({ method: "POST" })
 
 export const diagnosticoNotificacoes = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .inputValidator((input: Record<string, never> | undefined) => input ?? {})
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: devices } = await supabaseAdmin
@@ -264,9 +269,14 @@ export const diagnosticoNotificacoes = createServerFn({ method: "POST" })
 
 export const rodarRotinas = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .inputValidator((input: Record<string, never> | undefined) => input ?? {})
   .handler(async ({ context }) => {
-    const { data: mestre } = await context.supabase.rpc("is_mestre", { _user_id: context.userId });
-    if (!mestre) throw new Error("Somente o Usuário Mestre pode executar as rotinas.");
+    const { data: perfil } = await context.supabase
+      .from("profiles")
+      .select("is_master")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (!perfil?.is_master) throw new Error("Somente o Usuário Mestre pode executar as rotinas.");
     const { rodarRotinasNotificacao } = await import("./push.server");
     return rodarRotinasNotificacao();
   });
