@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   LayoutDashboard,
   ClipboardList,
@@ -13,6 +14,7 @@ import {
   Moon,
   Sun,
   Plus,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,12 +32,15 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
+import { minhasNotificacoesQuery } from "@/lib/notificacoes";
+import { AlertaUrgente } from "@/components/alerta-urgente";
 
 const items = [
   { to: "/", label: "Painel", icon: LayoutDashboard },
   { to: "/ordens", label: "Ordens de Serviço", icon: ClipboardList },
   { to: "/manutencoes", label: "Manutenções Periódicas", icon: CalendarClock },
   { to: "/equipamentos", label: "Equipamentos", icon: Wrench },
+  { to: "/notificacoes", label: "Notificações", icon: Bell },
   { to: "/setores", label: "Setores", icon: Building2 },
   { to: "/fornecedores", label: "Fornecedores", icon: Truck },
   { to: "/usuarios", label: "Usuários", icon: Users },
@@ -62,6 +67,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { dark, toggle } = useDark();
+  const { data: notifs = [] } = useQuery(minhasNotificacoesQuery());
+  const naoLidas = notifs.filter((n) => !n.lida_em).length;
 
   const isActive = (to: string) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
 
@@ -91,6 +98,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                         <Link to={it.to}>
                           <it.icon />
                           <span>{it.label}</span>
+                          {it.to === "/notificacoes" && naoLidas > 0 && (
+                            <span className="ml-auto rounded-full bg-destructive px-1.5 text-[10px] font-bold text-destructive-foreground">
+                              {naoLidas}
+                            </span>
+                          )}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -115,6 +127,16 @@ export function AppShell({ children }: { children: ReactNode }) {
           <header className="h-14 border-b flex items-center gap-2 px-3 sticky top-0 bg-background z-10">
             <SidebarTrigger />
             <div className="flex-1" />
+            <Button variant="ghost" size="icon" asChild aria-label="Notificações" className="relative">
+              <Link to="/notificacoes">
+                <Bell className="size-4" />
+                {naoLidas > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+                    {naoLidas}
+                  </span>
+                )}
+              </Link>
+            </Button>
             <Button asChild size="sm">
               <Link to="/ordens/nova">
                 <Plus className="size-4" /> Nova OS
@@ -124,7 +146,10 @@ export function AppShell({ children }: { children: ReactNode }) {
               {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
             </Button>
           </header>
-          <main className="flex-1 p-4 md:p-6 overflow-x-hidden">{children}</main>
+          <main className="flex-1 p-4 md:p-6 overflow-x-hidden">
+            <AlertaUrgente notificacoes={notifs} />
+            {children}
+          </main>
         </div>
       </div>
     </SidebarProvider>

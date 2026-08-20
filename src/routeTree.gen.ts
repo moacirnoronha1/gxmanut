@@ -15,6 +15,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedUsuariosIndexRouteImport } from './routes/_authenticated/usuarios.index'
 import { Route as AuthenticatedSetoresIndexRouteImport } from './routes/_authenticated/setores.index'
 import { Route as AuthenticatedOrdensIndexRouteImport } from './routes/_authenticated/ordens.index'
+import { Route as AuthenticatedNotificacoesIndexRouteImport } from './routes/_authenticated/notificacoes.index'
 import { Route as AuthenticatedManutencoesIndexRouteImport } from './routes/_authenticated/manutencoes.index'
 import { Route as AuthenticatedFornecedoresIndexRouteImport } from './routes/_authenticated/fornecedores.index'
 import { Route as AuthenticatedEquipamentosIndexRouteImport } from './routes/_authenticated/equipamentos.index'
@@ -56,6 +57,12 @@ const AuthenticatedOrdensIndexRoute =
   AuthenticatedOrdensIndexRouteImport.update({
     id: '/ordens/',
     path: '/ordens/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedNotificacoesIndexRoute =
+  AuthenticatedNotificacoesIndexRouteImport.update({
+    id: '/notificacoes/',
+    path: '/notificacoes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedManutencoesIndexRoute =
@@ -129,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
   '/fornecedores/': typeof AuthenticatedFornecedoresIndexRoute
   '/manutencoes/': typeof AuthenticatedManutencoesIndexRoute
+  '/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
   '/ordens/': typeof AuthenticatedOrdensIndexRoute
   '/setores/': typeof AuthenticatedSetoresIndexRoute
   '/usuarios/': typeof AuthenticatedUsuariosIndexRoute
@@ -146,6 +154,7 @@ export interface FileRoutesByTo {
   '/equipamentos': typeof AuthenticatedEquipamentosIndexRoute
   '/fornecedores': typeof AuthenticatedFornecedoresIndexRoute
   '/manutencoes': typeof AuthenticatedManutencoesIndexRoute
+  '/notificacoes': typeof AuthenticatedNotificacoesIndexRoute
   '/ordens': typeof AuthenticatedOrdensIndexRoute
   '/setores': typeof AuthenticatedSetoresIndexRoute
   '/usuarios': typeof AuthenticatedUsuariosIndexRoute
@@ -165,6 +174,7 @@ export interface FileRoutesById {
   '/_authenticated/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
   '/_authenticated/fornecedores/': typeof AuthenticatedFornecedoresIndexRoute
   '/_authenticated/manutencoes/': typeof AuthenticatedManutencoesIndexRoute
+  '/_authenticated/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
   '/_authenticated/ordens/': typeof AuthenticatedOrdensIndexRoute
   '/_authenticated/setores/': typeof AuthenticatedSetoresIndexRoute
   '/_authenticated/usuarios/': typeof AuthenticatedUsuariosIndexRoute
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/equipamentos/'
     | '/fornecedores/'
     | '/manutencoes/'
+    | '/notificacoes/'
     | '/ordens/'
     | '/setores/'
     | '/usuarios/'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/equipamentos'
     | '/fornecedores'
     | '/manutencoes'
+    | '/notificacoes'
     | '/ordens'
     | '/setores'
     | '/usuarios'
@@ -219,6 +231,7 @@ export interface FileRouteTypes {
     | '/_authenticated/equipamentos/'
     | '/_authenticated/fornecedores/'
     | '/_authenticated/manutencoes/'
+    | '/_authenticated/notificacoes/'
     | '/_authenticated/ordens/'
     | '/_authenticated/setores/'
     | '/_authenticated/usuarios/'
@@ -273,6 +286,13 @@ declare module '@tanstack/react-router' {
       path: '/ordens'
       fullPath: '/ordens/'
       preLoaderRoute: typeof AuthenticatedOrdensIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notificacoes/': {
+      id: '/_authenticated/notificacoes/'
+      path: '/notificacoes'
+      fullPath: '/notificacoes/'
+      preLoaderRoute: typeof AuthenticatedNotificacoesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/manutencoes/': {
@@ -359,6 +379,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEquipamentosIndexRoute: typeof AuthenticatedEquipamentosIndexRoute
   AuthenticatedFornecedoresIndexRoute: typeof AuthenticatedFornecedoresIndexRoute
   AuthenticatedManutencoesIndexRoute: typeof AuthenticatedManutencoesIndexRoute
+  AuthenticatedNotificacoesIndexRoute: typeof AuthenticatedNotificacoesIndexRoute
   AuthenticatedOrdensIndexRoute: typeof AuthenticatedOrdensIndexRoute
   AuthenticatedSetoresIndexRoute: typeof AuthenticatedSetoresIndexRoute
   AuthenticatedUsuariosIndexRoute: typeof AuthenticatedUsuariosIndexRoute
@@ -376,6 +397,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEquipamentosIndexRoute: AuthenticatedEquipamentosIndexRoute,
   AuthenticatedFornecedoresIndexRoute: AuthenticatedFornecedoresIndexRoute,
   AuthenticatedManutencoesIndexRoute: AuthenticatedManutencoesIndexRoute,
+  AuthenticatedNotificacoesIndexRoute: AuthenticatedNotificacoesIndexRoute,
   AuthenticatedOrdensIndexRoute: AuthenticatedOrdensIndexRoute,
   AuthenticatedSetoresIndexRoute: AuthenticatedSetoresIndexRoute,
   AuthenticatedUsuariosIndexRoute: AuthenticatedUsuariosIndexRoute,
