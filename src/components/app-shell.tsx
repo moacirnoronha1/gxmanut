@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useState } from "react";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard,
   ClipboardList,
@@ -11,6 +11,7 @@ import {
   Truck,
   Settings,
   LogOut,
+  Crown,
   Moon,
   Sun,
   Plus,
@@ -34,6 +35,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { minhasNotificacoesQuery } from "@/lib/notificacoes";
 import { AlertaUrgente } from "@/components/alerta-urgente";
+import { UserMenu } from "@/components/user-menu";
+import { useSessaoUsuario } from "@/lib/sessao";
 
 const items = [
   { to: "/", label: "Painel", icon: LayoutDashboard },
@@ -65,14 +68,18 @@ function useDark() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const qc = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { dark, toggle } = useDark();
   const { data: notifs = [] } = useQuery(minhasNotificacoesQuery());
   const naoLidas = notifs.filter((n) => !n.lida_em).length;
+  const { nomeCompleto, username, perfilLabel, setor, mestre } = useSessaoUsuario();
 
   const isActive = (to: string) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
 
   async function handleSignOut() {
+    await qc.cancelQueries();
+    qc.clear();
     await supabase.auth.signOut();
     router.navigate({ to: "/auth", replace: true });
   }
@@ -114,6 +121,14 @@ export function AppShell({ children }: { children: ReactNode }) {
           <SidebarFooter>
             <SidebarMenu>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild tooltip={`${username || nomeCompleto} — ${perfilLabel}`}>
+                  <Link to="/perfil" search={{ aba: "perfil" }}>
+                    {mestre ? <Crown /> : <Users />}
+                    <span className="truncate">{username || nomeCompleto}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton onClick={handleSignOut} tooltip="Sair">
                   <LogOut />
                   <span>Sair</span>
@@ -126,6 +141,16 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 border-b flex items-center gap-2 px-3 sticky top-0 bg-background z-10">
             <SidebarTrigger />
+            <div className="hidden min-w-0 text-xs leading-tight md:block">
+              <span className="font-semibold">
+                {nomeCompleto}
+                {mestre ? " — USUÁRIO MESTRE" : ""}
+              </span>
+              <span className="block text-muted-foreground">
+                {username}
+                {setor ? ` · ${setor.nome}` : ""}
+              </span>
+            </div>
             <div className="flex-1" />
             <Button variant="ghost" size="icon" asChild aria-label="Notificações" className="relative">
               <Link to="/notificacoes">
@@ -145,6 +170,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Button variant="ghost" size="icon" onClick={toggle} aria-label="Alternar tema">
               {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
             </Button>
+            <UserMenu />
           </header>
           <main className="flex-1 p-4 md:p-6 overflow-x-hidden">
             <AlertaUrgente notificacoes={notifs} />
