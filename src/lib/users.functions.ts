@@ -80,6 +80,7 @@ export const createUserAccount = createServerFn({ method: "POST" })
       nome_completo: z.string().trim().min(1).max(120),
       funcao: z.string().trim().max(80).optional().nullable(),
       setor_id: z.string().uuid().optional().nullable(),
+      setor_ids: z.array(z.string().uuid()).optional().default([]),
       role: z.enum(["admin", "gestor", "responsavel", "tecnico"]),
       must_change_password: z.boolean().optional().default(true),
     }).parse(input),
@@ -112,7 +113,14 @@ export const createUserAccount = createServerFn({ method: "POST" })
       criado_por: context.userId,
     }).eq("id", created.user.id);
     await supabaseAdmin.from("user_roles").insert({ user_id: created.user.id, role: data.role });
-    await audit(context.userId, created.user.id, "usuario_criado", { username: data.username, role: data.role });
+    const setoresIniciais = data.setor_ids?.length ? data.setor_ids : data.setor_id ? [data.setor_id] : [];
+    if (setoresIniciais.length) {
+      await supabaseAdmin
+        .from("profile_setores")
+        .insert(setoresIniciais.map((setor_id) => ({ user_id: created.user!.id, setor_id })));
+      await supabaseAdmin.from("profiles").update({ setor_id: setoresIniciais[0] }).eq("id", created.user.id);
+    }
+    await audit(context.userId, created.user.id, "usuario_criado", { username: data.username, role: data.role, setor_ids: setoresIniciais });
     return { ok: true, id: created.user.id };
   });
 
@@ -252,5 +260,30 @@ export const registrarAcesso = createServerFn({ method: "POST" })
       .update({ ultimo_acesso: new Date().toISOString(), tentativas_falhas: 0 })
       .eq("id", context.userId);
     await audit(context.userId, context.userId, "login", { username: perfil?.username ?? null });
+    return { ok: true };
+  });
+
+// Define os setores pelos quais um usuário é responsável (múltiplos).
+export const setUserSetores = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({ user_id: z.string().uuid(), setor_ids: z.array(z.string().uuid()) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertMestre(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error: delErr } = await supabaseAdmin.from("profile_setores").delete().eq("user_id", data.user_id);
+    if (delErr) throw new Error(delErr.message);
+    if (data.setor_ids.length) {
+      const { error } = await supabaseAdmin
+        .from("profile_setores")
+        .insert(data.setor_ids.map((setor_id) => ({ user_id: data.user_id, setor_id })));
+      if (error) throw new Error(error.message);
+    }
+    await supabaseAdmin
+      .from("profiles")
+      .update({ setor_id: data.setor_ids[0] ?? null })
+      .eq("id", data.user_id);
+    await audit(context.userId, data.user_id, "setores_responsaveis_atualizados", { setor_ids: data.setor_ids });
     return { ok: true };
   });

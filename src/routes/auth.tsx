@@ -11,8 +11,8 @@ import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
-  // A tela é estática no primeiro render (sessão é lida só em efeito),
-  // então pode ser renderizada no servidor sem divergência de hidratação.
+  // Sessão do Supabase vive no navegador: renderizar só no cliente evita divergência de hidratação.
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Entrar — Manutenção Xica da Silva" },

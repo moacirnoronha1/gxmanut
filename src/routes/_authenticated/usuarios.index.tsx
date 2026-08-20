@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
-import { profilesQuery, setoresQuery, myProfileQuery, userRolesQuery } from "@/lib/queries";
+import { profilesQuery, setoresQuery, myProfileQuery, userRolesQuery, profileSetoresQuery } from "@/lib/queries";
 import type { AppRole, Profile } from "@/lib/db-types";
 import { formatDateTime } from "@/lib/db-types";
 import { toast } from "sonner";
@@ -22,6 +23,7 @@ import {
   setUserActive,
   updateUsername,
   deleteUserAccount,
+  setUserSetores,
 } from "@/lib/users.functions";
 
 export const Route = createFileRoute("/_authenticated/usuarios/")({
@@ -37,6 +39,7 @@ function UsuariosPage() {
   const { data: myRoles = [] } = useQuery(userRolesQuery());
   const { data: profiles = [] } = useQuery(profilesQuery());
   const { data: setores = [] } = useQuery(setoresQuery());
+  const { data: vinculos = [] } = useQuery(profileSetoresQuery());
   const { data: rolesMap = {} } = useQuery({
     queryKey: ["user_roles", "all"],
     queryFn: async (): Promise<RoleMap> => {
@@ -55,6 +58,7 @@ function UsuariosPage() {
   function refresh() {
     qc.invalidateQueries({ queryKey: ["profiles"] });
     qc.invalidateQueries({ queryKey: ["user_roles"] });
+    qc.invalidateQueries({ queryKey: ["profile_setores"] });
   }
 
   if (!isMestre) {
@@ -85,6 +89,8 @@ function UsuariosPage() {
               key={p.id}
               profile={p}
               roles={rolesMap[p.id] ?? []}
+              setores={setores}
+              setoresDoUsuario={vinculos.filter((v) => v.user_id === p.id).map((v) => v.setor_id)}
               onDone={refresh}
               selfId={me?.id ?? ""}
             />
@@ -95,12 +101,13 @@ function UsuariosPage() {
   );
 }
 
-function UserRow({ profile, roles, onDone, selfId }: { profile: Profile & { username?: string | null; nome_completo?: string | null; funcao?: string | null; is_master?: boolean; bloqueado?: boolean; ultimo_acesso?: string | null; must_change_password?: boolean }; roles: AppRole[]; onDone: () => void; selfId: string }) {
+function UserRow({ profile, roles, setores, setoresDoUsuario, onDone, selfId }: { profile: Profile & { username?: string | null; nome_completo?: string | null; funcao?: string | null; is_master?: boolean; bloqueado?: boolean; ultimo_acesso?: string | null; must_change_password?: boolean }; roles: AppRole[]; setores: { id: string; nome: string }[]; setoresDoUsuario: string[]; onDone: () => void; selfId: string }) {
   const resetPwd = useServerFn(resetUserPassword);
   const setBlocked = useServerFn(setUserBlocked);
   const setActive = useServerFn(setUserActive);
   const rename = useServerFn(updateUsername);
   const del = useServerFn(deleteUserAccount);
+  const salvarSetores = useServerFn(setUserSetores);
   const [busy, setBusy] = useState(false);
 
   const isMaster = profile.is_master === true;
@@ -127,10 +134,21 @@ function UserRow({ profile, roles, onDone, selfId }: { profile: Profile & { user
           {!profile.ativo && <Badge variant="destructive">inativo</Badge>}
           {profile.bloqueado && <Badge variant="destructive">bloqueado</Badge>}
           {profile.must_change_password && <Badge variant="secondary">trocar senha</Badge>}
+          {setoresDoUsuario.length > 0 && (
+            <span className="text-xs text-muted-foreground">
+              Setores: {setoresDoUsuario.map((id) => setores.find((s) => s.id === id)?.nome ?? "—").join(", ")}
+            </span>
+          )}
           <span className="text-xs text-muted-foreground">Último acesso: {formatDateTime(profile.ultimo_acesso ?? null)}</span>
         </div>
       </div>
       <div className="flex gap-1 flex-wrap justify-end">
+        <SetoresDialog
+          disabled={busy}
+          setores={setores}
+          selecionados={setoresDoUsuario}
+          onSubmit={(ids) => run(() => salvarSetores({ data: { user_id: profile.id, setor_ids: ids } }), "Setores atualizados.")}
+        />
         <ResetPasswordDialog
           disabled={busy || !canManage}
           isSelf={profile.id === selfId}
@@ -152,6 +170,43 @@ function UserRow({ profile, roles, onDone, selfId }: { profile: Profile & { user
         )}
       </div>
     </div>
+  );
+}
+
+function SetorMultiSelect({ setores, value, onChange }: { setores: { id: string; nome: string }[]; value: string[]; onChange: (v: string[]) => void }) {
+  function toggle(id: string, on: boolean) {
+    onChange(on ? [...value, id] : value.filter((x) => x !== id));
+  }
+  if (setores.length === 0) return <p className="text-xs text-muted-foreground">Nenhum setor cadastrado.</p>;
+  return (
+    <div className="max-h-48 overflow-y-auto rounded-md border divide-y">
+      {setores.map((s) => (
+        <label key={s.id} className="flex items-center gap-2 p-2 text-sm cursor-pointer">
+          <Checkbox checked={value.includes(s.id)} onCheckedChange={(c) => toggle(s.id, c === true)} />
+          <span>{s.nome}</span>
+        </label>
+      ))}
+    </div>
+  );
+}
+
+function SetoresDialog({ disabled, setores, selecionados, onSubmit }: { disabled: boolean; setores: { id: string; nome: string }[]; selecionados: string[]; onSubmit: (ids: string[]) => void }) {
+  const [open, setOpen] = useState(false);
+  const [sel, setSel] = useState<string[]>(selecionados);
+  return (
+    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (o) setSel(selecionados); }}>
+      <DialogTrigger asChild><Button size="sm" variant="outline" disabled={disabled}>Setores</Button></DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Setores responsáveis</DialogTitle>
+          <DialogDescription>Selecione um ou vários setores. O usuário verá as OS de todos eles.</DialogDescription>
+        </DialogHeader>
+        <SetorMultiSelect setores={setores} value={sel} onChange={setSel} />
+        <DialogFooter>
+          <Button onClick={() => { onSubmit(sel); setOpen(false); }}>Salvar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -203,7 +258,7 @@ function NewUserDialog({ setores, onDone }: { setores: { id: string; nome: strin
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({
-    username: "", password: "", nome_completo: "", funcao: "", setor_id: "", role: "responsavel" as AppRole, must_change_password: true,
+    username: "", password: "", nome_completo: "", funcao: "", setor_ids: [] as string[], role: "responsavel" as AppRole, must_change_password: true,
   });
   function up<K extends keyof typeof form>(k: K, v: (typeof form)[K]) { setForm((f) => ({ ...f, [k]: v })); }
 
@@ -215,13 +270,13 @@ function NewUserDialog({ setores, onDone }: { setores: { id: string; nome: strin
         password: form.password,
         nome_completo: form.nome_completo,
         funcao: form.funcao || null,
-        setor_id: form.setor_id || null,
+        setor_ids: form.setor_ids,
         role: form.role as "admin" | "gestor" | "responsavel" | "tecnico",
         must_change_password: form.must_change_password,
       }});
       toast.success("Usuário criado.");
       setOpen(false);
-      setForm({ username: "", password: "", nome_completo: "", funcao: "", setor_id: "", role: "responsavel", must_change_password: true });
+      setForm({ username: "", password: "", nome_completo: "", funcao: "", setor_ids: [], role: "responsavel", must_change_password: true });
       onDone();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Falha");
@@ -238,14 +293,9 @@ function NewUserDialog({ setores, onDone }: { setores: { id: string; nome: strin
           <div><Label>Senha inicial</Label><Input value={form.password} onChange={(e) => up("password", e.target.value)} /></div>
           <div className="col-span-2"><Label>Nome completo</Label><Input value={form.nome_completo} onChange={(e) => up("nome_completo", e.target.value)} /></div>
           <div><Label>Função</Label><Input value={form.funcao} onChange={(e) => up("funcao", e.target.value)} /></div>
-          <div>
-            <Label>Setor</Label>
-            <Select value={form.setor_id} onValueChange={(v) => up("setor_id", v)}>
-              <SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger>
-              <SelectContent>
-                {setores.map((s) => <SelectItem key={s.id} value={s.id}>{s.nome}</SelectItem>)}
-              </SelectContent>
-            </Select>
+          <div className="col-span-2">
+            <Label>Setores responsáveis</Label>
+            <SetorMultiSelect setores={setores} value={form.setor_ids} onChange={(v) => up("setor_ids", v)} />
           </div>
           <div className="col-span-2">
             <Label>Perfil de acesso</Label>
