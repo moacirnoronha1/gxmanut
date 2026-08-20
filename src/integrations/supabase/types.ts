@@ -1766,6 +1766,42 @@ export type Database = {
           },
         ]
       }
+      profile_setores: {
+        Row: {
+          created_at: string
+          id: string
+          setor_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          setor_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          setor_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_setores_setor_id_fkey"
+            columns: ["setor_id"]
+            isOneToOne: false
+            referencedRelation: "setores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_setores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           ativo: boolean
