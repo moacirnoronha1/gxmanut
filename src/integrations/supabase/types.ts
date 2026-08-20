@@ -71,18 +71,237 @@ export type Database = {
         }
         Relationships: []
       }
+      equipamento_documentos: {
+        Row: {
+          autor_id: string | null
+          created_at: string
+          equipamento_id: string
+          id: string
+          nome: string
+          observacao: string | null
+          tipo: string
+          url: string
+        }
+        Insert: {
+          autor_id?: string | null
+          created_at?: string
+          equipamento_id: string
+          id?: string
+          nome: string
+          observacao?: string | null
+          tipo?: string
+          url: string
+        }
+        Update: {
+          autor_id?: string | null
+          created_at?: string
+          equipamento_id?: string
+          id?: string
+          nome?: string
+          observacao?: string | null
+          tipo?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipamento_documentos_autor_id_fkey"
+            columns: ["autor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipamento_documentos_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipamento_historico: {
+        Row: {
+          campo: string | null
+          created_at: string
+          descricao: string | null
+          detalhes: Json
+          equipamento_id: string
+          id: string
+          os_id: string | null
+          tipo: string
+          usuario_id: string | null
+          valor_anterior: string | null
+          valor_novo: string | null
+        }
+        Insert: {
+          campo?: string | null
+          created_at?: string
+          descricao?: string | null
+          detalhes?: Json
+          equipamento_id: string
+          id?: string
+          os_id?: string | null
+          tipo: string
+          usuario_id?: string | null
+          valor_anterior?: string | null
+          valor_novo?: string | null
+        }
+        Update: {
+          campo?: string | null
+          created_at?: string
+          descricao?: string | null
+          detalhes?: Json
+          equipamento_id?: string
+          id?: string
+          os_id?: string | null
+          tipo?: string
+          usuario_id?: string | null
+          valor_anterior?: string | null
+          valor_novo?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipamento_historico_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipamento_historico_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipamento_historico_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipamento_paradas: {
+        Row: {
+          created_at: string
+          equipamento_id: string
+          fim: string | null
+          id: string
+          inicio: string
+          motivo: string | null
+          observacao: string | null
+          os_id: string | null
+          registrado_por: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          equipamento_id: string
+          fim?: string | null
+          id?: string
+          inicio?: string
+          motivo?: string | null
+          observacao?: string | null
+          os_id?: string | null
+          registrado_por?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          equipamento_id?: string
+          fim?: string | null
+          id?: string
+          inicio?: string
+          motivo?: string | null
+          observacao?: string | null
+          os_id?: string | null
+          registrado_por?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipamento_paradas_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipamento_paradas_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipamento_paradas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipamento_status: {
+        Row: {
+          ativo: boolean
+          categoria: string
+          cor: string
+          created_at: string
+          id: string
+          nome: string
+          ordem: number
+          sistema: boolean
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          categoria?: string
+          cor?: string
+          created_at?: string
+          id?: string
+          nome: string
+          ordem?: number
+          sistema?: boolean
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          categoria?: string
+          cor?: string
+          created_at?: string
+          id?: string
+          nome?: string
+          ordem?: number
+          sistema?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       equipamentos: {
         Row: {
           ativo: boolean
+          baixa_destino: string | null
+          baixa_em: string | null
+          baixa_motivo: string | null
+          baixa_tipo: string | null
+          baixa_usuario_id: string | null
+          baixa_valor: number | null
           categoria: string | null
+          codigo: string | null
           created_at: string
           data_aquisicao: string | null
           data_instalacao: string | null
+          estado_conservacao: string | null
           fornecedor_id: string | null
           foto_url: string | null
           frequencia_preventiva: string | null
           garantia_ate: string | null
+          garantia_descricao: string | null
           id: string
+          limite_custo_percentual: number
           localizacao: string | null
           marca: string | null
           modelo: string | null
@@ -94,21 +313,34 @@ export type Database = {
           responsavel_id: string | null
           setor_id: string | null
           situacao: string
+          status_id: string | null
           tecnico_id: string | null
+          tipo: string | null
           updated_at: string
           valor_aquisicao: number | null
+          vida_util_meses: number | null
         }
         Insert: {
           ativo?: boolean
+          baixa_destino?: string | null
+          baixa_em?: string | null
+          baixa_motivo?: string | null
+          baixa_tipo?: string | null
+          baixa_usuario_id?: string | null
+          baixa_valor?: number | null
           categoria?: string | null
+          codigo?: string | null
           created_at?: string
           data_aquisicao?: string | null
           data_instalacao?: string | null
+          estado_conservacao?: string | null
           fornecedor_id?: string | null
           foto_url?: string | null
           frequencia_preventiva?: string | null
           garantia_ate?: string | null
+          garantia_descricao?: string | null
           id?: string
+          limite_custo_percentual?: number
           localizacao?: string | null
           marca?: string | null
           modelo?: string | null
@@ -120,21 +352,34 @@ export type Database = {
           responsavel_id?: string | null
           setor_id?: string | null
           situacao?: string
+          status_id?: string | null
           tecnico_id?: string | null
+          tipo?: string | null
           updated_at?: string
           valor_aquisicao?: number | null
+          vida_util_meses?: number | null
         }
         Update: {
           ativo?: boolean
+          baixa_destino?: string | null
+          baixa_em?: string | null
+          baixa_motivo?: string | null
+          baixa_tipo?: string | null
+          baixa_usuario_id?: string | null
+          baixa_valor?: number | null
           categoria?: string | null
+          codigo?: string | null
           created_at?: string
           data_aquisicao?: string | null
           data_instalacao?: string | null
+          estado_conservacao?: string | null
           fornecedor_id?: string | null
           foto_url?: string | null
           frequencia_preventiva?: string | null
           garantia_ate?: string | null
+          garantia_descricao?: string | null
           id?: string
+          limite_custo_percentual?: number
           localizacao?: string | null
           marca?: string | null
           modelo?: string | null
@@ -146,11 +391,21 @@ export type Database = {
           responsavel_id?: string | null
           setor_id?: string | null
           situacao?: string
+          status_id?: string | null
           tecnico_id?: string | null
+          tipo?: string | null
           updated_at?: string
           valor_aquisicao?: number | null
+          vida_util_meses?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "equipamentos_baixa_usuario_id_fkey"
+            columns: ["baixa_usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "equipamentos_fornecedor_id_fkey"
             columns: ["fornecedor_id"]
@@ -170,6 +425,13 @@ export type Database = {
             columns: ["setor_id"]
             isOneToOne: false
             referencedRelation: "setores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipamentos_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "equipamento_status"
             referencedColumns: ["id"]
           },
           {
