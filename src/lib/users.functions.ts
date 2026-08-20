@@ -56,9 +56,14 @@ export const resolveLoginEmail = createServerFn({ method: "POST" })
   .handler(async ({ data }) => ({ email: usernameToEmail(data.username) }));
 
 async function assertMestre(context: { supabase: import("@supabase/supabase-js").SupabaseClient; userId: string }) {
-  const { data, error } = await context.supabase.rpc("is_mestre", { _user_id: context.userId });
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
+    .from("profiles")
+    .select("is_master")
+    .eq("id", context.userId)
+    .maybeSingle();
   if (error) throw new Error(error.message);
-  if (!data) throw new Error("Apenas o Usuário Mestre pode executar esta ação.");
+  if (!data?.is_master) throw new Error("Apenas o Usuário Mestre pode executar esta ação.");
 }
 
 async function audit(actorId: string, alvoId: string | null, acao: string, detalhes: Record<string, unknown> = {}) {
