@@ -70,6 +70,19 @@ export interface Fornecedor {
 export interface Equipamento {
   id: string;
   nome: string;
+  codigo?: string | null;
+  tipo?: string | null;
+  status_id?: string | null;
+  vida_util_meses?: number | null;
+  estado_conservacao?: string | null;
+  garantia_descricao?: string | null;
+  limite_custo_percentual?: number;
+  baixa_em?: string | null;
+  baixa_tipo?: string | null;
+  baixa_motivo?: string | null;
+  baixa_destino?: string | null;
+  baixa_valor?: number | null;
+  baixa_usuario_id?: string | null;
   patrimonio: string | null;
   categoria: string | null;
   marca: string | null;
