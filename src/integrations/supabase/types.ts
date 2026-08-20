@@ -668,8 +668,196 @@ export type Database = {
           },
         ]
       }
+      notificacao_config: {
+        Row: {
+          extrema_repeticao_min: number
+          id: boolean
+          mp_atraso_repetir_dias: number
+          os_nao_urgente_lembrete_diario: boolean
+          updated_at: string
+          urgente_mestre_min: number
+          urgente_reforco_min: number
+        }
+        Insert: {
+          extrema_repeticao_min?: number
+          id?: boolean
+          mp_atraso_repetir_dias?: number
+          os_nao_urgente_lembrete_diario?: boolean
+          updated_at?: string
+          urgente_mestre_min?: number
+          urgente_reforco_min?: number
+        }
+        Update: {
+          extrema_repeticao_min?: number
+          id?: boolean
+          mp_atraso_repetir_dias?: number
+          os_nao_urgente_lembrete_diario?: boolean
+          updated_at?: string
+          urgente_mestre_min?: number
+          urgente_reforco_min?: number
+        }
+        Relationships: []
+      }
+      notificacao_envios: {
+        Row: {
+          created_at: string
+          device_id: string | null
+          erro: string | null
+          http_status: number | null
+          id: string
+          notificacao_id: string | null
+          status: string
+          tentativa: number
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_id?: string | null
+          erro?: string | null
+          http_status?: number | null
+          id?: string
+          notificacao_id?: string | null
+          status: string
+          tentativa?: number
+          tipo: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_id?: string | null
+          erro?: string | null
+          http_status?: number | null
+          id?: string
+          notificacao_id?: string | null
+          status?: string
+          tentativa?: number
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificacao_envios_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "push_devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificacao_envios_notificacao_id_fkey"
+            columns: ["notificacao_id"]
+            isOneToOne: false
+            referencedRelation: "notificacoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notificacao_preferencias: {
+        Row: {
+          silencio_ativo: boolean
+          silencio_fim: string
+          silencio_inicio: string
+          som_urgente: boolean
+          tipos: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          silencio_ativo?: boolean
+          silencio_fim?: string
+          silencio_inicio?: string
+          som_urgente?: boolean
+          tipos?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          silencio_ativo?: boolean
+          silencio_fim?: string
+          silencio_inicio?: string
+          som_urgente?: boolean
+          tipos?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notificacoes: {
+        Row: {
+          confirmada_em: string | null
+          created_at: string
+          dados: Json
+          id: string
+          lida_em: string | null
+          manutencao_id: string | null
+          mensagem: string
+          os_id: string | null
+          prioridade: string
+          resolvida_em: string | null
+          tentativas: number
+          tipo: string
+          titulo: string
+          ultimo_envio_em: string | null
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          confirmada_em?: string | null
+          created_at?: string
+          dados?: Json
+          id?: string
+          lida_em?: string | null
+          manutencao_id?: string | null
+          mensagem: string
+          os_id?: string | null
+          prioridade?: string
+          resolvida_em?: string | null
+          tentativas?: number
+          tipo: string
+          titulo: string
+          ultimo_envio_em?: string | null
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          confirmada_em?: string | null
+          created_at?: string
+          dados?: Json
+          id?: string
+          lida_em?: string | null
+          manutencao_id?: string | null
+          mensagem?: string
+          os_id?: string | null
+          prioridade?: string
+          resolvida_em?: string | null
+          tentativas?: number
+          tipo?: string
+          titulo?: string
+          ultimo_envio_em?: string | null
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificacoes_manutencao_id_fkey"
+            columns: ["manutencao_id"]
+            isOneToOne: false
+            referencedRelation: "manutencoes_periodicas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificacoes_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ordens_servico: {
         Row: {
+          assumida_em: string | null
+          assumida_por: string | null
           avaliacao: number | null
           avaliacao_comentario: string | null
           cancelada_motivo: string | null
@@ -686,12 +874,14 @@ export type Database = {
           equipamento_id: string | null
           equipamento_nao_cadastrado: string | null
           equipamento_parado: boolean
+          escalonamento_nivel: number
           id: string
           iniciada_em: string | null
           local: string | null
           manutencao_periodica_id: string | null
           materiais_utilizados: string | null
           mp_execucao_id: string | null
+          notificada_em: string | null
           numero: number
           previsao_atendimento: string | null
           reaberta_de: string | null
@@ -709,10 +899,13 @@ export type Database = {
           testes_realizados: string | null
           tipo: string
           titulo: string
+          ultimo_alerta_em: string | null
           updated_at: string
           urgencia_id: string | null
         }
         Insert: {
+          assumida_em?: string | null
+          assumida_por?: string | null
           avaliacao?: number | null
           avaliacao_comentario?: string | null
           cancelada_motivo?: string | null
@@ -729,12 +922,14 @@ export type Database = {
           equipamento_id?: string | null
           equipamento_nao_cadastrado?: string | null
           equipamento_parado?: boolean
+          escalonamento_nivel?: number
           id?: string
           iniciada_em?: string | null
           local?: string | null
           manutencao_periodica_id?: string | null
           materiais_utilizados?: string | null
           mp_execucao_id?: string | null
+          notificada_em?: string | null
           numero?: number
           previsao_atendimento?: string | null
           reaberta_de?: string | null
@@ -752,10 +947,13 @@ export type Database = {
           testes_realizados?: string | null
           tipo?: string
           titulo: string
+          ultimo_alerta_em?: string | null
           updated_at?: string
           urgencia_id?: string | null
         }
         Update: {
+          assumida_em?: string | null
+          assumida_por?: string | null
           avaliacao?: number | null
           avaliacao_comentario?: string | null
           cancelada_motivo?: string | null
@@ -772,12 +970,14 @@ export type Database = {
           equipamento_id?: string | null
           equipamento_nao_cadastrado?: string | null
           equipamento_parado?: boolean
+          escalonamento_nivel?: number
           id?: string
           iniciada_em?: string | null
           local?: string | null
           manutencao_periodica_id?: string | null
           materiais_utilizados?: string | null
           mp_execucao_id?: string | null
+          notificada_em?: string | null
           numero?: number
           previsao_atendimento?: string | null
           reaberta_de?: string | null
@@ -795,10 +995,18 @@ export type Database = {
           testes_realizados?: string | null
           tipo?: string
           titulo?: string
+          ultimo_alerta_em?: string | null
           updated_at?: string
           urgencia_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "ordens_servico_assumida_por_fkey"
+            columns: ["assumida_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "ordens_servico_categoria_id_fkey"
             columns: ["categoria_id"]
@@ -1369,6 +1577,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      push_devices: {
+        Row: {
+          ativo: boolean
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          nome: string
+          p256dh: string
+          ultima_confirmacao_em: string | null
+          ultimo_acesso: string
+          ultimo_envio_em: string | null
+          ultimo_erro: string | null
+          ultimo_teste_em: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          nome?: string
+          p256dh: string
+          ultima_confirmacao_em?: string | null
+          ultimo_acesso?: string
+          ultimo_envio_em?: string | null
+          ultimo_erro?: string | null
+          ultimo_teste_em?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          nome?: string
+          p256dh?: string
+          ultima_confirmacao_em?: string | null
+          ultimo_acesso?: string
+          ultimo_envio_em?: string | null
+          ultimo_erro?: string | null
+          ultimo_teste_em?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       setores: {
         Row: {
