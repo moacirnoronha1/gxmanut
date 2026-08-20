@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { BarraConfirmacaoOS } from "@/components/confirmar-os";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -107,6 +108,8 @@ function OSDetail() {
           <h1 className="text-xl md:text-2xl font-bold mt-1 truncate">{os.titulo}</h1>
         </div>
       </div>
+
+      <BarraConfirmacaoOS osId={os.id} urgencia={u?.nome} />
 
       <IndicadorFinanceiroOS custos={custos} categorias={custoCategorias} onVerDetalhes={() => setTab("custos")} />
 
