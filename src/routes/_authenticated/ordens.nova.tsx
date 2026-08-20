@@ -74,6 +74,11 @@ function NovaOS() {
     const { data, error } = await supabase.from("ordens_servico").insert(payload).select("id").single();
     setSaving(false);
     if (error) return showDbError(error);
+    try {
+      await notificar({ data: { osId: data.id } });
+    } catch {
+      toast.warning("OS criada, mas não foi possível enviar as notificações agora.");
+    }
     toast.success("OS aberta com sucesso!");
     navigate({ to: "/ordens/$id", params: { id: data.id } });
   }
