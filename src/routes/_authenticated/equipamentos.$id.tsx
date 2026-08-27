@@ -73,6 +73,8 @@ function EquipamentoDetalhe() {
   const [qrOpen, setQrOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const [baixaOpen, setBaixaOpen] = useState(false);
+  const [excluirOpen, setExcluirOpen] = useState(false);
+  const { mestre } = useSessaoUsuario();
   const [editOpen, setEditOpen] = useState(false);
   const [paradaOpen, setParadaOpen] = useState(false);
 
