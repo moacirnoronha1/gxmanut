@@ -247,6 +247,12 @@ function EquipamentoDetalhe() {
               <Linha label="Vida útil estimada" valor={eq.vida_util_meses ? `${eq.vida_util_meses} meses` : "—"} />
               <Linha label="Estado de conservação" valor={eq.estado_conservacao ?? "—"} />
               <Linha label="Observações" valor={eq.observacoes ?? "—"} />
+              <Linha
+                label="Cadastrado por"
+                valor={`${pessoas.find((p) => p.id === eq.criado_por)?.nome ?? "—"}${eq.created_at ? ` · ${formatDateTime(eq.created_at)}` : ""}`}
+              />
+
+
               {baixado && <Linha label="Baixa" valor={`${eq.baixa_tipo === "descarte" ? "Descartado" : "Desativado"} em ${formatDate(eq.baixa_em)} — ${eq.baixa_motivo ?? ""}`} />}
             </CardContent>
           </Card>

@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -292,6 +292,7 @@ export type Database = {
           categoria: string | null
           codigo: string | null
           created_at: string
+          criado_por: string | null
           data_aquisicao: string | null
           data_instalacao: string | null
           estado_conservacao: string | null
@@ -331,6 +332,7 @@ export type Database = {
           categoria?: string | null
           codigo?: string | null
           created_at?: string
+          criado_por?: string | null
           data_aquisicao?: string | null
           data_instalacao?: string | null
           estado_conservacao?: string | null
@@ -370,6 +372,7 @@ export type Database = {
           categoria?: string | null
           codigo?: string | null
           created_at?: string
+          criado_por?: string | null
           data_aquisicao?: string | null
           data_instalacao?: string | null
           estado_conservacao?: string | null
@@ -402,6 +405,13 @@ export type Database = {
           {
             foreignKeyName: "equipamentos_baixa_usuario_id_fkey"
             columns: ["baixa_usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipamentos_criado_por_fkey"
+            columns: ["criado_por"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]

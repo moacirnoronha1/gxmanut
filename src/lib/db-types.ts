@@ -103,6 +103,8 @@ export interface Equipamento {
   foto_url: string | null;
   observacoes: string | null;
   ativo: boolean;
+  criado_por?: string | null;
+  created_at?: string | null;
 }
 
 export interface OS {
