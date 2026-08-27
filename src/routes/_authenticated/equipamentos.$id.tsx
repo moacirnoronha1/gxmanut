@@ -179,7 +179,12 @@ function EquipamentoDetalhe() {
           {paradaAberta
             ? <Button variant="outline" size="sm" onClick={() => encerrarParada(paradaAberta.id)}><PlayCircle className="mr-1 size-4" />Voltou a operar</Button>
             : <Button variant="outline" size="sm" onClick={() => setParadaOpen(true)}><PauseCircle className="mr-1 size-4" />Registrar parada</Button>}
-          {!baixado && <Button variant="outline" size="sm" onClick={() => setBaixaOpen(true)}><Power className="mr-1 size-4" />Desativar / descartar</Button>}
+          {!baixado && <Button variant="outline" size="sm" onClick={() => setBaixaOpen(true)}><Power className="mr-1 size-4" />Desativar equipamento</Button>}
+          {mestre && (
+            <Button variant="destructive" size="sm" onClick={() => setExcluirOpen(true)}>
+              <Trash2 className="mr-1 size-4" />Excluir definitivamente
+            </Button>
+          )}
         </div>
       </div>
 
