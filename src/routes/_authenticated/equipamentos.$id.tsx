@@ -249,8 +249,9 @@ function EquipamentoDetalhe() {
               <Linha label="Observações" valor={eq.observacoes ?? "—"} />
               <Linha
                 label="Cadastrado por"
-                valor={`${pessoas.find((p) => p.id === (eq as { criado_por?: string | null }).criado_por)?.nome ?? "—"} · ${formatDateTime(eq.created_at)}`}
+                valor={`${pessoas.find((p) => p.id === eq.criado_por)?.nome ?? "—"}${eq.created_at ? ` · ${formatDateTime(eq.created_at)}` : ""}`}
               />
+
 
               {baixado && <Linha label="Baixa" valor={`${eq.baixa_tipo === "descarte" ? "Descartado" : "Desativado"} em ${formatDate(eq.baixa_em)} — ${eq.baixa_motivo ?? ""}`} />}
             </CardContent>
