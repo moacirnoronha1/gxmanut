@@ -27,11 +27,13 @@ import {
   diasEntre, HISTORICO_LABEL, TIPOS_DOCUMENTO, MOTIVOS_PARADA, ESTADOS_CONSERVACAO,
 } from "@/lib/equipamentos";
 import { EquipamentoQR } from "@/components/equipamento-qr";
+import { EquipamentoExcluirDialog } from "@/components/equipamento-excluir";
+import { useSessaoUsuario } from "@/lib/sessao";
 import { formatBRL, formatDate, formatDateTime } from "@/lib/db-types";
 import { supabase } from "@/integrations/supabase/client";
 import { showDbError } from "@/lib/db-error";
 import { toast } from "sonner";
-import { ArrowLeft, QrCode, MoveRight, Power, Pencil, PauseCircle, PlayCircle, Plus } from "lucide-react";
+import { ArrowLeft, QrCode, MoveRight, Power, Pencil, PauseCircle, PlayCircle, Plus, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/equipamentos/$id")({
   head: () => ({
@@ -71,6 +73,8 @@ function EquipamentoDetalhe() {
   const [qrOpen, setQrOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const [baixaOpen, setBaixaOpen] = useState(false);
+  const [excluirOpen, setExcluirOpen] = useState(false);
+  const { mestre } = useSessaoUsuario();
   const [editOpen, setEditOpen] = useState(false);
   const [paradaOpen, setParadaOpen] = useState(false);
 
@@ -175,7 +179,12 @@ function EquipamentoDetalhe() {
           {paradaAberta
             ? <Button variant="outline" size="sm" onClick={() => encerrarParada(paradaAberta.id)}><PlayCircle className="mr-1 size-4" />Voltou a operar</Button>
             : <Button variant="outline" size="sm" onClick={() => setParadaOpen(true)}><PauseCircle className="mr-1 size-4" />Registrar parada</Button>}
-          {!baixado && <Button variant="outline" size="sm" onClick={() => setBaixaOpen(true)}><Power className="mr-1 size-4" />Desativar / descartar</Button>}
+          {!baixado && <Button variant="outline" size="sm" onClick={() => setBaixaOpen(true)}><Power className="mr-1 size-4" />Desativar equipamento</Button>}
+          {mestre && (
+            <Button variant="destructive" size="sm" onClick={() => setExcluirOpen(true)}>
+              <Trash2 className="mr-1 size-4" />Excluir definitivamente
+            </Button>
+          )}
         </div>
       </div>
 
@@ -544,6 +553,7 @@ function EquipamentoDetalhe() {
         atual={{ setor_id: eq.setor_id, localizacao: eq.localizacao, responsavel_id: eq.responsavel_id }}
       />
       <BaixaDialog open={baixaOpen} onOpenChange={setBaixaOpen} equipamentoId={id} eqStatus={eqStatus} onDone={recarregar} />
+      {mestre && <EquipamentoExcluirDialog open={excluirOpen} onOpenChange={setExcluirOpen} equipamentoId={id} nome={eq.nome} />}
       <ParadaDialog open={paradaOpen} onOpenChange={setParadaOpen} equipamentoId={id} ordens={ordens} onDone={recarregar} />
       <EditarDialog
         open={editOpen} onOpenChange={setEditOpen} equipamento={eq as unknown as { id: string } & Record<string, unknown>}
