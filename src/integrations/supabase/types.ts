@@ -453,6 +453,600 @@ export type Database = {
           },
         ]
       }
+      estoque_auditoria: {
+        Row: {
+          acao: string
+          created_at: string
+          detalhes: Json
+          ferramenta_id: string | null
+          id: string
+          item_id: string | null
+          motivo: string | null
+          quantidade_anterior: number | null
+          quantidade_nova: number | null
+          usuario_id: string | null
+          valor_anterior: number | null
+          valor_novo: number | null
+        }
+        Insert: {
+          acao: string
+          created_at?: string
+          detalhes?: Json
+          ferramenta_id?: string | null
+          id?: string
+          item_id?: string | null
+          motivo?: string | null
+          quantidade_anterior?: number | null
+          quantidade_nova?: number | null
+          usuario_id?: string | null
+          valor_anterior?: number | null
+          valor_novo?: number | null
+        }
+        Update: {
+          acao?: string
+          created_at?: string
+          detalhes?: Json
+          ferramenta_id?: string | null
+          id?: string
+          item_id?: string | null
+          motivo?: string | null
+          quantidade_anterior?: number | null
+          quantidade_nova?: number | null
+          usuario_id?: string | null
+          valor_anterior?: number | null
+          valor_novo?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estoque_auditoria_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "estoque_itens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_auditoria_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      estoque_categorias: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          id: string
+          nome: string
+          ordem: number
+          sistema: boolean
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome: string
+          ordem?: number
+          sistema?: boolean
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome?: string
+          ordem?: number
+          sistema?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      estoque_config: {
+        Row: {
+          id: boolean
+          metodo_valoracao: string
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          metodo_valoracao?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          metodo_valoracao?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      estoque_item_equipamentos: {
+        Row: {
+          created_at: string
+          equipamento_id: string
+          id: string
+          item_id: string
+        }
+        Insert: {
+          created_at?: string
+          equipamento_id: string
+          id?: string
+          item_id: string
+        }
+        Update: {
+          created_at?: string
+          equipamento_id?: string
+          id?: string
+          item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estoque_item_equipamentos_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_item_equipamentos_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "estoque_itens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      estoque_itens: {
+        Row: {
+          ativo: boolean
+          categoria_id: string | null
+          codigo: string | null
+          created_at: string
+          criado_por: string | null
+          custo_medio: number
+          custo_unitario: number
+          estoque_minimo: number
+          fornecedor_id: string | null
+          foto_url: string | null
+          id: string
+          localizacao: string | null
+          nome: string
+          observacoes: string | null
+          quantidade: number
+          quantidade_reservada: number
+          ultima_compra: string | null
+          ultimo_custo: number | null
+          unidade: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          categoria_id?: string | null
+          codigo?: string | null
+          created_at?: string
+          criado_por?: string | null
+          custo_medio?: number
+          custo_unitario?: number
+          estoque_minimo?: number
+          fornecedor_id?: string | null
+          foto_url?: string | null
+          id?: string
+          localizacao?: string | null
+          nome: string
+          observacoes?: string | null
+          quantidade?: number
+          quantidade_reservada?: number
+          ultima_compra?: string | null
+          ultimo_custo?: number | null
+          unidade?: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          categoria_id?: string | null
+          codigo?: string | null
+          created_at?: string
+          criado_por?: string | null
+          custo_medio?: number
+          custo_unitario?: number
+          estoque_minimo?: number
+          fornecedor_id?: string | null
+          foto_url?: string | null
+          id?: string
+          localizacao?: string | null
+          nome?: string
+          observacoes?: string | null
+          quantidade?: number
+          quantidade_reservada?: number
+          ultima_compra?: string | null
+          ultimo_custo?: number | null
+          unidade?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estoque_itens_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "estoque_categorias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_itens_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_itens_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      estoque_movimentacoes: {
+        Row: {
+          comprovante_url: string | null
+          created_at: string
+          data: string
+          equipamento_id: string | null
+          fornecedor_id: string | null
+          id: string
+          item_id: string
+          manutencao_id: string | null
+          motivo: string | null
+          nota_numero: string | null
+          observacao: string | null
+          os_custo_id: string | null
+          os_id: string | null
+          quantidade: number
+          reserva_id: string | null
+          saldo_anterior: number | null
+          saldo_novo: number | null
+          tipo: string
+          usuario_id: string | null
+          valor_total: number | null
+          valor_unitario: number | null
+        }
+        Insert: {
+          comprovante_url?: string | null
+          created_at?: string
+          data?: string
+          equipamento_id?: string | null
+          fornecedor_id?: string | null
+          id?: string
+          item_id: string
+          manutencao_id?: string | null
+          motivo?: string | null
+          nota_numero?: string | null
+          observacao?: string | null
+          os_custo_id?: string | null
+          os_id?: string | null
+          quantidade: number
+          reserva_id?: string | null
+          saldo_anterior?: number | null
+          saldo_novo?: number | null
+          tipo: string
+          usuario_id?: string | null
+          valor_total?: number | null
+          valor_unitario?: number | null
+        }
+        Update: {
+          comprovante_url?: string | null
+          created_at?: string
+          data?: string
+          equipamento_id?: string | null
+          fornecedor_id?: string | null
+          id?: string
+          item_id?: string
+          manutencao_id?: string | null
+          motivo?: string | null
+          nota_numero?: string | null
+          observacao?: string | null
+          os_custo_id?: string | null
+          os_id?: string | null
+          quantidade?: number
+          reserva_id?: string | null
+          saldo_anterior?: number | null
+          saldo_novo?: number | null
+          tipo?: string
+          usuario_id?: string | null
+          valor_total?: number | null
+          valor_unitario?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estoque_movimentacoes_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_movimentacoes_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_movimentacoes_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "estoque_itens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_movimentacoes_manutencao_id_fkey"
+            columns: ["manutencao_id"]
+            isOneToOne: false
+            referencedRelation: "manutencoes_periodicas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_movimentacoes_os_custo_id_fkey"
+            columns: ["os_custo_id"]
+            isOneToOne: false
+            referencedRelation: "os_custos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_movimentacoes_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_movimentacoes_reserva_id_fkey"
+            columns: ["reserva_id"]
+            isOneToOne: false
+            referencedRelation: "estoque_reservas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_movimentacoes_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      estoque_reservas: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          manutencao_id: string | null
+          motivo: string | null
+          os_id: string | null
+          quantidade: number
+          status: string
+          updated_at: string
+          usuario_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          manutencao_id?: string | null
+          motivo?: string | null
+          os_id?: string | null
+          quantidade: number
+          status?: string
+          updated_at?: string
+          usuario_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          manutencao_id?: string | null
+          motivo?: string | null
+          os_id?: string | null
+          quantidade?: number
+          status?: string
+          updated_at?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "estoque_reservas_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "estoque_itens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_reservas_manutencao_id_fkey"
+            columns: ["manutencao_id"]
+            isOneToOne: false
+            referencedRelation: "manutencoes_periodicas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_reservas_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_reservas_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ferramenta_emprestimos: {
+        Row: {
+          created_at: string
+          devolvido_em: string | null
+          estado_devolucao: string | null
+          ferramenta_id: string
+          id: string
+          observacao: string | null
+          os_id: string | null
+          previsao_devolucao: string | null
+          registrado_por: string | null
+          retirada_em: string
+          updated_at: string
+          usuario_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          devolvido_em?: string | null
+          estado_devolucao?: string | null
+          ferramenta_id: string
+          id?: string
+          observacao?: string | null
+          os_id?: string | null
+          previsao_devolucao?: string | null
+          registrado_por?: string | null
+          retirada_em?: string
+          updated_at?: string
+          usuario_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          devolvido_em?: string | null
+          estado_devolucao?: string | null
+          ferramenta_id?: string
+          id?: string
+          observacao?: string | null
+          os_id?: string | null
+          previsao_devolucao?: string | null
+          registrado_por?: string | null
+          retirada_em?: string
+          updated_at?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ferramenta_emprestimos_ferramenta_id_fkey"
+            columns: ["ferramenta_id"]
+            isOneToOne: false
+            referencedRelation: "ferramentas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ferramenta_emprestimos_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ferramenta_emprestimos_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ferramenta_emprestimos_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ferramentas: {
+        Row: {
+          ativo: boolean
+          categoria: string | null
+          codigo: string | null
+          created_at: string
+          criado_por: string | null
+          data_aquisicao: string | null
+          fornecedor_id: string | null
+          foto_url: string | null
+          id: string
+          localizacao: string | null
+          marca: string | null
+          modelo: string | null
+          nome: string
+          numero_serie: string | null
+          observacoes: string | null
+          setor_id: string | null
+          status: string
+          updated_at: string
+          valor_aquisicao: number | null
+        }
+        Insert: {
+          ativo?: boolean
+          categoria?: string | null
+          codigo?: string | null
+          created_at?: string
+          criado_por?: string | null
+          data_aquisicao?: string | null
+          fornecedor_id?: string | null
+          foto_url?: string | null
+          id?: string
+          localizacao?: string | null
+          marca?: string | null
+          modelo?: string | null
+          nome: string
+          numero_serie?: string | null
+          observacoes?: string | null
+          setor_id?: string | null
+          status?: string
+          updated_at?: string
+          valor_aquisicao?: number | null
+        }
+        Update: {
+          ativo?: boolean
+          categoria?: string | null
+          codigo?: string | null
+          created_at?: string
+          criado_por?: string | null
+          data_aquisicao?: string | null
+          fornecedor_id?: string | null
+          foto_url?: string | null
+          id?: string
+          localizacao?: string | null
+          marca?: string | null
+          modelo?: string | null
+          nome?: string
+          numero_serie?: string | null
+          observacoes?: string | null
+          setor_id?: string | null
+          status?: string
+          updated_at?: string
+          valor_aquisicao?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ferramentas_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ferramentas_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ferramentas_setor_id_fkey"
+            columns: ["setor_id"]
+            isOneToOne: false
+            referencedRelation: "setores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fornecedores: {
         Row: {
           ativo: boolean
