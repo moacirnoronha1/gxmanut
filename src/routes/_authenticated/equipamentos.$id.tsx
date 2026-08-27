@@ -553,6 +553,7 @@ function EquipamentoDetalhe() {
         atual={{ setor_id: eq.setor_id, localizacao: eq.localizacao, responsavel_id: eq.responsavel_id }}
       />
       <BaixaDialog open={baixaOpen} onOpenChange={setBaixaOpen} equipamentoId={id} eqStatus={eqStatus} onDone={recarregar} />
+      {mestre && <EquipamentoExcluirDialog open={excluirOpen} onOpenChange={setExcluirOpen} equipamentoId={id} nome={eq.nome} />}
       <ParadaDialog open={paradaOpen} onOpenChange={setParadaOpen} equipamentoId={id} ordens={ordens} onDone={recarregar} />
       <EditarDialog
         open={editOpen} onOpenChange={setEditOpen} equipamento={eq as unknown as { id: string } & Record<string, unknown>}
