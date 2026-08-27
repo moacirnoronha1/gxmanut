@@ -27,11 +27,13 @@ import {
   diasEntre, HISTORICO_LABEL, TIPOS_DOCUMENTO, MOTIVOS_PARADA, ESTADOS_CONSERVACAO,
 } from "@/lib/equipamentos";
 import { EquipamentoQR } from "@/components/equipamento-qr";
+import { EquipamentoExcluirDialog } from "@/components/equipamento-excluir";
+import { useSessaoUsuario } from "@/lib/sessao";
 import { formatBRL, formatDate, formatDateTime } from "@/lib/db-types";
 import { supabase } from "@/integrations/supabase/client";
 import { showDbError } from "@/lib/db-error";
 import { toast } from "sonner";
-import { ArrowLeft, QrCode, MoveRight, Power, Pencil, PauseCircle, PlayCircle, Plus } from "lucide-react";
+import { ArrowLeft, QrCode, MoveRight, Power, Pencil, PauseCircle, PlayCircle, Plus, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/equipamentos/$id")({
   head: () => ({
