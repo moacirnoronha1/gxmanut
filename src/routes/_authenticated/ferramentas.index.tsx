@@ -282,6 +282,12 @@ function Ferramentas() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="sm:col-span-2"><Label>Foto (link da imagem)</Label><Input value={form.foto_url} onChange={(e) => setForm({ ...form, foto_url: e.target.value })} placeholder="https://..." /></div>
+              {form.foto_url.trim() !== "" && (
+                <div className="sm:col-span-2">
+                  <img src={form.foto_url} alt="Foto da ferramenta" className="h-32 rounded border object-cover" loading="lazy" />
+                </div>
+              )}
               <div className="sm:col-span-2"><Label>Observações</Label><Textarea value={form.observacoes} onChange={(e) => setForm({ ...form, observacoes: e.target.value })} /></div>
               <div className="sm:col-span-2 flex justify-end"><Button onClick={salvar} disabled={saving}>Salvar</Button></div>
             </div>

@@ -237,8 +237,9 @@ function Equipamentos() {
                 <Campo label="Categoria"><Input value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} /></Campo>
                 <Campo label="Tipo de item">
                   <Selecao value={form.tipo || "none"} onChange={(v) => setForm({ ...form, tipo: v === "none" ? "" : v })}
-                    itens={[{ value: "Equipamento", label: "Equipamento" }, { value: "Ferramenta", label: "Ferramenta" }]} vazio="Não informado" />
+                    itens={[{ value: "Equipamento", label: "Equipamento" }, { value: "Instalação", label: "Instalação" }]} vazio="Não informado" />
                 </Campo>
+
                 <Campo label="Marca"><Input value={form.marca} onChange={(e) => setForm({ ...form, marca: e.target.value })} /></Campo>
                 <Campo label="Modelo"><Input value={form.modelo} onChange={(e) => setForm({ ...form, modelo: e.target.value })} /></Campo>
                 <Campo label="Número de série"><Input value={form.numero_serie} onChange={(e) => setForm({ ...form, numero_serie: e.target.value })} /></Campo>
