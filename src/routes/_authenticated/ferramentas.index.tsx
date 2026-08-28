@@ -44,7 +44,7 @@ const num = (v: string) => {
 const VAZIO = {
   nome: "", codigo: "", categoria: "", marca: "", modelo: "", numero_serie: "",
   localizacao: "", setor_id: "", fornecedor_id: "", valor_aquisicao: "", data_aquisicao: "",
-  status: "disponivel" as FerramentaStatus, observacoes: "",
+  status: "disponivel" as FerramentaStatus, foto_url: "", observacoes: "",
 };
 
 function Ferramentas() {
@@ -84,7 +84,8 @@ function Ferramentas() {
       modelo: f.modelo ?? "", numero_serie: f.numero_serie ?? "", localizacao: f.localizacao ?? "",
       setor_id: f.setor_id ?? "", fornecedor_id: f.fornecedor_id ?? "",
       valor_aquisicao: f.valor_aquisicao != null ? String(f.valor_aquisicao) : "",
-      data_aquisicao: f.data_aquisicao ?? "", status: f.status, observacoes: f.observacoes ?? "",
+      data_aquisicao: f.data_aquisicao ?? "", status: f.status,
+      foto_url: f.foto_url ?? "", observacoes: f.observacoes ?? "",
     });
   }
 
@@ -97,7 +98,8 @@ function Ferramentas() {
       marca: nn(form.marca), modelo: nn(form.modelo), numero_serie: nn(form.numero_serie),
       localizacao: nn(form.localizacao), setor_id: nn(form.setor_id), fornecedor_id: nn(form.fornecedor_id),
       valor_aquisicao: form.valor_aquisicao.trim() === "" ? null : num(form.valor_aquisicao),
-      data_aquisicao: nn(form.data_aquisicao), status: form.status, observacoes: nn(form.observacoes),
+      data_aquisicao: nn(form.data_aquisicao), status: form.status,
+      foto_url: nn(form.foto_url), observacoes: nn(form.observacoes),
     };
     const { error } = editId
       ? await supabase.from("ferramentas").update(payload as never).eq("id", editId)
