@@ -23,6 +23,7 @@ import { formatBRL, formatDateTime } from "@/lib/db-types";
 import { toast } from "sonner";
 import { showDbError } from "@/lib/db-error";
 import { ArrowLeft } from "lucide-react";
+import { UsarPecaOS } from "@/components/usar-peca-os";
 
 export const Route = createFileRoute("/_authenticated/ordens/$id")({
   head: () => ({ meta: [{ title: "OS — Manutenção Xica da Silva" }] }),
@@ -147,7 +148,10 @@ function OSDetail() {
               <ExecucaoCard os={os} onConcluir={concluir} onIniciar={iniciar} />
             </TabsContent>
 
-            <TabsContent value="custos">
+            <TabsContent value="custos" className="space-y-3">
+              <div className="flex justify-end">
+                <UsarPecaOS osId={id} equipamentoId={os.equipamento_id} />
+              </div>
               <CustosOSPanel osId={id} equipamentoId={os.equipamento_id} custos={custos} />
             </TabsContent>
 
