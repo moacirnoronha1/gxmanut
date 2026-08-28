@@ -106,7 +106,7 @@ function Estoque() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2"><Boxes className="h-6 w-6" /> Estoque de Manutenção</h1>
-          <p className="text-sm text-muted-foreground">Peças e materiais, movimentações e integração automática com o custo das OS.</p>
+          <p className="text-sm text-muted-foreground">Somente peças, materiais, insumos, consumíveis e itens de reposição. Ferramentas permanentes ficam na aba Ferramentas.</p>
         </div>
         <div className="flex gap-2">
           {mestre && (
