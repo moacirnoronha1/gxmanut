@@ -19,11 +19,14 @@ import { Route as AuthenticatedOrdensIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedNotificacoesIndexRouteImport } from './routes/_authenticated/notificacoes.index'
 import { Route as AuthenticatedManutencoesIndexRouteImport } from './routes/_authenticated/manutencoes.index'
 import { Route as AuthenticatedFornecedoresIndexRouteImport } from './routes/_authenticated/fornecedores.index'
+import { Route as AuthenticatedFerramentasIndexRouteImport } from './routes/_authenticated/ferramentas.index'
+import { Route as AuthenticatedEstoqueIndexRouteImport } from './routes/_authenticated/estoque.index'
 import { Route as AuthenticatedEquipamentosIndexRouteImport } from './routes/_authenticated/equipamentos.index'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated/configuracoes.index'
 import { Route as AuthenticatedOrdensNovaRouteImport } from './routes/_authenticated/ordens.nova'
 import { Route as AuthenticatedOrdensIdRouteImport } from './routes/_authenticated/ordens.$id'
 import { Route as AuthenticatedManutencoesIdRouteImport } from './routes/_authenticated/manutencoes.$id'
+import { Route as AuthenticatedEstoqueIdRouteImport } from './routes/_authenticated/estoque.$id'
 import { Route as AuthenticatedEquipamentosIdRouteImport } from './routes/_authenticated/equipamentos.$id'
 import { Route as AuthenticatedConfiguracoesNotificacoesRouteImport } from './routes/_authenticated/configuracoes.notificacoes'
 import { Route as ApiPublicHooksNotificacoesRouteImport } from './routes/api/public/hooks/notificacoes'
@@ -83,6 +86,18 @@ const AuthenticatedFornecedoresIndexRoute =
     path: '/fornecedores/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedFerramentasIndexRoute =
+  AuthenticatedFerramentasIndexRouteImport.update({
+    id: '/ferramentas/',
+    path: '/ferramentas/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEstoqueIndexRoute =
+  AuthenticatedEstoqueIndexRouteImport.update({
+    id: '/estoque/',
+    path: '/estoque/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEquipamentosIndexRoute =
   AuthenticatedEquipamentosIndexRouteImport.update({
     id: '/equipamentos/',
@@ -111,6 +126,11 @@ const AuthenticatedManutencoesIdRoute =
     path: '/manutencoes/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedEstoqueIdRoute = AuthenticatedEstoqueIdRouteImport.update({
+  id: '/estoque/$id',
+  path: '/estoque/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedEquipamentosIdRoute =
   AuthenticatedEquipamentosIdRouteImport.update({
     id: '/equipamentos/$id',
@@ -136,11 +156,14 @@ export interface FileRoutesByFullPath {
   '/perfil': typeof AuthenticatedPerfilRoute
   '/configuracoes/notificacoes': typeof AuthenticatedConfiguracoesNotificacoesRoute
   '/equipamentos/$id': typeof AuthenticatedEquipamentosIdRoute
+  '/estoque/$id': typeof AuthenticatedEstoqueIdRoute
   '/manutencoes/$id': typeof AuthenticatedManutencoesIdRoute
   '/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/ordens/nova': typeof AuthenticatedOrdensNovaRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
+  '/estoque/': typeof AuthenticatedEstoqueIndexRoute
+  '/ferramentas/': typeof AuthenticatedFerramentasIndexRoute
   '/fornecedores/': typeof AuthenticatedFornecedoresIndexRoute
   '/manutencoes/': typeof AuthenticatedManutencoesIndexRoute
   '/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
@@ -155,11 +178,14 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/configuracoes/notificacoes': typeof AuthenticatedConfiguracoesNotificacoesRoute
   '/equipamentos/$id': typeof AuthenticatedEquipamentosIdRoute
+  '/estoque/$id': typeof AuthenticatedEstoqueIdRoute
   '/manutencoes/$id': typeof AuthenticatedManutencoesIdRoute
   '/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/ordens/nova': typeof AuthenticatedOrdensNovaRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
   '/equipamentos': typeof AuthenticatedEquipamentosIndexRoute
+  '/estoque': typeof AuthenticatedEstoqueIndexRoute
+  '/ferramentas': typeof AuthenticatedFerramentasIndexRoute
   '/fornecedores': typeof AuthenticatedFornecedoresIndexRoute
   '/manutencoes': typeof AuthenticatedManutencoesIndexRoute
   '/notificacoes': typeof AuthenticatedNotificacoesIndexRoute
@@ -176,11 +202,14 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/configuracoes/notificacoes': typeof AuthenticatedConfiguracoesNotificacoesRoute
   '/_authenticated/equipamentos/$id': typeof AuthenticatedEquipamentosIdRoute
+  '/_authenticated/estoque/$id': typeof AuthenticatedEstoqueIdRoute
   '/_authenticated/manutencoes/$id': typeof AuthenticatedManutencoesIdRoute
   '/_authenticated/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/_authenticated/ordens/nova': typeof AuthenticatedOrdensNovaRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/_authenticated/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
+  '/_authenticated/estoque/': typeof AuthenticatedEstoqueIndexRoute
+  '/_authenticated/ferramentas/': typeof AuthenticatedFerramentasIndexRoute
   '/_authenticated/fornecedores/': typeof AuthenticatedFornecedoresIndexRoute
   '/_authenticated/manutencoes/': typeof AuthenticatedManutencoesIndexRoute
   '/_authenticated/notificacoes/': typeof AuthenticatedNotificacoesIndexRoute
@@ -197,11 +226,14 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/configuracoes/notificacoes'
     | '/equipamentos/$id'
+    | '/estoque/$id'
     | '/manutencoes/$id'
     | '/ordens/$id'
     | '/ordens/nova'
     | '/configuracoes/'
     | '/equipamentos/'
+    | '/estoque/'
+    | '/ferramentas/'
     | '/fornecedores/'
     | '/manutencoes/'
     | '/notificacoes/'
@@ -216,11 +248,14 @@ export interface FileRouteTypes {
     | '/'
     | '/configuracoes/notificacoes'
     | '/equipamentos/$id'
+    | '/estoque/$id'
     | '/manutencoes/$id'
     | '/ordens/$id'
     | '/ordens/nova'
     | '/configuracoes'
     | '/equipamentos'
+    | '/estoque'
+    | '/ferramentas'
     | '/fornecedores'
     | '/manutencoes'
     | '/notificacoes'
@@ -236,11 +271,14 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/configuracoes/notificacoes'
     | '/_authenticated/equipamentos/$id'
+    | '/_authenticated/estoque/$id'
     | '/_authenticated/manutencoes/$id'
     | '/_authenticated/ordens/$id'
     | '/_authenticated/ordens/nova'
     | '/_authenticated/configuracoes/'
     | '/_authenticated/equipamentos/'
+    | '/_authenticated/estoque/'
+    | '/_authenticated/ferramentas/'
     | '/_authenticated/fornecedores/'
     | '/_authenticated/manutencoes/'
     | '/_authenticated/notificacoes/'
@@ -328,6 +366,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFornecedoresIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/ferramentas/': {
+      id: '/_authenticated/ferramentas/'
+      path: '/ferramentas'
+      fullPath: '/ferramentas/'
+      preLoaderRoute: typeof AuthenticatedFerramentasIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/estoque/': {
+      id: '/_authenticated/estoque/'
+      path: '/estoque'
+      fullPath: '/estoque/'
+      preLoaderRoute: typeof AuthenticatedEstoqueIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/equipamentos/': {
       id: '/_authenticated/equipamentos/'
       path: '/equipamentos'
@@ -363,6 +415,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManutencoesIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/estoque/$id': {
+      id: '/_authenticated/estoque/$id'
+      path: '/estoque/$id'
+      fullPath: '/estoque/$id'
+      preLoaderRoute: typeof AuthenticatedEstoqueIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/equipamentos/$id': {
       id: '/_authenticated/equipamentos/$id'
       path: '/equipamentos/$id'
@@ -392,11 +451,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedConfiguracoesNotificacoesRoute: typeof AuthenticatedConfiguracoesNotificacoesRoute
   AuthenticatedEquipamentosIdRoute: typeof AuthenticatedEquipamentosIdRoute
+  AuthenticatedEstoqueIdRoute: typeof AuthenticatedEstoqueIdRoute
   AuthenticatedManutencoesIdRoute: typeof AuthenticatedManutencoesIdRoute
   AuthenticatedOrdensIdRoute: typeof AuthenticatedOrdensIdRoute
   AuthenticatedOrdensNovaRoute: typeof AuthenticatedOrdensNovaRoute
   AuthenticatedConfiguracoesIndexRoute: typeof AuthenticatedConfiguracoesIndexRoute
   AuthenticatedEquipamentosIndexRoute: typeof AuthenticatedEquipamentosIndexRoute
+  AuthenticatedEstoqueIndexRoute: typeof AuthenticatedEstoqueIndexRoute
+  AuthenticatedFerramentasIndexRoute: typeof AuthenticatedFerramentasIndexRoute
   AuthenticatedFornecedoresIndexRoute: typeof AuthenticatedFornecedoresIndexRoute
   AuthenticatedManutencoesIndexRoute: typeof AuthenticatedManutencoesIndexRoute
   AuthenticatedNotificacoesIndexRoute: typeof AuthenticatedNotificacoesIndexRoute
@@ -411,11 +473,14 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConfiguracoesNotificacoesRoute:
     AuthenticatedConfiguracoesNotificacoesRoute,
   AuthenticatedEquipamentosIdRoute: AuthenticatedEquipamentosIdRoute,
+  AuthenticatedEstoqueIdRoute: AuthenticatedEstoqueIdRoute,
   AuthenticatedManutencoesIdRoute: AuthenticatedManutencoesIdRoute,
   AuthenticatedOrdensIdRoute: AuthenticatedOrdensIdRoute,
   AuthenticatedOrdensNovaRoute: AuthenticatedOrdensNovaRoute,
   AuthenticatedConfiguracoesIndexRoute: AuthenticatedConfiguracoesIndexRoute,
   AuthenticatedEquipamentosIndexRoute: AuthenticatedEquipamentosIndexRoute,
+  AuthenticatedEstoqueIndexRoute: AuthenticatedEstoqueIndexRoute,
+  AuthenticatedFerramentasIndexRoute: AuthenticatedFerramentasIndexRoute,
   AuthenticatedFornecedoresIndexRoute: AuthenticatedFornecedoresIndexRoute,
   AuthenticatedManutencoesIndexRoute: AuthenticatedManutencoesIndexRoute,
   AuthenticatedNotificacoesIndexRoute: AuthenticatedNotificacoesIndexRoute,
