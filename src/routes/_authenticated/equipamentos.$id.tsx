@@ -262,7 +262,7 @@ function EquipamentoDetalhe() {
         </TabsList>
 
         <TabsContent value="componentes" className="space-y-3">
-          <ComponentesEquipamento equipamentoId={id} respostas={respostasComp} />
+          <ComponentesEquipamento equipamentoId={id} />
         </TabsContent>
 
         <TabsContent value="checklists" className="space-y-3">
