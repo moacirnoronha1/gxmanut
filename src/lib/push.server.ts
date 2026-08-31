@@ -286,6 +286,8 @@ export async function notificarAberturaOS(osId: string) {
 
   const destinatarios: string[] = [];
   if (os.tecnico_id) destinatarios.push(os.tecnico_id as string);
+  // Toda nova OS é disponibilizada para todos os técnicos ativos.
+  destinatarios.push(...(await idsTecnicos()));
   const responsavelSetor = (os as any).setores?.responsavel_id as string | undefined;
 
   let titulo: string;
