@@ -257,7 +257,57 @@ function EquipamentoDetalhe() {
           <TabsTrigger value="docs">Documentos</TabsTrigger>
           <TabsTrigger value="fotos">Fotos</TabsTrigger>
           <TabsTrigger value="indicadores">Indicadores</TabsTrigger>
+          <TabsTrigger value="componentes">Componentes</TabsTrigger>
+          <TabsTrigger value="checklists">Checklists</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="componentes" className="space-y-3">
+          <ComponentesEquipamento equipamentoId={id} respostas={respostasComp} />
+        </TabsContent>
+
+        <TabsContent value="checklists" className="space-y-3">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between py-3">
+              <CardTitle className="text-base">Checklists deste equipamento</CardTitle>
+              <Button size="sm" onClick={() => setChecklistFormOpen(true)}>+ Novo checklist</Button>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              {checklists.length === 0 && <p className="text-muted-foreground">Nenhum checklist cadastrado para este equipamento.</p>}
+              {checklists.map((c) => (
+                <div key={c.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-2">
+                  <div>
+                    <div className="font-medium">{c.nome}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {periodicidadeLabel(c.periodicidade)}
+                      {c.proxima_execucao ? ` · próxima em ${formatDate(c.proxima_execucao)}` : ""}
+                    </div>
+                  </div>
+                  <Button size="sm" variant="outline" asChild>
+                    <Link to="/checklists/executar/$id" params={{ id: c.id }}>Iniciar inspeção</Link>
+                  </Button>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="py-3"><CardTitle className="text-base">Inspeções realizadas</CardTitle></CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              {execucoes.length === 0 && <p className="text-muted-foreground">Nenhuma inspeção registrada.</p>}
+              {execucoes.map((e) => (
+                <div key={e.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-2">
+                  <span>{formatDateTime(e.created_at)} · {e.status === "concluida" ? "Concluída" : "Em andamento"}</span>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">{Math.round(e.percentual_conformidade ?? 0)}% conforme</Badge>
+                    <Button size="sm" variant="ghost" asChild>
+                      <Link to="/checklists/resultado/$id" params={{ id: e.id }}>Ver resultado</Link>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+          <ChecklistFormDialog open={checklistFormOpen} onOpenChange={setChecklistFormOpen} equipamentoId={id} />
+        </TabsContent>
 
         <TabsContent value="geral" className="space-y-3">
           <Card>
