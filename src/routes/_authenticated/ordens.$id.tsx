@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BarraConfirmacaoOS } from "@/components/confirmar-os";
+import { EquipeOSCard } from "@/components/equipe-os";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -182,6 +183,8 @@ function OSDetail() {
         </div>
 
         <div className="space-y-4">
+          <EquipeOSCard osId={id} assumidaPor={os.assumida_por} assumidaEm={os.assumida_em} />
+
           <Card>
             <CardHeader><CardTitle>Ações</CardTitle></CardHeader>
             <CardContent className="space-y-3">
