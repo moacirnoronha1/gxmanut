@@ -73,6 +73,12 @@ function EquipamentoDetalhe() {
   const { data: paradas = [] } = useQuery(equipamentoParadasQuery(id));
   const { data: manutencoes = [] } = useQuery(manutencoesQuery());
   const { data: periodicidades = [] } = useQuery(periodicidadesQuery());
+  const { data: propTipos = [] } = useQuery(propriedadeTiposQuery());
+  const { data: checklists = [] } = useQuery(checklistsQuery(id));
+  const { data: execucoes = [] } = useQuery(execucoesQuery({ equipamentoId: id }));
+  const { data: respostasComp = [] } = useQuery(respostasDoEquipamentoQuery(id));
+  const [checklistFormOpen, setChecklistFormOpen] = useState(false);
+
 
   const [qrOpen, setQrOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
