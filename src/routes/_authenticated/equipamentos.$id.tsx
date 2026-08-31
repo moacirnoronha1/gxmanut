@@ -28,6 +28,10 @@ import {
 } from "@/lib/equipamentos";
 import { EquipamentoQR } from "@/components/equipamento-qr";
 import { EquipamentoExcluirDialog } from "@/components/equipamento-excluir";
+import { ComponentesEquipamento } from "@/components/equipamento-componentes";
+import { ChecklistFormDialog } from "@/components/checklist-form";
+import { propriedadeTiposQuery, checklistsQuery, execucoesQuery, respostasDoEquipamentoQuery } from "@/lib/checklist-queries";
+import { diasParaVencimento, periodicidadeLabel, MANUTENCAO_RESPONSAVEL } from "@/lib/checklists";
 import { useSessaoUsuario } from "@/lib/sessao";
 import { formatBRL, formatDate, formatDateTime } from "@/lib/db-types";
 import { supabase } from "@/integrations/supabase/client";
