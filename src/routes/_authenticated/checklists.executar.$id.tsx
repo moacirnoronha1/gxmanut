@@ -233,7 +233,7 @@ function ExecutarChecklist() {
                         ? <Textarea value={r.valor} onChange={(e) => set(item.id, { valor: e.target.value, conforme: r.conforme ?? true })} />
                         : <Input
                             type={formato === "foto" ? "url" : "text"}
-                            inputMode={formato === "texto" ? "text" : "decimal"}
+                            inputMode={formato === "foto" ? "url" : "decimal"}
                             placeholder={formato === "temperatura" ? "°C" : formato === "foto" ? "URL da foto" : ""}
                             value={r.valor}
                             onChange={(e) => set(item.id, { valor: e.target.value, conforme: r.conforme ?? true })}
