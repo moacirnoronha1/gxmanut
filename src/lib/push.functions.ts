@@ -137,17 +137,37 @@ export const assumirOS = createServerFn({ method: "POST" })
     const agora = new Date().toISOString();
     const { data: os } = await supabaseAdmin
       .from("ordens_servico")
-      .select("id,numero,assumida_por,assumida_em")
+      .select("id,numero,assumida_por,assumida_em,tecnico_id,status_id")
       .eq("id", data.osId)
       .maybeSingle();
     if (!os) throw new Error("OS não encontrada.");
     if (os.assumida_por && os.assumida_por !== context.userId) {
       return { ok: false, jaAssumida: true };
     }
+
+    // Status "Recebida" (ou "Em atendimento", conforme configurado)
+    const { data: statusList } = await supabaseAdmin.from("status_os").select("id,nome,ordem").eq("ativo", true);
+    const acha = (t: string) =>
+      (statusList ?? []).find((s) => (s.nome as string).toLowerCase().includes(t))?.id as string | undefined;
+    const novoStatus = acha("recebid") ?? acha("atendimento") ?? acha("andamento") ?? os.status_id;
+
     await supabaseAdmin
       .from("ordens_servico")
-      .update({ assumida_por: context.userId, assumida_em: agora, confirmada_em: agora })
+      .update({
+        assumida_por: context.userId,
+        assumida_em: agora,
+        confirmada_em: agora,
+        tecnico_id: os.tecnico_id ?? context.userId,
+        status_id: novoStatus,
+      })
       .eq("id", data.osId);
+
+    await supabaseAdmin
+      .from("os_tecnicos")
+      .upsert(
+        { os_id: data.osId, tecnico_id: context.userId, papel: "principal", adicionado_por: context.userId },
+        { onConflict: "os_id,tecnico_id" },
+      );
 
     const { data: perfil } = await supabaseAdmin
       .from("profiles")
