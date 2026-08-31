@@ -14,6 +14,8 @@ import { equipamentoStatusQuery, custosComEquipamentoQuery, paradasTodasQuery } 
 import { manutencoesQuery } from "@/lib/mp-queries";
 import { EquipamentoStatusConfig } from "@/components/equipamento-status-config";
 import { calcularIndice, horasParada, diasEntre, ESTADOS_CONSERVACAO } from "@/lib/equipamentos";
+import { propriedadeTiposQuery } from "@/lib/checklist-queries";
+import { MANUTENCAO_RESPONSAVEL } from "@/lib/checklists";
 import { formatBRL, formatDate } from "@/lib/db-types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -53,6 +55,9 @@ const EMPTY_FORM = {
   data_aquisicao: "", data_instalacao: "", valor_aquisicao: "", fornecedor_id: "none",
   garantia_descricao: "", garantia_ate: "", vida_util_meses: "", estado_conservacao: "none",
   status_id: "none", limite_custo_percentual: "60", observacoes: "",
+  propriedade_tipo_id: "", nota_fiscal: "", prop_empresa: "", prop_contrato_numero: "",
+  prop_contrato_inicio: "", prop_contrato_fim: "", prop_valor_mensal: "", prop_responsavel_id: "none",
+  prop_manutencao_por: "none", prop_telefone: "", prop_condicoes: "", prop_observacoes: "",
 };
 
 function Equipamentos() {
@@ -75,6 +80,9 @@ function Equipamentos() {
   const [open, setOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
+
+  const { data: propTipos = [] } = useQuery(propriedadeTiposQuery());
+  const chaveProp = propTipos.find((t) => t.id === form.propriedade_tipo_id)?.chave ?? "";
 
   const statusMap = useMemo(() => new Map(status.map((s) => [s.id, s])), [status]);
 
@@ -181,10 +189,23 @@ function Equipamentos() {
 
   async function save() {
     if (!form.nome.trim()) return toast.error("Informe o nome.");
+    if (!form.propriedade_tipo_id) return toast.error("Informe o tipo de propriedade.");
     const nn = (v: string) => (v.trim() === "" ? null : v.trim());
     const sel = (v: string) => (v === "none" ? null : v);
     const num = (v: string) => { const n = Number(v.replace(",", ".")); return Number.isFinite(n) && v.trim() !== "" ? n : null; };
     const payload = {
+      propriedade_tipo_id: form.propriedade_tipo_id,
+      nota_fiscal: nn(form.nota_fiscal),
+      prop_empresa: nn(form.prop_empresa),
+      prop_contrato_numero: nn(form.prop_contrato_numero),
+      prop_contrato_inicio: nn(form.prop_contrato_inicio),
+      prop_contrato_fim: nn(form.prop_contrato_fim),
+      prop_valor_mensal: num(form.prop_valor_mensal),
+      prop_responsavel_id: sel(form.prop_responsavel_id),
+      prop_manutencao_por: sel(form.prop_manutencao_por),
+      prop_telefone: nn(form.prop_telefone),
+      prop_condicoes: nn(form.prop_condicoes),
+      prop_observacoes: nn(form.prop_observacoes),
       nome: form.nome.trim(),
       codigo: nn(form.codigo),
       patrimonio: nn(form.patrimonio),
@@ -239,6 +260,66 @@ function Equipamentos() {
                   <Selecao value={form.tipo || "none"} onChange={(v) => setForm({ ...form, tipo: v === "none" ? "" : v })}
                     itens={[{ value: "Equipamento", label: "Equipamento" }, { value: "Instalação", label: "Instalação" }]} vazio="Não informado" />
                 </Campo>
+
+                <Campo label="Tipo de propriedade *" className="sm:col-span-2">
+                  <Selecao value={form.propriedade_tipo_id || "none"}
+                    onChange={(v) => setForm({ ...form, propriedade_tipo_id: v === "none" ? "" : v })}
+                    itens={propTipos.filter((t) => t.ativo).map((t) => ({ value: t.id, label: t.nome }))}
+                    vazio="Selecione (obrigatório)" />
+                </Campo>
+
+                {chaveProp === "proprio" && (
+                  <Campo label="Nota fiscal" className="sm:col-span-2">
+                    <Input placeholder="Número ou link da NF" value={form.nota_fiscal} onChange={(e) => setForm({ ...form, nota_fiscal: e.target.value })} />
+                  </Campo>
+                )}
+
+                {(chaveProp === "alugado" || chaveProp === "consignado") && (
+                  <>
+                    <Campo label={chaveProp === "alugado" ? "Empresa locadora" : "Empresa proprietária"}>
+                      <Input value={form.prop_empresa} onChange={(e) => setForm({ ...form, prop_empresa: e.target.value })} />
+                    </Campo>
+                    <Campo label="Número do contrato / documento">
+                      <Input value={form.prop_contrato_numero} onChange={(e) => setForm({ ...form, prop_contrato_numero: e.target.value })} />
+                    </Campo>
+                    <Campo label="Data de início">
+                      <Input type="date" value={form.prop_contrato_inicio} onChange={(e) => setForm({ ...form, prop_contrato_inicio: e.target.value })} />
+                    </Campo>
+                    {chaveProp === "alugado" && (
+                      <>
+                        <Campo label="Data final">
+                          <Input type="date" value={form.prop_contrato_fim} onChange={(e) => setForm({ ...form, prop_contrato_fim: e.target.value })} />
+                        </Campo>
+                        <Campo label="Valor mensal (R$)">
+                          <Input inputMode="decimal" value={form.prop_valor_mensal} onChange={(e) => setForm({ ...form, prop_valor_mensal: e.target.value })} />
+                        </Campo>
+                      </>
+                    )}
+                    <Campo label="Responsável pelo contrato">
+                      <Selecao value={form.prop_responsavel_id} onChange={(v) => setForm({ ...form, prop_responsavel_id: v })}
+                        itens={pessoas.map((p) => ({ value: p.id, label: p.nome }))} vazio="Não definido" />
+                    </Campo>
+                    <Campo label="Manutenção é responsabilidade de">
+                      <Selecao value={form.prop_manutencao_por} onChange={(v) => setForm({ ...form, prop_manutencao_por: v })}
+                        itens={MANUTENCAO_RESPONSAVEL} vazio="Não definido" />
+                    </Campo>
+                    <Campo label="Telefone de contato">
+                      <Input value={form.prop_telefone} onChange={(e) => setForm({ ...form, prop_telefone: e.target.value })} />
+                    </Campo>
+                    <Campo label={chaveProp === "alugado" ? "Documentos (link)" : "Contrato / documento (link)"}>
+                      <Input value={form.nota_fiscal} onChange={(e) => setForm({ ...form, nota_fiscal: e.target.value })} />
+                    </Campo>
+                    {chaveProp === "consignado" && (
+                      <Campo label="Condições da consignação" className="sm:col-span-2">
+                        <Textarea value={form.prop_condicoes} onChange={(e) => setForm({ ...form, prop_condicoes: e.target.value })} />
+                      </Campo>
+                    )}
+                    <Campo label="Observações da propriedade" className="sm:col-span-2">
+                      <Textarea value={form.prop_observacoes} onChange={(e) => setForm({ ...form, prop_observacoes: e.target.value })} />
+                    </Campo>
+                  </>
+                )}
+
 
                 <Campo label="Marca"><Input value={form.marca} onChange={(e) => setForm({ ...form, marca: e.target.value })} /></Campo>
                 <Campo label="Modelo"><Input value={form.modelo} onChange={(e) => setForm({ ...form, modelo: e.target.value })} /></Campo>

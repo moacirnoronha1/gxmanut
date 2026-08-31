@@ -28,6 +28,10 @@ import {
 } from "@/lib/equipamentos";
 import { EquipamentoQR } from "@/components/equipamento-qr";
 import { EquipamentoExcluirDialog } from "@/components/equipamento-excluir";
+import { ComponentesEquipamento } from "@/components/equipamento-componentes";
+import { ChecklistFormDialog } from "@/components/checklist-form";
+import { propriedadeTiposQuery, checklistsQuery, execucoesQuery, respostasDoEquipamentoQuery } from "@/lib/checklist-queries";
+import { diasParaVencimento, periodicidadeLabel, MANUTENCAO_RESPONSAVEL } from "@/lib/checklists";
 import { useSessaoUsuario } from "@/lib/sessao";
 import { formatBRL, formatDate, formatDateTime } from "@/lib/db-types";
 import { supabase } from "@/integrations/supabase/client";
@@ -69,6 +73,14 @@ function EquipamentoDetalhe() {
   const { data: paradas = [] } = useQuery(equipamentoParadasQuery(id));
   const { data: manutencoes = [] } = useQuery(manutencoesQuery());
   const { data: periodicidades = [] } = useQuery(periodicidadesQuery());
+  const { data: propTipos = [] } = useQuery(propriedadeTiposQuery());
+  const { data: checklists = [] } = useQuery(checklistsQuery(id));
+  const { data: execucoes = [] } = useQuery(execucoesQuery({ equipamentoId: id }));
+  
+  const [checklistFormOpen, setChecklistFormOpen] = useState(false);
+  const propTipo = propTipos.find((t) => t.id === (eq as { propriedade_tipo_id?: string | null } | undefined)?.propriedade_tipo_id);
+  const diasContrato = diasParaVencimento((eq as { prop_contrato_fim?: string | null } | undefined)?.prop_contrato_fim ?? null);
+
 
   const [qrOpen, setQrOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
@@ -204,6 +216,14 @@ function EquipamentoDetalhe() {
                 </SelectContent>
               </Select>
               {stEq && <Badge variant="outline" style={{ borderColor: stEq.cor, color: stEq.cor }}>{stEq.nome}</Badge>}
+              {propTipo && (
+                <Badge style={{ backgroundColor: propTipo.cor, color: "#fff" }}>{propTipo.nome.toUpperCase()}</Badge>
+              )}
+              {diasContrato !== null && diasContrato <= 30 && (
+                <Badge variant="destructive">
+                  {diasContrato < 0 ? `Contrato vencido há ${Math.abs(diasContrato)} d` : `Contrato vence em ${diasContrato} d`}
+                </Badge>
+              )}
               <Badge variant="outline" className={indice.cor}>Índice: {indice.label} ({indice.pontuacao})</Badge>
               {baixado && <Badge variant="destructive">Baixado em {formatDate(eq.baixa_em)}</Badge>}
               {paradaAberta && <Badge variant="destructive">Parado desde {formatDateTime(paradaAberta.inicio)}</Badge>}
@@ -237,7 +257,57 @@ function EquipamentoDetalhe() {
           <TabsTrigger value="docs">Documentos</TabsTrigger>
           <TabsTrigger value="fotos">Fotos</TabsTrigger>
           <TabsTrigger value="indicadores">Indicadores</TabsTrigger>
+          <TabsTrigger value="componentes">Componentes</TabsTrigger>
+          <TabsTrigger value="checklists">Checklists</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="componentes" className="space-y-3">
+          <ComponentesEquipamento equipamentoId={id} />
+        </TabsContent>
+
+        <TabsContent value="checklists" className="space-y-3">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between py-3">
+              <CardTitle className="text-base">Checklists deste equipamento</CardTitle>
+              <Button size="sm" onClick={() => setChecklistFormOpen(true)}>+ Novo checklist</Button>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              {checklists.length === 0 && <p className="text-muted-foreground">Nenhum checklist cadastrado para este equipamento.</p>}
+              {checklists.map((c) => (
+                <div key={c.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-2">
+                  <div>
+                    <div className="font-medium">{c.nome}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {periodicidadeLabel(c.periodicidade)}
+                      {c.proxima_execucao ? ` · próxima em ${formatDate(c.proxima_execucao)}` : ""}
+                    </div>
+                  </div>
+                  <Button size="sm" variant="outline" asChild>
+                    <Link to="/checklists/executar/$id" params={{ id: c.id }}>Iniciar inspeção</Link>
+                  </Button>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="py-3"><CardTitle className="text-base">Inspeções realizadas</CardTitle></CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              {execucoes.length === 0 && <p className="text-muted-foreground">Nenhuma inspeção registrada.</p>}
+              {execucoes.map((e) => (
+                <div key={e.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border p-2">
+                  <span>{formatDateTime(e.created_at)} · {e.status === "concluida" ? "Concluída" : "Em andamento"}</span>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">{Math.round(e.percentual_conformidade ?? 0)}% conforme</Badge>
+                    <Button size="sm" variant="ghost" asChild>
+                      <Link to="/checklists/resultado/$id" params={{ id: e.id }}>Ver resultado</Link>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+          <ChecklistFormDialog open={checklistFormOpen} onOpenChange={setChecklistFormOpen} equipamentoId={id} />
+        </TabsContent>
 
         <TabsContent value="geral" className="space-y-3">
           <Card>
@@ -260,7 +330,25 @@ function EquipamentoDetalhe() {
                 label="Cadastrado por"
                 valor={`${pessoas.find((p) => p.id === eq.criado_por)?.nome ?? "—"}${eq.created_at ? ` · ${formatDateTime(eq.created_at)}` : ""}`}
               />
-
+              <Linha label="Tipo de propriedade" valor={propTipo?.nome ?? "—"} />
+              {propTipo?.chave === "proprio" && <Linha label="Nota fiscal" valor={ep.nota_fiscal ?? "—"} />}
+              {propTipo && propTipo.chave !== "proprio" && (
+                <>
+                  <Linha label={propTipo.chave === "alugado" ? "Empresa locadora" : "Empresa proprietária"} valor={ep.prop_empresa ?? "—"} />
+                  <Linha label="Contrato / documento" valor={ep.prop_contrato_numero ?? "—"} />
+                  <Linha label="Início" valor={formatDate(ep.prop_contrato_inicio)} />
+                  {propTipo.chave === "alugado" && <Linha label="Fim do contrato" valor={formatDate(ep.prop_contrato_fim)} />}
+                  {propTipo.chave === "alugado" && <Linha label="Valor mensal" valor={formatBRL(ep.prop_valor_mensal ?? 0)} />}
+                  <Linha label="Responsável pelo contrato" valor={pessoas.find((p) => p.id === ep.prop_responsavel_id)?.nome ?? "—"} />
+                  <Linha
+                    label="Manutenção por"
+                    valor={MANUTENCAO_RESPONSAVEL.find((m) => m.value === ep.prop_manutencao_por)?.label ?? "—"}
+                  />
+                  <Linha label="Telefone de contato" valor={ep.prop_telefone ?? "—"} />
+                  {propTipo.chave === "consignado" && <Linha label="Condições" valor={ep.prop_condicoes ?? "—"} />}
+                  <Linha label="Observações da propriedade" valor={ep.prop_observacoes ?? "—"} />
+                </>
+              )}
 
               {baixado && <Linha label="Baixa" valor={`${eq.baixa_tipo === "descarte" ? "Descartado" : "Desativado"} em ${formatDate(eq.baixa_em)} — ${eq.baixa_motivo ?? ""}`} />}
             </CardContent>
