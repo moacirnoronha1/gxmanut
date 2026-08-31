@@ -261,6 +261,21 @@ export async function idsMestres(): Promise<string[]> {
   return (data ?? []).map((p) => p.id as string);
 }
 
+/** IDs de todos os técnicos de manutenção ativos e não bloqueados. */
+export async function idsTecnicos(): Promise<string[]> {
+  const admin = await getAdmin();
+  const { data: roles } = await admin.from("user_roles").select("user_id").eq("role", "tecnico");
+  const ids = (roles ?? []).map((r) => r.user_id as string);
+  if (ids.length === 0) return [];
+  const { data: perfis } = await admin
+    .from("profiles")
+    .select("id")
+    .in("id", ids)
+    .eq("ativo", true)
+    .eq("bloqueado", false);
+  return (perfis ?? []).map((p) => p.id as string);
+}
+
 /** Notifica a abertura de uma OS conforme a urgência. */
 export async function notificarAberturaOS(osId: string) {
   const admin = await getAdmin();
