@@ -256,6 +256,66 @@ function Equipamentos() {
                     itens={[{ value: "Equipamento", label: "Equipamento" }, { value: "Instalação", label: "Instalação" }]} vazio="Não informado" />
                 </Campo>
 
+                <Campo label="Tipo de propriedade *" className="sm:col-span-2">
+                  <Selecao value={form.propriedade_tipo_id || "none"}
+                    onChange={(v) => setForm({ ...form, propriedade_tipo_id: v === "none" ? "" : v })}
+                    itens={propTipos.filter((t) => t.ativo).map((t) => ({ value: t.id, label: t.nome }))}
+                    vazio="Selecione (obrigatório)" />
+                </Campo>
+
+                {chaveProp === "proprio" && (
+                  <Campo label="Nota fiscal" className="sm:col-span-2">
+                    <Input placeholder="Número ou link da NF" value={form.nota_fiscal} onChange={(e) => setForm({ ...form, nota_fiscal: e.target.value })} />
+                  </Campo>
+                )}
+
+                {(chaveProp === "alugado" || chaveProp === "consignado") && (
+                  <>
+                    <Campo label={chaveProp === "alugado" ? "Empresa locadora" : "Empresa proprietária"}>
+                      <Input value={form.prop_empresa} onChange={(e) => setForm({ ...form, prop_empresa: e.target.value })} />
+                    </Campo>
+                    <Campo label="Número do contrato / documento">
+                      <Input value={form.prop_contrato_numero} onChange={(e) => setForm({ ...form, prop_contrato_numero: e.target.value })} />
+                    </Campo>
+                    <Campo label="Data de início">
+                      <Input type="date" value={form.prop_contrato_inicio} onChange={(e) => setForm({ ...form, prop_contrato_inicio: e.target.value })} />
+                    </Campo>
+                    {chaveProp === "alugado" && (
+                      <>
+                        <Campo label="Data final">
+                          <Input type="date" value={form.prop_contrato_fim} onChange={(e) => setForm({ ...form, prop_contrato_fim: e.target.value })} />
+                        </Campo>
+                        <Campo label="Valor mensal (R$)">
+                          <Input inputMode="decimal" value={form.prop_valor_mensal} onChange={(e) => setForm({ ...form, prop_valor_mensal: e.target.value })} />
+                        </Campo>
+                      </>
+                    )}
+                    <Campo label="Responsável pelo contrato">
+                      <Selecao value={form.prop_responsavel_id} onChange={(v) => setForm({ ...form, prop_responsavel_id: v })}
+                        itens={pessoas.map((p) => ({ value: p.id, label: p.nome }))} vazio="Não definido" />
+                    </Campo>
+                    <Campo label="Manutenção é responsabilidade de">
+                      <Selecao value={form.prop_manutencao_por} onChange={(v) => setForm({ ...form, prop_manutencao_por: v })}
+                        itens={MANUTENCAO_RESPONSAVEL} vazio="Não definido" />
+                    </Campo>
+                    <Campo label="Telefone de contato">
+                      <Input value={form.prop_telefone} onChange={(e) => setForm({ ...form, prop_telefone: e.target.value })} />
+                    </Campo>
+                    <Campo label={chaveProp === "alugado" ? "Documentos (link)" : "Contrato / documento (link)"}>
+                      <Input value={form.nota_fiscal} onChange={(e) => setForm({ ...form, nota_fiscal: e.target.value })} />
+                    </Campo>
+                    {chaveProp === "consignado" && (
+                      <Campo label="Condições da consignação" className="sm:col-span-2">
+                        <Textarea value={form.prop_condicoes} onChange={(e) => setForm({ ...form, prop_condicoes: e.target.value })} />
+                      </Campo>
+                    )}
+                    <Campo label="Observações da propriedade" className="sm:col-span-2">
+                      <Textarea value={form.prop_observacoes} onChange={(e) => setForm({ ...form, prop_observacoes: e.target.value })} />
+                    </Campo>
+                  </>
+                )}
+
+
                 <Campo label="Marca"><Input value={form.marca} onChange={(e) => setForm({ ...form, marca: e.target.value })} /></Campo>
                 <Campo label="Modelo"><Input value={form.modelo} onChange={(e) => setForm({ ...form, modelo: e.target.value })} /></Campo>
                 <Campo label="Número de série"><Input value={form.numero_serie} onChange={(e) => setForm({ ...form, numero_serie: e.target.value })} /></Campo>
