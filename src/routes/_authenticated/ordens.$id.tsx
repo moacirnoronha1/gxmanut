@@ -182,6 +182,8 @@ function OSDetail() {
         </div>
 
         <div className="space-y-4">
+          <EquipeOSCard osId={id} assumidaPor={os.assumida_por} assumidaEm={os.assumida_em} />
+
           <Card>
             <CardHeader><CardTitle>Ações</CardTitle></CardHeader>
             <CardContent className="space-y-3">
