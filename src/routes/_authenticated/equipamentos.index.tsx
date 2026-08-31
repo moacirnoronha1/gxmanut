@@ -81,6 +81,9 @@ function Equipamentos() {
   const [configOpen, setConfigOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
 
+  const { data: propTipos = [] } = useQuery(propriedadeTiposQuery());
+  const chaveProp = propTipos.find((t) => t.id === form.propriedade_tipo_id)?.chave ?? "";
+
   const statusMap = useMemo(() => new Map(status.map((s) => [s.id, s])), [status]);
 
   const metricas = useMemo(() => {
