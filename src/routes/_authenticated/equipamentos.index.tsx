@@ -184,10 +184,23 @@ function Equipamentos() {
 
   async function save() {
     if (!form.nome.trim()) return toast.error("Informe o nome.");
+    if (!form.propriedade_tipo_id) return toast.error("Informe o tipo de propriedade.");
     const nn = (v: string) => (v.trim() === "" ? null : v.trim());
     const sel = (v: string) => (v === "none" ? null : v);
     const num = (v: string) => { const n = Number(v.replace(",", ".")); return Number.isFinite(n) && v.trim() !== "" ? n : null; };
     const payload = {
+      propriedade_tipo_id: form.propriedade_tipo_id,
+      nota_fiscal: nn(form.nota_fiscal),
+      prop_empresa: nn(form.prop_empresa),
+      prop_contrato_numero: nn(form.prop_contrato_numero),
+      prop_contrato_inicio: nn(form.prop_contrato_inicio),
+      prop_contrato_fim: nn(form.prop_contrato_fim),
+      prop_valor_mensal: num(form.prop_valor_mensal),
+      prop_responsavel_id: sel(form.prop_responsavel_id),
+      prop_manutencao_por: sel(form.prop_manutencao_por),
+      prop_telefone: nn(form.prop_telefone),
+      prop_condicoes: nn(form.prop_condicoes),
+      prop_observacoes: nn(form.prop_observacoes),
       nome: form.nome.trim(),
       codigo: nn(form.codigo),
       patrimonio: nn(form.patrimonio),
