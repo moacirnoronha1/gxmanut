@@ -15,7 +15,7 @@ import { manutencoesQuery } from "@/lib/mp-queries";
 import { EquipamentoStatusConfig } from "@/components/equipamento-status-config";
 import { calcularIndice, horasParada, diasEntre, ESTADOS_CONSERVACAO } from "@/lib/equipamentos";
 import { propriedadeTiposQuery } from "@/lib/checklist-queries";
-import { MANUTENCAO_RESPONSAVEL } from "@/lib/checklists";
+import { MANUTENCAO_RESPONSAVEL, diasParaVencimento } from "@/lib/checklists";
 import { formatBRL, formatDate } from "@/lib/db-types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
