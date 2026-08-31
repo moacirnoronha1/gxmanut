@@ -214,6 +214,14 @@ function EquipamentoDetalhe() {
                 </SelectContent>
               </Select>
               {stEq && <Badge variant="outline" style={{ borderColor: stEq.cor, color: stEq.cor }}>{stEq.nome}</Badge>}
+              {propTipo && (
+                <Badge style={{ backgroundColor: propTipo.cor, color: "#fff" }}>{propTipo.nome.toUpperCase()}</Badge>
+              )}
+              {diasContrato !== null && diasContrato <= 30 && (
+                <Badge variant="destructive">
+                  {diasContrato < 0 ? `Contrato vencido há ${Math.abs(diasContrato)} d` : `Contrato vence em ${diasContrato} d`}
+                </Badge>
+              )}
               <Badge variant="outline" className={indice.cor}>Índice: {indice.label} ({indice.pontuacao})</Badge>
               {baixado && <Badge variant="destructive">Baixado em {formatDate(eq.baixa_em)}</Badge>}
               {paradaAberta && <Badge variant="destructive">Parado desde {formatDateTime(paradaAberta.inicio)}</Badge>}
