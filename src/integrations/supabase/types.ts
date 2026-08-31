@@ -2785,6 +2785,44 @@ export type Database = {
           },
         ]
       }
+      os_tecnicos: {
+        Row: {
+          adicionado_por: string | null
+          created_at: string
+          id: string
+          os_id: string
+          papel: string
+          tecnico_id: string
+          updated_at: string
+        }
+        Insert: {
+          adicionado_por?: string | null
+          created_at?: string
+          id?: string
+          os_id: string
+          papel?: string
+          tecnico_id: string
+          updated_at?: string
+        }
+        Update: {
+          adicionado_por?: string | null
+          created_at?: string
+          id?: string
+          os_id?: string
+          papel?: string
+          tecnico_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_tecnicos_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       periodicidades: {
         Row: {
           ativo: boolean
