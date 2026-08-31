@@ -126,6 +126,8 @@ export interface OS {
   equipamento_parado: boolean;
   risco: string | null;
   confirmada_em: string | null;
+  assumida_por: string | null;
+  assumida_em: string | null;
   previsao_atendimento: string | null;
   iniciada_em: string | null;
   diagnostico: string | null;
