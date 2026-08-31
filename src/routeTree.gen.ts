@@ -31,6 +31,7 @@ import { Route as AuthenticatedEstoqueIdRouteImport } from './routes/_authentica
 import { Route as AuthenticatedEquipamentosIdRouteImport } from './routes/_authenticated/equipamentos.$id'
 import { Route as AuthenticatedConfiguracoesNotificacoesRouteImport } from './routes/_authenticated/configuracoes.notificacoes'
 import { Route as ApiPublicHooksNotificacoesRouteImport } from './routes/api/public/hooks/notificacoes'
+import { Route as AuthenticatedChecklistsExecutarIdRouteImport } from './routes/_authenticated/checklists.executar.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -156,6 +157,12 @@ const ApiPublicHooksNotificacoesRoute =
     path: '/api/public/hooks/notificacoes',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedChecklistsExecutarIdRoute =
+  AuthenticatedChecklistsExecutarIdRouteImport.update({
+    id: '/checklists/executar/$id',
+    path: '/checklists/executar/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -178,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/ordens/': typeof AuthenticatedOrdensIndexRoute
   '/setores/': typeof AuthenticatedSetoresIndexRoute
   '/usuarios/': typeof AuthenticatedUsuariosIndexRoute
+  '/checklists/executar/$id': typeof AuthenticatedChecklistsExecutarIdRoute
   '/api/public/hooks/notificacoes': typeof ApiPublicHooksNotificacoesRoute
 }
 export interface FileRoutesByTo {
@@ -201,6 +209,7 @@ export interface FileRoutesByTo {
   '/ordens': typeof AuthenticatedOrdensIndexRoute
   '/setores': typeof AuthenticatedSetoresIndexRoute
   '/usuarios': typeof AuthenticatedUsuariosIndexRoute
+  '/checklists/executar/$id': typeof AuthenticatedChecklistsExecutarIdRoute
   '/api/public/hooks/notificacoes': typeof ApiPublicHooksNotificacoesRoute
 }
 export interface FileRoutesById {
@@ -226,6 +235,7 @@ export interface FileRoutesById {
   '/_authenticated/ordens/': typeof AuthenticatedOrdensIndexRoute
   '/_authenticated/setores/': typeof AuthenticatedSetoresIndexRoute
   '/_authenticated/usuarios/': typeof AuthenticatedUsuariosIndexRoute
+  '/_authenticated/checklists/executar/$id': typeof AuthenticatedChecklistsExecutarIdRoute
   '/api/public/hooks/notificacoes': typeof ApiPublicHooksNotificacoesRoute
 }
 export interface FileRouteTypes {
@@ -251,6 +261,7 @@ export interface FileRouteTypes {
     | '/ordens/'
     | '/setores/'
     | '/usuarios/'
+    | '/checklists/executar/$id'
     | '/api/public/hooks/notificacoes'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -274,6 +285,7 @@ export interface FileRouteTypes {
     | '/ordens'
     | '/setores'
     | '/usuarios'
+    | '/checklists/executar/$id'
     | '/api/public/hooks/notificacoes'
   id:
     | '__root__'
@@ -298,6 +310,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ordens/'
     | '/_authenticated/setores/'
     | '/_authenticated/usuarios/'
+    | '/_authenticated/checklists/executar/$id'
     | '/api/public/hooks/notificacoes'
   fileRoutesById: FileRoutesById
 }
@@ -463,6 +476,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksNotificacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/checklists/executar/$id': {
+      id: '/_authenticated/checklists/executar/$id'
+      path: '/checklists/executar/$id'
+      fullPath: '/checklists/executar/$id'
+      preLoaderRoute: typeof AuthenticatedChecklistsExecutarIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -486,6 +506,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOrdensIndexRoute: typeof AuthenticatedOrdensIndexRoute
   AuthenticatedSetoresIndexRoute: typeof AuthenticatedSetoresIndexRoute
   AuthenticatedUsuariosIndexRoute: typeof AuthenticatedUsuariosIndexRoute
+  AuthenticatedChecklistsExecutarIdRoute: typeof AuthenticatedChecklistsExecutarIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -509,6 +530,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOrdensIndexRoute: AuthenticatedOrdensIndexRoute,
   AuthenticatedSetoresIndexRoute: AuthenticatedSetoresIndexRoute,
   AuthenticatedUsuariosIndexRoute: AuthenticatedUsuariosIndexRoute,
+  AuthenticatedChecklistsExecutarIdRoute:
+    AuthenticatedChecklistsExecutarIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
