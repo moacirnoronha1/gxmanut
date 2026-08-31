@@ -78,6 +78,8 @@ function EquipamentoDetalhe() {
   const { data: execucoes = [] } = useQuery(execucoesQuery({ equipamentoId: id }));
   const { data: respostasComp = [] } = useQuery(respostasDoEquipamentoQuery(id));
   const [checklistFormOpen, setChecklistFormOpen] = useState(false);
+  const propTipo = propTipos.find((t) => t.id === (eq as { propriedade_tipo_id?: string | null } | undefined)?.propriedade_tipo_id);
+  const diasContrato = diasParaVencimento((eq as { prop_contrato_fim?: string | null } | undefined)?.prop_contrato_fim ?? null);
 
 
   const [qrOpen, setQrOpen] = useState(false);
