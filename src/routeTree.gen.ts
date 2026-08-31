@@ -23,6 +23,7 @@ import { Route as AuthenticatedFerramentasIndexRouteImport } from './routes/_aut
 import { Route as AuthenticatedEstoqueIndexRouteImport } from './routes/_authenticated/estoque.index'
 import { Route as AuthenticatedEquipamentosIndexRouteImport } from './routes/_authenticated/equipamentos.index'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated/configuracoes.index'
+import { Route as AuthenticatedChecklistsIndexRouteImport } from './routes/_authenticated/checklists.index'
 import { Route as AuthenticatedOrdensNovaRouteImport } from './routes/_authenticated/ordens.nova'
 import { Route as AuthenticatedOrdensIdRouteImport } from './routes/_authenticated/ordens.$id'
 import { Route as AuthenticatedManutencoesIdRouteImport } from './routes/_authenticated/manutencoes.$id'
@@ -110,6 +111,12 @@ const AuthenticatedConfiguracoesIndexRoute =
     path: '/configuracoes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedChecklistsIndexRoute =
+  AuthenticatedChecklistsIndexRouteImport.update({
+    id: '/checklists/',
+    path: '/checklists/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOrdensNovaRoute = AuthenticatedOrdensNovaRouteImport.update({
   id: '/ordens/nova',
   path: '/ordens/nova',
@@ -160,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/manutencoes/$id': typeof AuthenticatedManutencoesIdRoute
   '/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/ordens/nova': typeof AuthenticatedOrdensNovaRoute
+  '/checklists/': typeof AuthenticatedChecklistsIndexRoute
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
   '/estoque/': typeof AuthenticatedEstoqueIndexRoute
@@ -182,6 +190,7 @@ export interface FileRoutesByTo {
   '/manutencoes/$id': typeof AuthenticatedManutencoesIdRoute
   '/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/ordens/nova': typeof AuthenticatedOrdensNovaRoute
+  '/checklists': typeof AuthenticatedChecklistsIndexRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
   '/equipamentos': typeof AuthenticatedEquipamentosIndexRoute
   '/estoque': typeof AuthenticatedEstoqueIndexRoute
@@ -206,6 +215,7 @@ export interface FileRoutesById {
   '/_authenticated/manutencoes/$id': typeof AuthenticatedManutencoesIdRoute
   '/_authenticated/ordens/$id': typeof AuthenticatedOrdensIdRoute
   '/_authenticated/ordens/nova': typeof AuthenticatedOrdensNovaRoute
+  '/_authenticated/checklists/': typeof AuthenticatedChecklistsIndexRoute
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/_authenticated/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
   '/_authenticated/estoque/': typeof AuthenticatedEstoqueIndexRoute
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/manutencoes/$id'
     | '/ordens/$id'
     | '/ordens/nova'
+    | '/checklists/'
     | '/configuracoes/'
     | '/equipamentos/'
     | '/estoque/'
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
     | '/manutencoes/$id'
     | '/ordens/$id'
     | '/ordens/nova'
+    | '/checklists'
     | '/configuracoes'
     | '/equipamentos'
     | '/estoque'
@@ -275,6 +287,7 @@ export interface FileRouteTypes {
     | '/_authenticated/manutencoes/$id'
     | '/_authenticated/ordens/$id'
     | '/_authenticated/ordens/nova'
+    | '/_authenticated/checklists/'
     | '/_authenticated/configuracoes/'
     | '/_authenticated/equipamentos/'
     | '/_authenticated/estoque/'
@@ -394,6 +407,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConfiguracoesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/checklists/': {
+      id: '/_authenticated/checklists/'
+      path: '/checklists'
+      fullPath: '/checklists/'
+      preLoaderRoute: typeof AuthenticatedChecklistsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/ordens/nova': {
       id: '/_authenticated/ordens/nova'
       path: '/ordens/nova'
@@ -455,6 +475,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedManutencoesIdRoute: typeof AuthenticatedManutencoesIdRoute
   AuthenticatedOrdensIdRoute: typeof AuthenticatedOrdensIdRoute
   AuthenticatedOrdensNovaRoute: typeof AuthenticatedOrdensNovaRoute
+  AuthenticatedChecklistsIndexRoute: typeof AuthenticatedChecklistsIndexRoute
   AuthenticatedConfiguracoesIndexRoute: typeof AuthenticatedConfiguracoesIndexRoute
   AuthenticatedEquipamentosIndexRoute: typeof AuthenticatedEquipamentosIndexRoute
   AuthenticatedEstoqueIndexRoute: typeof AuthenticatedEstoqueIndexRoute
@@ -477,6 +498,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedManutencoesIdRoute: AuthenticatedManutencoesIdRoute,
   AuthenticatedOrdensIdRoute: AuthenticatedOrdensIdRoute,
   AuthenticatedOrdensNovaRoute: AuthenticatedOrdensNovaRoute,
+  AuthenticatedChecklistsIndexRoute: AuthenticatedChecklistsIndexRoute,
   AuthenticatedConfiguracoesIndexRoute: AuthenticatedConfiguracoesIndexRoute,
   AuthenticatedEquipamentosIndexRoute: AuthenticatedEquipamentosIndexRoute,
   AuthenticatedEstoqueIndexRoute: AuthenticatedEstoqueIndexRoute,
