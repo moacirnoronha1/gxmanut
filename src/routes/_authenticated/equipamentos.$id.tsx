@@ -78,6 +78,12 @@ function EquipamentoDetalhe() {
   const { data: execucoes = [] } = useQuery(execucoesQuery({ equipamentoId: id }));
   
   const [checklistFormOpen, setChecklistFormOpen] = useState(false);
+  const ep = (eq ?? {}) as Partial<{
+    propriedade_tipo_id: string | null; nota_fiscal: string | null; prop_empresa: string | null;
+    prop_contrato_numero: string | null; prop_contrato_inicio: string | null; prop_contrato_fim: string | null;
+    prop_valor_mensal: number | null; prop_responsavel_id: string | null; prop_manutencao_por: string | null;
+    prop_telefone: string | null; prop_condicoes: string | null; prop_observacoes: string | null;
+  }>;
   const propTipo = propTipos.find((t) => t.id === (eq as { propriedade_tipo_id?: string | null } | undefined)?.propriedade_tipo_id);
   const diasContrato = diasParaVencimento((eq as { prop_contrato_fim?: string | null } | undefined)?.prop_contrato_fim ?? null);
 
