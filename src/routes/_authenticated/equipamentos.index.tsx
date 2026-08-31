@@ -53,6 +53,9 @@ const EMPTY_FORM = {
   data_aquisicao: "", data_instalacao: "", valor_aquisicao: "", fornecedor_id: "none",
   garantia_descricao: "", garantia_ate: "", vida_util_meses: "", estado_conservacao: "none",
   status_id: "none", limite_custo_percentual: "60", observacoes: "",
+  propriedade_tipo_id: "", nota_fiscal: "", prop_empresa: "", prop_contrato_numero: "",
+  prop_contrato_inicio: "", prop_contrato_fim: "", prop_valor_mensal: "", prop_responsavel_id: "none",
+  prop_manutencao_por: "none", prop_telefone: "", prop_condicoes: "", prop_observacoes: "",
 };
 
 function Equipamentos() {
