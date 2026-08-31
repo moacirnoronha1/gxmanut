@@ -15,7 +15,7 @@ import { manutencoesQuery } from "@/lib/mp-queries";
 import { EquipamentoStatusConfig } from "@/components/equipamento-status-config";
 import { calcularIndice, horasParada, diasEntre, ESTADOS_CONSERVACAO } from "@/lib/equipamentos";
 import { propriedadeTiposQuery } from "@/lib/checklist-queries";
-import { MANUTENCAO_RESPONSAVEL } from "@/lib/checklists";
+import { MANUTENCAO_RESPONSAVEL, diasParaVencimento } from "@/lib/checklists";
 import { formatBRL, formatDate } from "@/lib/db-types";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -423,6 +423,18 @@ function Equipamentos() {
                 <div className="flex flex-col items-end gap-1">
                   {st && <Badge variant="outline" style={{ borderColor: st.cor, color: st.cor }}>{st.nome}</Badge>}
                   {idx && <Badge variant="outline" className={idx.cor}>{idx.label}</Badge>}
+                  {(() => {
+                    const pt = propTipos.find((t) => t.id === (e as { propriedade_tipo_id?: string | null }).propriedade_tipo_id);
+                    const d = diasParaVencimento((e as { prop_contrato_fim?: string | null }).prop_contrato_fim ?? null);
+                    return (
+                      <>
+                        {pt && <Badge variant="secondary">{pt.nome}</Badge>}
+                        {d !== null && d <= 30 && (
+                          <Badge variant="destructive">{d < 0 ? "Contrato vencido" : `Contrato vence em ${d} d`}</Badge>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               </Link>
             );
