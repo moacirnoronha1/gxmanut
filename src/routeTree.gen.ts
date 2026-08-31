@@ -31,6 +31,7 @@ import { Route as AuthenticatedEstoqueIdRouteImport } from './routes/_authentica
 import { Route as AuthenticatedEquipamentosIdRouteImport } from './routes/_authenticated/equipamentos.$id'
 import { Route as AuthenticatedConfiguracoesNotificacoesRouteImport } from './routes/_authenticated/configuracoes.notificacoes'
 import { Route as ApiPublicHooksNotificacoesRouteImport } from './routes/api/public/hooks/notificacoes'
+import { Route as AuthenticatedChecklistsResultadoIdRouteImport } from './routes/_authenticated/checklists.resultado.$id'
 import { Route as AuthenticatedChecklistsExecutarIdRouteImport } from './routes/_authenticated/checklists.executar.$id'
 
 const AuthRoute = AuthRouteImport.update({
@@ -157,6 +158,12 @@ const ApiPublicHooksNotificacoesRoute =
     path: '/api/public/hooks/notificacoes',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedChecklistsResultadoIdRoute =
+  AuthenticatedChecklistsResultadoIdRouteImport.update({
+    id: '/checklists/resultado/$id',
+    path: '/checklists/resultado/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedChecklistsExecutarIdRoute =
   AuthenticatedChecklistsExecutarIdRouteImport.update({
     id: '/checklists/executar/$id',
@@ -186,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/setores/': typeof AuthenticatedSetoresIndexRoute
   '/usuarios/': typeof AuthenticatedUsuariosIndexRoute
   '/checklists/executar/$id': typeof AuthenticatedChecklistsExecutarIdRoute
+  '/checklists/resultado/$id': typeof AuthenticatedChecklistsResultadoIdRoute
   '/api/public/hooks/notificacoes': typeof ApiPublicHooksNotificacoesRoute
 }
 export interface FileRoutesByTo {
@@ -210,6 +218,7 @@ export interface FileRoutesByTo {
   '/setores': typeof AuthenticatedSetoresIndexRoute
   '/usuarios': typeof AuthenticatedUsuariosIndexRoute
   '/checklists/executar/$id': typeof AuthenticatedChecklistsExecutarIdRoute
+  '/checklists/resultado/$id': typeof AuthenticatedChecklistsResultadoIdRoute
   '/api/public/hooks/notificacoes': typeof ApiPublicHooksNotificacoesRoute
 }
 export interface FileRoutesById {
@@ -236,6 +245,7 @@ export interface FileRoutesById {
   '/_authenticated/setores/': typeof AuthenticatedSetoresIndexRoute
   '/_authenticated/usuarios/': typeof AuthenticatedUsuariosIndexRoute
   '/_authenticated/checklists/executar/$id': typeof AuthenticatedChecklistsExecutarIdRoute
+  '/_authenticated/checklists/resultado/$id': typeof AuthenticatedChecklistsResultadoIdRoute
   '/api/public/hooks/notificacoes': typeof ApiPublicHooksNotificacoesRoute
 }
 export interface FileRouteTypes {
@@ -262,6 +272,7 @@ export interface FileRouteTypes {
     | '/setores/'
     | '/usuarios/'
     | '/checklists/executar/$id'
+    | '/checklists/resultado/$id'
     | '/api/public/hooks/notificacoes'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/setores'
     | '/usuarios'
     | '/checklists/executar/$id'
+    | '/checklists/resultado/$id'
     | '/api/public/hooks/notificacoes'
   id:
     | '__root__'
@@ -311,6 +323,7 @@ export interface FileRouteTypes {
     | '/_authenticated/setores/'
     | '/_authenticated/usuarios/'
     | '/_authenticated/checklists/executar/$id'
+    | '/_authenticated/checklists/resultado/$id'
     | '/api/public/hooks/notificacoes'
   fileRoutesById: FileRoutesById
 }
@@ -476,6 +489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksNotificacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/checklists/resultado/$id': {
+      id: '/_authenticated/checklists/resultado/$id'
+      path: '/checklists/resultado/$id'
+      fullPath: '/checklists/resultado/$id'
+      preLoaderRoute: typeof AuthenticatedChecklistsResultadoIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/checklists/executar/$id': {
       id: '/_authenticated/checklists/executar/$id'
       path: '/checklists/executar/$id'
@@ -507,6 +527,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSetoresIndexRoute: typeof AuthenticatedSetoresIndexRoute
   AuthenticatedUsuariosIndexRoute: typeof AuthenticatedUsuariosIndexRoute
   AuthenticatedChecklistsExecutarIdRoute: typeof AuthenticatedChecklistsExecutarIdRoute
+  AuthenticatedChecklistsResultadoIdRoute: typeof AuthenticatedChecklistsResultadoIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -532,6 +553,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedUsuariosIndexRoute: AuthenticatedUsuariosIndexRoute,
   AuthenticatedChecklistsExecutarIdRoute:
     AuthenticatedChecklistsExecutarIdRoute,
+  AuthenticatedChecklistsResultadoIdRoute:
+    AuthenticatedChecklistsResultadoIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
