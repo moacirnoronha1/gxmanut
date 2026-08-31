@@ -35,6 +35,425 @@ export type Database = {
         }
         Relationships: []
       }
+      checklist_execucoes: {
+        Row: {
+          checklist_id: string
+          concluida_em: string | null
+          conformes: number
+          created_at: string
+          equipamento_id: string
+          id: string
+          iniciada_em: string
+          nao_aplicaveis: number
+          nao_conformes: number
+          observacoes: string | null
+          percentual_conformidade: number
+          status: string
+          total_itens: number
+          updated_at: string
+          usuario_id: string | null
+        }
+        Insert: {
+          checklist_id: string
+          concluida_em?: string | null
+          conformes?: number
+          created_at?: string
+          equipamento_id: string
+          id?: string
+          iniciada_em?: string
+          nao_aplicaveis?: number
+          nao_conformes?: number
+          observacoes?: string | null
+          percentual_conformidade?: number
+          status?: string
+          total_itens?: number
+          updated_at?: string
+          usuario_id?: string | null
+        }
+        Update: {
+          checklist_id?: string
+          concluida_em?: string | null
+          conformes?: number
+          created_at?: string
+          equipamento_id?: string
+          id?: string
+          iniciada_em?: string
+          nao_aplicaveis?: number
+          nao_conformes?: number
+          observacoes?: string | null
+          percentual_conformidade?: number
+          status?: string
+          total_itens?: number
+          updated_at?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_execucoes_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "checklists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_execucoes_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_execucoes_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_itens: {
+        Row: {
+          checklist_id: string
+          componente: string
+          componente_id: string | null
+          created_at: string
+          exige_foto: boolean
+          id: string
+          obrigatorio: boolean
+          ordem: number
+          pergunta: string
+          tipo_resposta: string
+        }
+        Insert: {
+          checklist_id: string
+          componente: string
+          componente_id?: string | null
+          created_at?: string
+          exige_foto?: boolean
+          id?: string
+          obrigatorio?: boolean
+          ordem?: number
+          pergunta: string
+          tipo_resposta?: string
+        }
+        Update: {
+          checklist_id?: string
+          componente?: string
+          componente_id?: string | null
+          created_at?: string
+          exige_foto?: boolean
+          id?: string
+          obrigatorio?: boolean
+          ordem?: number
+          pergunta?: string
+          tipo_resposta?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_itens_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "checklists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_itens_componente_id_fkey"
+            columns: ["componente_id"]
+            isOneToOne: false
+            referencedRelation: "equipamento_componentes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_modelo_itens: {
+        Row: {
+          componente: string
+          created_at: string
+          exige_foto: boolean
+          id: string
+          modelo_id: string
+          obrigatorio: boolean
+          ordem: number
+          pergunta: string
+          tipo_resposta: string
+        }
+        Insert: {
+          componente: string
+          created_at?: string
+          exige_foto?: boolean
+          id?: string
+          modelo_id: string
+          obrigatorio?: boolean
+          ordem?: number
+          pergunta: string
+          tipo_resposta?: string
+        }
+        Update: {
+          componente?: string
+          created_at?: string
+          exige_foto?: boolean
+          id?: string
+          modelo_id?: string
+          obrigatorio?: boolean
+          ordem?: number
+          pergunta?: string
+          tipo_resposta?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_modelo_itens_modelo_id_fkey"
+            columns: ["modelo_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_modelos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_modelos: {
+        Row: {
+          ativo: boolean
+          categoria: string | null
+          created_at: string
+          criado_por: string | null
+          descricao: string | null
+          id: string
+          intervalo_dias: number | null
+          nome: string
+          periodicidade: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          categoria?: string | null
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          id?: string
+          intervalo_dias?: number | null
+          nome: string
+          periodicidade?: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          categoria?: string | null
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          id?: string
+          intervalo_dias?: number | null
+          nome?: string
+          periodicidade?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_modelos_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_respostas: {
+        Row: {
+          componente: string
+          componente_id: string | null
+          conforme: boolean | null
+          created_at: string
+          descricao_problema: string | null
+          execucao_id: string
+          foto_url: string | null
+          gravidade: string | null
+          id: string
+          item_id: string | null
+          necessita_manutencao: boolean
+          observacao: string | null
+          ordem: number
+          os_id: string | null
+          pergunta: string
+          tipo_resposta: string
+          valor: string | null
+        }
+        Insert: {
+          componente: string
+          componente_id?: string | null
+          conforme?: boolean | null
+          created_at?: string
+          descricao_problema?: string | null
+          execucao_id: string
+          foto_url?: string | null
+          gravidade?: string | null
+          id?: string
+          item_id?: string | null
+          necessita_manutencao?: boolean
+          observacao?: string | null
+          ordem?: number
+          os_id?: string | null
+          pergunta: string
+          tipo_resposta?: string
+          valor?: string | null
+        }
+        Update: {
+          componente?: string
+          componente_id?: string | null
+          conforme?: boolean | null
+          created_at?: string
+          descricao_problema?: string | null
+          execucao_id?: string
+          foto_url?: string | null
+          gravidade?: string | null
+          id?: string
+          item_id?: string | null
+          necessita_manutencao?: boolean
+          observacao?: string | null
+          ordem?: number
+          os_id?: string | null
+          pergunta?: string
+          tipo_resposta?: string
+          valor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_respostas_componente_id_fkey"
+            columns: ["componente_id"]
+            isOneToOne: false
+            referencedRelation: "equipamento_componentes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_respostas_execucao_id_fkey"
+            columns: ["execucao_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_execucoes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_respostas_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_itens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_respostas_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_tipos_resposta: {
+        Row: {
+          ativo: boolean
+          chave: string
+          created_at: string
+          formato: string
+          id: string
+          nome: string
+          opcoes: Json
+          ordem: number
+          sistema: boolean
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          chave: string
+          created_at?: string
+          formato?: string
+          id?: string
+          nome: string
+          opcoes?: Json
+          ordem?: number
+          sistema?: boolean
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          chave?: string
+          created_at?: string
+          formato?: string
+          id?: string
+          nome?: string
+          opcoes?: Json
+          ordem?: number
+          sistema?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      checklists: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          criado_por: string | null
+          descricao: string | null
+          equipamento_id: string
+          id: string
+          intervalo_dias: number | null
+          modelo_id: string | null
+          nome: string
+          periodicidade: string
+          proxima_execucao: string | null
+          ultima_execucao: string | null
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          equipamento_id: string
+          id?: string
+          intervalo_dias?: number | null
+          modelo_id?: string | null
+          nome: string
+          periodicidade?: string
+          proxima_execucao?: string | null
+          ultima_execucao?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          equipamento_id?: string
+          id?: string
+          intervalo_dias?: number | null
+          modelo_id?: string | null
+          nome?: string
+          periodicidade?: string
+          proxima_execucao?: string | null
+          ultima_execucao?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklists_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklists_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklists_modelo_id_fkey"
+            columns: ["modelo_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_modelos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       custo_categorias: {
         Row: {
           ativo: boolean
@@ -70,6 +489,57 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      equipamento_componentes: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          criado_por: string | null
+          descricao: string | null
+          equipamento_id: string
+          id: string
+          nome: string
+          ordem: number
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          equipamento_id: string
+          id?: string
+          nome: string
+          ordem?: number
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          criado_por?: string | null
+          descricao?: string | null
+          equipamento_id?: string
+          id?: string
+          nome?: string
+          ordem?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipamento_componentes_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipamento_componentes_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       equipamento_documentos: {
         Row: {
@@ -307,9 +777,21 @@ export type Database = {
           marca: string | null
           modelo: string | null
           nome: string
+          nota_fiscal: string | null
           numero_serie: string | null
           observacoes: string | null
           patrimonio: string | null
+          prop_condicoes: string | null
+          prop_contrato_fim: string | null
+          prop_contrato_inicio: string | null
+          prop_contrato_numero: string | null
+          prop_empresa: string | null
+          prop_manutencao_por: string | null
+          prop_observacoes: string | null
+          prop_responsavel_id: string | null
+          prop_telefone: string | null
+          prop_valor_mensal: number | null
+          propriedade_tipo_id: string | null
           proxima_manutencao: string | null
           responsavel_id: string | null
           setor_id: string | null
@@ -347,9 +829,21 @@ export type Database = {
           marca?: string | null
           modelo?: string | null
           nome: string
+          nota_fiscal?: string | null
           numero_serie?: string | null
           observacoes?: string | null
           patrimonio?: string | null
+          prop_condicoes?: string | null
+          prop_contrato_fim?: string | null
+          prop_contrato_inicio?: string | null
+          prop_contrato_numero?: string | null
+          prop_empresa?: string | null
+          prop_manutencao_por?: string | null
+          prop_observacoes?: string | null
+          prop_responsavel_id?: string | null
+          prop_telefone?: string | null
+          prop_valor_mensal?: number | null
+          propriedade_tipo_id?: string | null
           proxima_manutencao?: string | null
           responsavel_id?: string | null
           setor_id?: string | null
@@ -387,9 +881,21 @@ export type Database = {
           marca?: string | null
           modelo?: string | null
           nome?: string
+          nota_fiscal?: string | null
           numero_serie?: string | null
           observacoes?: string | null
           patrimonio?: string | null
+          prop_condicoes?: string | null
+          prop_contrato_fim?: string | null
+          prop_contrato_inicio?: string | null
+          prop_contrato_numero?: string | null
+          prop_empresa?: string | null
+          prop_manutencao_por?: string | null
+          prop_observacoes?: string | null
+          prop_responsavel_id?: string | null
+          prop_telefone?: string | null
+          prop_valor_mensal?: number | null
+          propriedade_tipo_id?: string | null
           proxima_manutencao?: string | null
           responsavel_id?: string | null
           setor_id?: string | null
@@ -421,6 +927,20 @@ export type Database = {
             columns: ["fornecedor_id"]
             isOneToOne: false
             referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipamentos_prop_responsavel_id_fkey"
+            columns: ["prop_responsavel_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipamentos_propriedade_tipo_id_fkey"
+            columns: ["propriedade_tipo_id"]
+            isOneToOne: false
+            referencedRelation: "propriedade_tipos"
             referencedColumns: ["id"]
           },
           {
@@ -2479,6 +2999,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      propriedade_tipos: {
+        Row: {
+          ativo: boolean
+          chave: string
+          cor: string
+          created_at: string
+          id: string
+          nome: string
+          ordem: number
+          sistema: boolean
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          chave: string
+          cor?: string
+          created_at?: string
+          id?: string
+          nome: string
+          ordem?: number
+          sistema?: boolean
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          chave?: string
+          cor?: string
+          created_at?: string
+          id?: string
+          nome?: string
+          ordem?: number
+          sistema?: boolean
+          updated_at?: string
+        }
+        Relationships: []
       }
       push_devices: {
         Row: {
