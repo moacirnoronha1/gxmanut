@@ -45,6 +45,7 @@ const items = [
   { to: "/ordens", label: "Ordens de Serviço", icon: ClipboardList },
   { to: "/manutencoes", label: "Manutenções Periódicas", icon: CalendarClock },
   { to: "/equipamentos", label: "Equipamentos", icon: Wrench },
+  { to: "/checklists", label: "Checklists", icon: ClipboardCheck },
   { to: "/estoque", label: "Estoque de Manutenção", icon: Boxes },
   { to: "/ferramentas", label: "Ferramentas", icon: Hammer },
   { to: "/notificacoes", label: "Notificações", icon: Bell },
