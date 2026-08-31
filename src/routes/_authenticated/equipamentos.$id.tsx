@@ -330,7 +330,25 @@ function EquipamentoDetalhe() {
                 label="Cadastrado por"
                 valor={`${pessoas.find((p) => p.id === eq.criado_por)?.nome ?? "—"}${eq.created_at ? ` · ${formatDateTime(eq.created_at)}` : ""}`}
               />
-
+              <Linha label="Tipo de propriedade" valor={propTipo?.nome ?? "—"} />
+              {propTipo?.chave === "proprio" && <Linha label="Nota fiscal" valor={ep.nota_fiscal ?? "—"} />}
+              {propTipo && propTipo.chave !== "proprio" && (
+                <>
+                  <Linha label={propTipo.chave === "alugado" ? "Empresa locadora" : "Empresa proprietária"} valor={ep.prop_empresa ?? "—"} />
+                  <Linha label="Contrato / documento" valor={ep.prop_contrato_numero ?? "—"} />
+                  <Linha label="Início" valor={formatDate(ep.prop_contrato_inicio)} />
+                  {propTipo.chave === "alugado" && <Linha label="Fim do contrato" valor={formatDate(ep.prop_contrato_fim)} />}
+                  {propTipo.chave === "alugado" && <Linha label="Valor mensal" valor={formatBRL(ep.prop_valor_mensal ?? 0)} />}
+                  <Linha label="Responsável pelo contrato" valor={pessoas.find((p) => p.id === ep.prop_responsavel_id)?.nome ?? "—"} />
+                  <Linha
+                    label="Manutenção por"
+                    valor={MANUTENCAO_RESPONSAVEL.find((m) => m.value === ep.prop_manutencao_por)?.label ?? "—"}
+                  />
+                  <Linha label="Telefone de contato" valor={ep.prop_telefone ?? "—"} />
+                  {propTipo.chave === "consignado" && <Linha label="Condições" valor={ep.prop_condicoes ?? "—"} />}
+                  <Linha label="Observações da propriedade" valor={ep.prop_observacoes ?? "—"} />
+                </>
+              )}
 
               {baixado && <Linha label="Baixa" valor={`${eq.baixa_tipo === "descarte" ? "Descartado" : "Desativado"} em ${formatDate(eq.baixa_em)} — ${eq.baixa_motivo ?? ""}`} />}
             </CardContent>
