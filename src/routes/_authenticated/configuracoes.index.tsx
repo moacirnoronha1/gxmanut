@@ -2,10 +2,16 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { urgenciasQuery, statusOsQuery, categoriasQuery, custoCategoriasQuery } from "@/lib/queries";
+import {
+  urgenciasQuery,
+  statusOsQuery,
+  categoriasQuery,
+  custoCategoriasQuery,
+} from "@/lib/queries";
 import { CategoriasCustoCard } from "@/components/categorias-custo";
 import { Button } from "@/components/ui/button";
 import { BellRing } from "lucide-react";
+import { PermissoesEdicaoOS } from "@/components/permissoes-edicao-os";
 
 export const Route = createFileRoute("/_authenticated/configuracoes/")({
   head: () => ({ meta: [{ title: "Configurações — Manutenção Xica da Silva" }] }),
@@ -24,19 +30,26 @@ function Config() {
         <p className="text-sm text-muted-foreground">Parâmetros do sistema.</p>
       </div>
       <Card>
-        <CardHeader><CardTitle>Notificações do meu dispositivo</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>Notificações do meu dispositivo</CardTitle>
+        </CardHeader>
         <CardContent className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm text-muted-foreground">
-            Ative os alertas push neste celular, envie uma notificação de teste e veja o diagnóstico.
+            Ative os alertas push neste celular, envie uma notificação de teste e veja o
+            diagnóstico.
           </p>
           <Button asChild>
-            <Link to="/configuracoes/notificacoes"><BellRing className="size-4" /> Abrir notificações</Link>
+            <Link to="/configuracoes/notificacoes">
+              <BellRing className="size-4" /> Abrir notificações
+            </Link>
           </Button>
         </CardContent>
       </Card>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
-          <CardHeader><CardTitle>Níveis de urgência</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Níveis de urgência</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-2">
             {urgencias.map((u) => (
               <div key={u.id} className="flex items-center justify-between text-sm">
@@ -44,29 +57,44 @@ function Config() {
                   <span className="size-3 rounded-full" style={{ backgroundColor: u.cor }} />
                   {u.nome}
                 </div>
-                <span className="text-xs text-muted-foreground">{u.prazo_horas ? `${u.prazo_horas}h` : "—"}</span>
+                <span className="text-xs text-muted-foreground">
+                  {u.prazo_horas ? `${u.prazo_horas}h` : "—"}
+                </span>
               </div>
             ))}
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Status de OS</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Status de OS</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-2">
             {status.map((s) => (
               <div key={s.id} className="flex items-center justify-between text-sm">
-                <Badge variant="outline" style={{ borderColor: s.cor, color: s.cor }}>{s.nome}</Badge>
-                <span className="text-xs text-muted-foreground">{s.is_final ? "Final" : "Em andamento"}</span>
+                <Badge variant="outline" style={{ borderColor: s.cor, color: s.cor }}>
+                  {s.nome}
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  {s.is_final ? "Final" : "Em andamento"}
+                </span>
               </div>
             ))}
           </CardContent>
         </Card>
         <Card className="md:col-span-2">
-          <CardHeader><CardTitle>Categorias de problema</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Categorias de problema</CardTitle>
+          </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
-            {categorias.map((c) => <Badge key={c.id} variant="secondary">{c.nome}</Badge>)}
+            {categorias.map((c) => (
+              <Badge key={c.id} variant="secondary">
+                {c.nome}
+              </Badge>
+            ))}
           </CardContent>
         </Card>
         <CategoriasCustoCard categorias={custoCategorias} />
+        <PermissoesEdicaoOS />
       </div>
     </div>
   );

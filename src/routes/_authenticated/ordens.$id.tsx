@@ -9,13 +9,27 @@ import { EquipeOSCard } from "@/components/equipe-os";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
-  osQuery, osCustosDetalhadosQuery, osComentariosQuery, osHistoricoQuery,
-  statusOsQuery, urgenciasQuery, setoresQuery, equipamentosQuery,
-  profilesQuery, categoriasQuery, custoCategoriasQuery,
+  osQuery,
+  osCustosDetalhadosQuery,
+  osComentariosQuery,
+  osHistoricoQuery,
+  statusOsQuery,
+  urgenciasQuery,
+  setoresQuery,
+  equipamentosQuery,
+  profilesQuery,
+  categoriasQuery,
+  custoCategoriasQuery,
 } from "@/lib/queries";
 import { CustosOSPanel, IndicadorFinanceiroOS } from "@/components/custos-os";
 import { resumirCustos } from "@/lib/custos";
@@ -25,6 +39,7 @@ import { toast } from "sonner";
 import { showDbError } from "@/lib/db-error";
 import { ArrowLeft } from "lucide-react";
 import { UsarPecaOS } from "@/components/usar-peca-os";
+import { EditarOS } from "@/components/editar-os";
 
 export const Route = createFileRoute("/_authenticated/ordens/$id")({
   head: () => ({ meta: [{ title: "OS — Manutenção Xica da Silva" }] }),
@@ -63,7 +78,10 @@ function OSDetail() {
   const cat = categorias.find((c) => c.id === os.categoria_id);
 
   async function updateOS(patch: Record<string, unknown>, ok = "Atualizado.") {
-    const { error } = await supabase.from("ordens_servico").update(patch as never).eq("id", id);
+    const { error } = await supabase
+      .from("ordens_servico")
+      .update(patch as never)
+      .eq("id", id);
     if (error) return showDbError(error);
     toast.success(ok);
     await qc.invalidateQueries({ queryKey: ["os", id] });
@@ -76,49 +94,85 @@ function OSDetail() {
       const n = x.nome.toLowerCase();
       return n.includes("andamento") || n.includes("execu");
     });
-    await updateOS({ status_id: em?.id ?? os!.status_id, iniciada_em: new Date().toISOString() }, "OS iniciada.");
+    await updateOS(
+      { status_id: em?.id ?? os!.status_id, iniciada_em: new Date().toISOString() },
+      "OS iniciada.",
+    );
   }
-  async function concluir(form: { diagnostico: string; correcao: string; materiais: string; testes: string; resultado: string }) {
+  async function concluir(form: {
+    diagnostico: string;
+    correcao: string;
+    materiais: string;
+    testes: string;
+    resultado: string;
+  }) {
     const conc = status.find((x) => x.nome.toLowerCase().includes("conclu"));
-    await updateOS({
-      status_id: conc?.id ?? os!.status_id,
-      concluida_em: new Date().toISOString(),
-      diagnostico: form.diagnostico,
-      correcao: form.correcao,
-      materiais_utilizados: form.materiais,
-      testes_realizados: form.testes,
-      resultado_testes: form.resultado,
-    }, "OS concluída.");
+    await updateOS(
+      {
+        status_id: conc?.id ?? os!.status_id,
+        concluida_em: new Date().toISOString(),
+        diagnostico: form.diagnostico,
+        correcao: form.correcao,
+        materiais_utilizados: form.materiais,
+        testes_realizados: form.testes,
+        resultado_testes: form.resultado,
+      },
+      "OS concluída.",
+    );
   }
   async function cancelar() {
     const motivo = prompt("Motivo do cancelamento:");
     if (!motivo) return;
     const canc = status.find((x) => x.nome.toLowerCase().includes("cancel"));
-    await updateOS({ status_id: canc?.id ?? os!.status_id, cancelada_motivo: motivo }, "OS cancelada.");
+    await updateOS(
+      { status_id: canc?.id ?? os!.status_id, cancelada_motivo: motivo },
+      "OS cancelada.",
+    );
   }
 
   return (
     <div className="space-y-4 max-w-6xl mx-auto">
       <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate({ to: "/ordens" })}><ArrowLeft className="size-4" /></Button>
+        <Button variant="ghost" size="icon" onClick={() => navigate({ to: "/ordens" })}>
+          <ArrowLeft className="size-4" />
+        </Button>
         <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-mono text-sm text-muted-foreground">OS #{os.numero}</span>
             {u && <Badge style={{ backgroundColor: u.cor, color: "white" }}>{u.nome}</Badge>}
-            {s && <Badge variant="outline" style={{ borderColor: s.cor, color: s.cor }}>{s.nome}</Badge>}
+            {s && (
+              <Badge variant="outline" style={{ borderColor: s.cor, color: s.cor }}>
+                {s.nome}
+              </Badge>
+            )}
           </div>
           <h1 className="text-xl md:text-2xl font-bold mt-1 truncate">{os.titulo}</h1>
         </div>
+        <EditarOS
+          os={os}
+          setores={setores}
+          equipamentos={equipamentos}
+          categorias={categorias}
+          urgencias={urgencias}
+          status={status}
+          profiles={profiles}
+        />
       </div>
 
       <BarraConfirmacaoOS osId={os.id} urgencia={u?.nome} />
 
-      <IndicadorFinanceiroOS custos={custos} categorias={custoCategorias} onVerDetalhes={() => setTab("custos")} />
+      <IndicadorFinanceiroOS
+        custos={custos}
+        categorias={custoCategorias}
+        onVerDetalhes={() => setTab("custos")}
+      />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-4">
           <Card>
-            <CardHeader><CardTitle>Detalhes</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Detalhes</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <div className="whitespace-pre-wrap">{os.descricao}</div>
               <Separator />
@@ -167,11 +221,27 @@ function OSDetail() {
                   {hist.map((h) => {
                     const p = profiles.find((x) => x.id === h.usuario_id);
                     return (
-                      <div key={h.id} className="flex items-start gap-2 border-l-2 border-muted pl-3">
-                        <div className="text-xs text-muted-foreground w-32 shrink-0">{formatDateTime(h.created_at)}</div>
+                      <div
+                        key={h.id}
+                        className="flex items-start gap-2 border-l-2 border-muted pl-3"
+                      >
+                        <div className="text-xs text-muted-foreground w-32 shrink-0">
+                          {formatDateTime(h.created_at)}
+                        </div>
                         <div>
                           <div className="font-medium">{h.acao}</div>
-                          <div className="text-xs text-muted-foreground">{p?.nome ?? "Sistema"}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {p?.nome ?? "Sistema"}
+                          </div>
+                          <HistoricoDetalhes
+                            detalhes={h.detalhes}
+                            status={status}
+                            urgencias={urgencias}
+                            setores={setores}
+                            equipamentos={equipamentos}
+                            categorias={categorias}
+                            profiles={profiles}
+                          />
                         </div>
                       </div>
                     );
@@ -186,57 +256,197 @@ function OSDetail() {
           <EquipeOSCard osId={id} assumidaPor={os.assumida_por} assumidaEm={os.assumida_em} />
 
           <Card>
-            <CardHeader><CardTitle>Ações</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Ações</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-3">
               <div>
                 <Label>Status</Label>
-                <Select value={os.status_id ?? ""} onValueChange={(v) => updateOS({ status_id: v }, "Status alterado.")}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select
+                  value={os.status_id ?? ""}
+                  onValueChange={(v) => updateOS({ status_id: v }, "Status alterado.")}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {status.map((st) => <SelectItem key={st.id} value={st.id}>{st.nome}</SelectItem>)}
+                    {status.map((st) => (
+                      <SelectItem key={st.id} value={st.id}>
+                        {st.nome}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label>Urgência</Label>
-                <Select value={os.urgencia_id ?? ""} onValueChange={(v) => updateOS({ urgencia_id: v }, "Urgência alterada.")}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select
+                  value={os.urgencia_id ?? ""}
+                  onValueChange={(v) => updateOS({ urgencia_id: v }, "Urgência alterada.")}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {urgencias.map((x) => <SelectItem key={x.id} value={x.id}>{x.nome}</SelectItem>)}
+                    {urgencias.map((x) => (
+                      <SelectItem key={x.id} value={x.id}>
+                        {x.nome}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label>Técnico responsável</Label>
-                <Select value={os.tecnico_id ?? "none"} onValueChange={(v) => updateOS({ tecnico_id: v === "none" ? null : v }, "Técnico atribuído.")}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select
+                  value={os.tecnico_id ?? "none"}
+                  onValueChange={(v) =>
+                    updateOS({ tecnico_id: v === "none" ? null : v }, "Técnico atribuído.")
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Sem técnico</SelectItem>
-                    {profiles.map((p) => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}
+                    {profiles.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.nome}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <Separator />
-              {!os.iniciada_em && <Button className="w-full" onClick={iniciar}>Iniciar atendimento</Button>}
-              <Button variant="destructive" className="w-full" onClick={cancelar}>Cancelar OS</Button>
+              {!os.iniciada_em && (
+                <Button className="w-full" onClick={iniciar}>
+                  Iniciar atendimento
+                </Button>
+              )}
+              <Button variant="destructive" className="w-full" onClick={cancelar}>
+                Cancelar OS
+              </Button>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader><CardTitle>Resumo financeiro</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Resumo financeiro</CardTitle>
+            </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold">{formatBRL(totalCustos)}</div>
-              <div className="text-xs text-muted-foreground">{resumo.lancamentos} lançamento(s)</div>
-              <div className="mt-3 space-y-1 text-sm">
-                <div className="flex justify-between"><span className="text-muted-foreground">Desembolso</span><span>{formatBRL(resumo.desembolso)}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Custo interno</span><span>{formatBRL(resumo.interno)}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Comprovado</span><span>{formatBRL(resumo.comprovado)}</span></div>
+              <div className="text-xs text-muted-foreground">
+                {resumo.lancamentos} lançamento(s)
               </div>
-              <Button variant="outline" size="sm" className="w-full mt-3" onClick={() => setTab("custos")}>Ver composição</Button>
+              <div className="mt-3 space-y-1 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Desembolso</span>
+                  <span>{formatBRL(resumo.desembolso)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Custo interno</span>
+                  <span>{formatBRL(resumo.interno)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Comprovado</span>
+                  <span>{formatBRL(resumo.comprovado)}</span>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full mt-3"
+                onClick={() => setTab("custos")}
+              >
+                Ver composição
+              </Button>
             </CardContent>
           </Card>
         </div>
       </div>
+    </div>
+  );
+}
+
+const ROTULOS_HISTORICO: Record<string, string> = {
+  titulo: "Título",
+  descricao: "Descrição",
+  setor_id: "Setor",
+  local: "Local",
+  equipamento_id: "Equipamento",
+  categoria_id: "Categoria",
+  urgencia_id: "Urgência",
+  tecnico_id: "Técnico responsável",
+  tecnicos_apoio: "Técnicos de apoio",
+  data_desejada: "Data prevista",
+  recomendacoes: "Observações",
+  status_id: "Status",
+  iniciada_em: "Início",
+  concluida_em: "Conclusão",
+  cancelada_motivo: "Motivo do cancelamento",
+  diagnostico: "Diagnóstico",
+  correcao: "Correção",
+  materiais_utilizados: "Materiais utilizados",
+  testes_realizados: "Testes realizados",
+  resultado_testes: "Resultado dos testes",
+};
+
+function HistoricoDetalhes({
+  detalhes,
+  status,
+  urgencias,
+  setores,
+  equipamentos,
+  categorias,
+  profiles,
+}: {
+  detalhes: Record<string, unknown> | null;
+  status: Array<{ id: string; nome: string }>;
+  urgencias: Array<{ id: string; nome: string }>;
+  setores: Array<{ id: string; nome: string }>;
+  equipamentos: Array<{ id: string; nome: string }>;
+  categorias: Array<{ id: string; nome: string }>;
+  profiles: Array<{ id: string; nome: string; nome_completo?: string | null }>;
+}) {
+  if (!detalhes) return null;
+  const listas: Record<string, Array<{ id: string; nome: string }>> = {
+    status_id: status,
+    urgencia_id: urgencias,
+    setor_id: setores,
+    equipamento_id: equipamentos,
+    categoria_id: categorias,
+    tecnico_id: profiles.map((p) => ({ id: p.id, nome: p.nome_completo || p.nome })),
+    tecnicos_apoio: profiles.map((p) => ({ id: p.id, nome: p.nome_completo || p.nome })),
+  };
+  const valor = (campo: string, v: unknown): string => {
+    if (v === null || v === undefined || v === "") return "—";
+    if (Array.isArray(v))
+      return (
+        v.map((x) => listas[campo]?.find((i) => i.id === x)?.nome ?? String(x)).join(", ") || "—"
+      );
+    if (listas[campo]) return listas[campo].find((i) => i.id === v)?.nome ?? String(v);
+    if (["data_desejada", "iniciada_em", "concluida_em"].includes(campo))
+      return formatDateTime(String(v));
+    return String(v);
+  };
+  const mudancas = Object.entries(detalhes).filter(
+    ([, v]) => v && typeof v === "object" && "anterior" in (v as object),
+  );
+  if (!mudancas.length) return null;
+  return (
+    <div className="mt-2 space-y-1">
+      {mudancas.map(([campo, raw]) => {
+        const item = raw as { anterior: unknown; novo: unknown };
+        return (
+          <div key={campo} className="rounded bg-muted/50 px-2 py-1 text-xs">
+            <span className="font-medium">{ROTULOS_HISTORICO[campo] ?? campo}:</span>{" "}
+            <span className="line-through text-muted-foreground">
+              {valor(campo, item.anterior)}
+            </span>{" "}
+            → <span>{valor(campo, item.novo)}</span>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -255,8 +465,22 @@ function ExecucaoCard({
   onConcluir,
   onIniciar,
 }: {
-  os: { diagnostico: string | null; correcao: string | null; materiais_utilizados: string | null; testes_realizados: string | null; resultado_testes: string | null; iniciada_em: string | null; concluida_em: string | null };
-  onConcluir: (f: { diagnostico: string; correcao: string; materiais: string; testes: string; resultado: string }) => Promise<void>;
+  os: {
+    diagnostico: string | null;
+    correcao: string | null;
+    materiais_utilizados: string | null;
+    testes_realizados: string | null;
+    resultado_testes: string | null;
+    iniciada_em: string | null;
+    concluida_em: string | null;
+  };
+  onConcluir: (f: {
+    diagnostico: string;
+    correcao: string;
+    materiais: string;
+    testes: string;
+    resultado: string;
+  }) => Promise<void>;
   onIniciar: () => Promise<void>;
 }) {
   const [diagnostico, setDiagnostico] = useState(os.diagnostico ?? "");
@@ -270,18 +494,38 @@ function ExecucaoCard({
         {!os.iniciada_em && (
           <div className="p-3 border rounded-md bg-muted/50 text-sm flex items-center justify-between gap-3 flex-wrap">
             <span>Esta OS ainda não foi iniciada.</span>
-            <Button size="sm" onClick={onIniciar}>Iniciar atendimento</Button>
+            <Button size="sm" onClick={onIniciar}>
+              Iniciar atendimento
+            </Button>
           </div>
         )}
-        <div><Label>Diagnóstico</Label><Textarea rows={3} value={diagnostico} onChange={(e) => setDiagnostico(e.target.value)} /></div>
-        <div><Label>Correção aplicada</Label><Textarea rows={3} value={correcao} onChange={(e) => setCorrecao(e.target.value)} /></div>
-        <div><Label>Materiais utilizados</Label><Textarea rows={2} value={materiais} onChange={(e) => setMateriais(e.target.value)} /></div>
+        <div>
+          <Label>Diagnóstico</Label>
+          <Textarea rows={3} value={diagnostico} onChange={(e) => setDiagnostico(e.target.value)} />
+        </div>
+        <div>
+          <Label>Correção aplicada</Label>
+          <Textarea rows={3} value={correcao} onChange={(e) => setCorrecao(e.target.value)} />
+        </div>
+        <div>
+          <Label>Materiais utilizados</Label>
+          <Textarea rows={2} value={materiais} onChange={(e) => setMateriais(e.target.value)} />
+        </div>
         <div className="grid gap-3 sm:grid-cols-2">
-          <div><Label>Testes realizados</Label><Textarea rows={2} value={testes} onChange={(e) => setTestes(e.target.value)} /></div>
-          <div><Label>Resultado dos testes</Label><Textarea rows={2} value={resultado} onChange={(e) => setResultado(e.target.value)} /></div>
+          <div>
+            <Label>Testes realizados</Label>
+            <Textarea rows={2} value={testes} onChange={(e) => setTestes(e.target.value)} />
+          </div>
+          <div>
+            <Label>Resultado dos testes</Label>
+            <Textarea rows={2} value={resultado} onChange={(e) => setResultado(e.target.value)} />
+          </div>
         </div>
         <div className="flex justify-end">
-          <Button onClick={() => onConcluir({ diagnostico, correcao, materiais, testes, resultado })} disabled={!!os.concluida_em}>
+          <Button
+            onClick={() => onConcluir({ diagnostico, correcao, materiais, testes, resultado })}
+            disabled={!!os.concluida_em}
+          >
             {os.concluida_em ? "Já concluída" : "Concluir OS"}
           </Button>
         </div>
@@ -291,10 +535,19 @@ function ExecucaoCard({
 }
 
 function ComentariosCard({
-  osId, coments, profiles, qc,
+  osId,
+  coments,
+  profiles,
+  qc,
 }: {
   osId: string;
-  coments: Array<{ id: string; mensagem: string; created_at: string; autor_id: string; interno: boolean }>;
+  coments: Array<{
+    id: string;
+    mensagem: string;
+    created_at: string;
+    autor_id: string;
+    interno: boolean;
+  }>;
   profiles: Array<{ id: string; nome: string }>;
   qc: ReturnType<typeof useQueryClient>;
 }) {
@@ -305,7 +558,10 @@ function ComentariosCard({
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) return;
     const { error } = await supabase.from("os_comentarios").insert({
-      os_id: osId, autor_id: u.user.id, mensagem: msg.trim(), interno,
+      os_id: osId,
+      autor_id: u.user.id,
+      mensagem: msg.trim(),
+      interno,
     });
     if (error) return showDbError(error);
     setMsg("");
@@ -315,13 +571,18 @@ function ComentariosCard({
     <Card>
       <CardContent className="p-4 space-y-3">
         <div className="space-y-2">
-          {coments.length === 0 && <div className="text-sm text-muted-foreground">Nenhum comentário.</div>}
+          {coments.length === 0 && (
+            <div className="text-sm text-muted-foreground">Nenhum comentário.</div>
+          )}
           {coments.map((c) => {
             const p = profiles.find((x) => x.id === c.autor_id);
             return (
               <div key={c.id} className="rounded-md border p-2 text-sm">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{p?.nome ?? "Usuário"}{c.interno && " · nota interna"}</span>
+                  <span>
+                    {p?.nome ?? "Usuário"}
+                    {c.interno && " · nota interna"}
+                  </span>
                   <span>{formatDateTime(c.created_at)}</span>
                 </div>
                 <div className="whitespace-pre-wrap mt-1">{c.mensagem}</div>
@@ -330,13 +591,24 @@ function ComentariosCard({
           })}
         </div>
         <Separator />
-        <Textarea rows={2} placeholder="Escreva um comentário…" value={msg} onChange={(e) => setMsg(e.target.value)} />
+        <Textarea
+          rows={2}
+          placeholder="Escreva um comentário…"
+          value={msg}
+          onChange={(e) => setMsg(e.target.value)}
+        />
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-2 text-xs text-muted-foreground">
-            <input type="checkbox" checked={interno} onChange={(e) => setInterno(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={interno}
+              onChange={(e) => setInterno(e.target.checked)}
+            />
             Nota interna (apenas equipe)
           </label>
-          <Button size="sm" onClick={send}>Enviar</Button>
+          <Button size="sm" onClick={send}>
+            Enviar
+          </Button>
         </div>
       </CardContent>
     </Card>
