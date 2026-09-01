@@ -2743,6 +2743,27 @@ export type Database = {
           },
         ]
       }
+      os_edicao_permissoes: {
+        Row: {
+          atualizado_em: string
+          campo: string
+          permitido: boolean
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Insert: {
+          atualizado_em?: string
+          campo: string
+          permitido?: boolean
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Update: {
+          atualizado_em?: string
+          campo?: string
+          permitido?: boolean
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: []
+      }
       os_historico: {
         Row: {
           acao: string
@@ -3285,7 +3306,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      editar_ordem_servico: {
+        Args: {
+          p_alteracoes?: Json
+          p_os_id: string
+          p_tecnicos_apoio?: string[]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "gestor" | "responsavel" | "tecnico" | "mestre"

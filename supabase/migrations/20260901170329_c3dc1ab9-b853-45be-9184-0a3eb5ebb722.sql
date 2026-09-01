@@ -1,0 +1,1 @@
+ALTER FUNCTION public.editar_ordem_servico(UUID, JSONB, UUID[]) SECURITY INVOKER;
