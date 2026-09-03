@@ -41,10 +41,19 @@ import { ArrowLeft } from "lucide-react";
 import { UsarPecaOS } from "@/components/usar-peca-os";
 import { EditarOS } from "@/components/editar-os";
 
+type ExecForm = {
+  diagnostico: string;
+  correcao: string;
+  materiais: string;
+  testes: string;
+  resultado: string;
+};
+
 export const Route = createFileRoute("/_authenticated/ordens/$id")({
   head: () => ({ meta: [{ title: "OS — Manutenção Xica da Silva" }] }),
   component: OSDetail,
 });
+
 
 function OSDetail() {
   const { id } = Route.useParams();
@@ -66,6 +75,15 @@ function OSDetail() {
   const resumo = useMemo(() => resumirCustos(custos, custoCategorias), [custos, custoCategorias]);
   const totalCustos = resumo.total;
   const [tab, setTab] = useState("exec");
+  const [exec, setExec] = useState<ExecForm | null>(null);
+  const execAtual: ExecForm = exec ?? {
+    diagnostico: os?.diagnostico ?? "",
+    correcao: os?.correcao ?? "",
+    materiais: os?.materiais_utilizados ?? "",
+    testes: os?.testes_realizados ?? "",
+    resultado: os?.resultado_testes ?? "",
+  };
+
 
   if (!os) return <div className="text-sm text-muted-foreground">Carregando…</div>;
 
@@ -99,13 +117,19 @@ function OSDetail() {
       "OS iniciada.",
     );
   }
-  async function concluir(form: {
-    diagnostico: string;
-    correcao: string;
-    materiais: string;
-    testes: string;
-    resultado: string;
-  }) {
+  async function salvarExecucao(form: ExecForm) {
+    await updateOS(
+      {
+        diagnostico: form.diagnostico,
+        correcao: form.correcao,
+        materiais_utilizados: form.materiais,
+        testes_realizados: form.testes,
+        resultado_testes: form.resultado,
+      },
+      "Execução salva.",
+    );
+  }
+  async function concluir(form: ExecForm) {
     const conc = status.find((x) => x.nome.toLowerCase().includes("conclu"));
     await updateOS(
       {
@@ -120,6 +144,7 @@ function OSDetail() {
       "OS concluída.",
     );
   }
+
   async function cancelar() {
     const motivo = prompt("Motivo do cancelamento:");
     if (!motivo) return;
@@ -199,20 +224,32 @@ function OSDetail() {
               <TabsTrigger value="hist">Histórico</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="exec">
-              <ExecucaoCard os={os} onConcluir={concluir} onIniciar={iniciar} />
+            <TabsContent forceMount value="exec" className="data-[state=inactive]:hidden">
+              <ExecucaoCard
+                os={os}
+                form={execAtual}
+                setForm={setExec}
+                onSalvar={salvarExecucao}
+                onConcluir={concluir}
+                onIniciar={iniciar}
+              />
             </TabsContent>
 
-            <TabsContent value="custos" className="space-y-3">
+            <TabsContent
+              forceMount
+              value="custos"
+              className="space-y-3 data-[state=inactive]:hidden"
+            >
               <div className="flex justify-end">
                 <UsarPecaOS osId={id} equipamentoId={os.equipamento_id} />
               </div>
               <CustosOSPanel osId={id} equipamentoId={os.equipamento_id} custos={custos} />
             </TabsContent>
 
-            <TabsContent value="coment">
+            <TabsContent forceMount value="coment" className="data-[state=inactive]:hidden">
               <ComentariosCard osId={id} coments={coments} profiles={profiles} qc={qc} />
             </TabsContent>
+
 
             <TabsContent value="hist">
               <Card>
@@ -462,32 +499,24 @@ function Info({ label, value }: { label: string; value: string | null | undefine
 
 function ExecucaoCard({
   os,
+  form,
+  setForm,
+  onSalvar,
   onConcluir,
   onIniciar,
 }: {
   os: {
-    diagnostico: string | null;
-    correcao: string | null;
-    materiais_utilizados: string | null;
-    testes_realizados: string | null;
-    resultado_testes: string | null;
     iniciada_em: string | null;
     concluida_em: string | null;
   };
-  onConcluir: (f: {
-    diagnostico: string;
-    correcao: string;
-    materiais: string;
-    testes: string;
-    resultado: string;
-  }) => Promise<void>;
+  form: ExecForm;
+  setForm: React.Dispatch<React.SetStateAction<ExecForm | null>>;
+  onSalvar: (f: ExecForm) => Promise<void>;
+  onConcluir: (f: ExecForm) => Promise<void>;
   onIniciar: () => Promise<void>;
 }) {
-  const [diagnostico, setDiagnostico] = useState(os.diagnostico ?? "");
-  const [correcao, setCorrecao] = useState(os.correcao ?? "");
-  const [materiais, setMateriais] = useState(os.materiais_utilizados ?? "");
-  const [testes, setTestes] = useState(os.testes_realizados ?? "");
-  const [resultado, setResultado] = useState(os.resultado_testes ?? "");
+  const up = (campo: keyof ExecForm, valor: string) =>
+    setForm((f) => ({ ...(f ?? form), [campo]: valor }));
   return (
     <Card>
       <CardContent className="p-4 space-y-3">
@@ -501,31 +530,47 @@ function ExecucaoCard({
         )}
         <div>
           <Label>Diagnóstico</Label>
-          <Textarea rows={3} value={diagnostico} onChange={(e) => setDiagnostico(e.target.value)} />
+          <Textarea
+            rows={3}
+            value={form.diagnostico}
+            onChange={(e) => up("diagnostico", e.target.value)}
+          />
         </div>
         <div>
           <Label>Correção aplicada</Label>
-          <Textarea rows={3} value={correcao} onChange={(e) => setCorrecao(e.target.value)} />
+          <Textarea
+            rows={3}
+            value={form.correcao}
+            onChange={(e) => up("correcao", e.target.value)}
+          />
         </div>
         <div>
           <Label>Materiais utilizados</Label>
-          <Textarea rows={2} value={materiais} onChange={(e) => setMateriais(e.target.value)} />
+          <Textarea
+            rows={2}
+            value={form.materiais}
+            onChange={(e) => up("materiais", e.target.value)}
+          />
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <Label>Testes realizados</Label>
-            <Textarea rows={2} value={testes} onChange={(e) => setTestes(e.target.value)} />
+            <Textarea rows={2} value={form.testes} onChange={(e) => up("testes", e.target.value)} />
           </div>
           <div>
             <Label>Resultado dos testes</Label>
-            <Textarea rows={2} value={resultado} onChange={(e) => setResultado(e.target.value)} />
+            <Textarea
+              rows={2}
+              value={form.resultado}
+              onChange={(e) => up("resultado", e.target.value)}
+            />
           </div>
         </div>
-        <div className="flex justify-end">
-          <Button
-            onClick={() => onConcluir({ diagnostico, correcao, materiais, testes, resultado })}
-            disabled={!!os.concluida_em}
-          >
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={() => onSalvar(form)}>
+            Salvar execução
+          </Button>
+          <Button onClick={() => onConcluir(form)} disabled={!!os.concluida_em}>
             {os.concluida_em ? "Já concluída" : "Concluir OS"}
           </Button>
         </div>
@@ -533,6 +578,7 @@ function ExecucaoCard({
     </Card>
   );
 }
+
 
 function ComentariosCard({
   osId,
