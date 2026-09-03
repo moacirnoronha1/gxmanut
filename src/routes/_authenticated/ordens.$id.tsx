@@ -199,20 +199,32 @@ function OSDetail() {
               <TabsTrigger value="hist">Histórico</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="exec">
-              <ExecucaoCard os={os} onConcluir={concluir} onIniciar={iniciar} />
+            <TabsContent forceMount value="exec" className="data-[state=inactive]:hidden">
+              <ExecucaoCard
+                os={os}
+                form={exec}
+                setForm={setExec}
+                onSalvar={salvarExecucao}
+                onConcluir={concluir}
+                onIniciar={iniciar}
+              />
             </TabsContent>
 
-            <TabsContent value="custos" className="space-y-3">
+            <TabsContent
+              forceMount
+              value="custos"
+              className="space-y-3 data-[state=inactive]:hidden"
+            >
               <div className="flex justify-end">
                 <UsarPecaOS osId={id} equipamentoId={os.equipamento_id} />
               </div>
               <CustosOSPanel osId={id} equipamentoId={os.equipamento_id} custos={custos} />
             </TabsContent>
 
-            <TabsContent value="coment">
+            <TabsContent forceMount value="coment" className="data-[state=inactive]:hidden">
               <ComentariosCard osId={id} coments={coments} profiles={profiles} qc={qc} />
             </TabsContent>
+
 
             <TabsContent value="hist">
               <Card>
