@@ -66,6 +66,15 @@ function OSDetail() {
   const resumo = useMemo(() => resumirCustos(custos, custoCategorias), [custos, custoCategorias]);
   const totalCustos = resumo.total;
   const [tab, setTab] = useState("exec");
+  const [exec, setExec] = useState<ExecForm | null>(null);
+  const execAtual: ExecForm = exec ?? {
+    diagnostico: os?.diagnostico ?? "",
+    correcao: os?.correcao ?? "",
+    materiais: os?.materiais_utilizados ?? "",
+    testes: os?.testes_realizados ?? "",
+    resultado: os?.resultado_testes ?? "",
+  };
+
 
   if (!os) return <div className="text-sm text-muted-foreground">Carregando…</div>;
 
