@@ -41,10 +41,19 @@ import { ArrowLeft } from "lucide-react";
 import { UsarPecaOS } from "@/components/usar-peca-os";
 import { EditarOS } from "@/components/editar-os";
 
+type ExecForm = {
+  diagnostico: string;
+  correcao: string;
+  materiais: string;
+  testes: string;
+  resultado: string;
+};
+
 export const Route = createFileRoute("/_authenticated/ordens/$id")({
   head: () => ({ meta: [{ title: "OS — Manutenção Xica da Silva" }] }),
   component: OSDetail,
 });
+
 
 function OSDetail() {
   const { id } = Route.useParams();
