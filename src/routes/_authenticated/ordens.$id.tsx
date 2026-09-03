@@ -108,13 +108,19 @@ function OSDetail() {
       "OS iniciada.",
     );
   }
-  async function concluir(form: {
-    diagnostico: string;
-    correcao: string;
-    materiais: string;
-    testes: string;
-    resultado: string;
-  }) {
+  async function salvarExecucao(form: ExecForm) {
+    await updateOS(
+      {
+        diagnostico: form.diagnostico,
+        correcao: form.correcao,
+        materiais_utilizados: form.materiais,
+        testes_realizados: form.testes,
+        resultado_testes: form.resultado,
+      },
+      "Execução salva.",
+    );
+  }
+  async function concluir(form: ExecForm) {
     const conc = status.find((x) => x.nome.toLowerCase().includes("conclu"));
     await updateOS(
       {
@@ -129,6 +135,7 @@ function OSDetail() {
       "OS concluída.",
     );
   }
+
   async function cancelar() {
     const motivo = prompt("Motivo do cancelamento:");
     if (!motivo) return;
