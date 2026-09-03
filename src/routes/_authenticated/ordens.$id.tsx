@@ -499,32 +499,24 @@ function Info({ label, value }: { label: string; value: string | null | undefine
 
 function ExecucaoCard({
   os,
+  form,
+  setForm,
+  onSalvar,
   onConcluir,
   onIniciar,
 }: {
   os: {
-    diagnostico: string | null;
-    correcao: string | null;
-    materiais_utilizados: string | null;
-    testes_realizados: string | null;
-    resultado_testes: string | null;
     iniciada_em: string | null;
     concluida_em: string | null;
   };
-  onConcluir: (f: {
-    diagnostico: string;
-    correcao: string;
-    materiais: string;
-    testes: string;
-    resultado: string;
-  }) => Promise<void>;
+  form: ExecForm;
+  setForm: React.Dispatch<React.SetStateAction<ExecForm | null>>;
+  onSalvar: (f: ExecForm) => Promise<void>;
+  onConcluir: (f: ExecForm) => Promise<void>;
   onIniciar: () => Promise<void>;
 }) {
-  const [diagnostico, setDiagnostico] = useState(os.diagnostico ?? "");
-  const [correcao, setCorrecao] = useState(os.correcao ?? "");
-  const [materiais, setMateriais] = useState(os.materiais_utilizados ?? "");
-  const [testes, setTestes] = useState(os.testes_realizados ?? "");
-  const [resultado, setResultado] = useState(os.resultado_testes ?? "");
+  const up = (campo: keyof ExecForm, valor: string) =>
+    setForm((f) => ({ ...(f ?? form), [campo]: valor }));
   return (
     <Card>
       <CardContent className="p-4 space-y-3">
@@ -538,31 +530,47 @@ function ExecucaoCard({
         )}
         <div>
           <Label>Diagnóstico</Label>
-          <Textarea rows={3} value={diagnostico} onChange={(e) => setDiagnostico(e.target.value)} />
+          <Textarea
+            rows={3}
+            value={form.diagnostico}
+            onChange={(e) => up("diagnostico", e.target.value)}
+          />
         </div>
         <div>
           <Label>Correção aplicada</Label>
-          <Textarea rows={3} value={correcao} onChange={(e) => setCorrecao(e.target.value)} />
+          <Textarea
+            rows={3}
+            value={form.correcao}
+            onChange={(e) => up("correcao", e.target.value)}
+          />
         </div>
         <div>
           <Label>Materiais utilizados</Label>
-          <Textarea rows={2} value={materiais} onChange={(e) => setMateriais(e.target.value)} />
+          <Textarea
+            rows={2}
+            value={form.materiais}
+            onChange={(e) => up("materiais", e.target.value)}
+          />
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <Label>Testes realizados</Label>
-            <Textarea rows={2} value={testes} onChange={(e) => setTestes(e.target.value)} />
+            <Textarea rows={2} value={form.testes} onChange={(e) => up("testes", e.target.value)} />
           </div>
           <div>
             <Label>Resultado dos testes</Label>
-            <Textarea rows={2} value={resultado} onChange={(e) => setResultado(e.target.value)} />
+            <Textarea
+              rows={2}
+              value={form.resultado}
+              onChange={(e) => up("resultado", e.target.value)}
+            />
           </div>
         </div>
-        <div className="flex justify-end">
-          <Button
-            onClick={() => onConcluir({ diagnostico, correcao, materiais, testes, resultado })}
-            disabled={!!os.concluida_em}
-          >
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={() => onSalvar(form)}>
+            Salvar execução
+          </Button>
+          <Button onClick={() => onConcluir(form)} disabled={!!os.concluida_em}>
             {os.concluida_em ? "Já concluída" : "Concluir OS"}
           </Button>
         </div>
@@ -570,6 +578,7 @@ function ExecucaoCard({
     </Card>
   );
 }
+
 
 function ComentariosCard({
   osId,
