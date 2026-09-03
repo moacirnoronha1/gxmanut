@@ -227,7 +227,7 @@ function OSDetail() {
             <TabsContent forceMount value="exec" className="data-[state=inactive]:hidden">
               <ExecucaoCard
                 os={os}
-                form={exec}
+                form={execAtual}
                 setForm={setExec}
                 onSalvar={salvarExecucao}
                 onConcluir={concluir}
