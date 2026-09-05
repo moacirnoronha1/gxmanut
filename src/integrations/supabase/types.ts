@@ -3397,10 +3397,6 @@ export type Database = {
         }
         Returns: undefined
       }
-      excluir_os_definitivo: {
-        Args: { p_solicitacao_id: string }
-        Returns: undefined
-      }
     }
     Enums: {
       app_role: "admin" | "gestor" | "responsavel" | "tecnico" | "mestre"

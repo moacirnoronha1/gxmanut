@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.excluir_os_definitivo(UUID);
