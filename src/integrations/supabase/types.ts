@@ -2255,6 +2255,7 @@ export type Database = {
           correcao: string | null
           created_at: string
           data_desejada: string | null
+          data_ocorrencia: string
           descricao: string
           diagnostico: string | null
           equipamento_id: string | null
@@ -2272,11 +2273,13 @@ export type Database = {
           previsao_atendimento: string | null
           reaberta_de: string | null
           recomendacoes: string | null
+          registrado_por: string | null
           resultado_testes: string | null
           risco: string | null
           setor_id: string | null
           situacao_final: string | null
           solicitante_id: string
+          solicitante_nome: string | null
           solucao: string | null
           status_id: string | null
           tecnico_id: string | null
@@ -2303,6 +2306,7 @@ export type Database = {
           correcao?: string | null
           created_at?: string
           data_desejada?: string | null
+          data_ocorrencia?: string
           descricao: string
           diagnostico?: string | null
           equipamento_id?: string | null
@@ -2320,11 +2324,13 @@ export type Database = {
           previsao_atendimento?: string | null
           reaberta_de?: string | null
           recomendacoes?: string | null
+          registrado_por?: string | null
           resultado_testes?: string | null
           risco?: string | null
           setor_id?: string | null
           situacao_final?: string | null
           solicitante_id: string
+          solicitante_nome?: string | null
           solucao?: string | null
           status_id?: string | null
           tecnico_id?: string | null
@@ -2351,6 +2357,7 @@ export type Database = {
           correcao?: string | null
           created_at?: string
           data_desejada?: string | null
+          data_ocorrencia?: string
           descricao?: string
           diagnostico?: string | null
           equipamento_id?: string | null
@@ -2368,11 +2375,13 @@ export type Database = {
           previsao_atendimento?: string | null
           reaberta_de?: string | null
           recomendacoes?: string | null
+          registrado_por?: string | null
           resultado_testes?: string | null
           risco?: string | null
           setor_id?: string | null
           situacao_final?: string | null
           solicitante_id?: string
+          solicitante_nome?: string | null
           solucao?: string | null
           status_id?: string | null
           tecnico_id?: string | null
@@ -2426,6 +2435,13 @@ export type Database = {
             columns: ["reaberta_de"]
             isOneToOne: false
             referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ordens_servico_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -2763,6 +2779,73 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"]
         }
         Relationships: []
+      }
+      os_exclusao_solicitacoes: {
+        Row: {
+          created_at: string
+          decidido_em: string | null
+          decidido_por: string | null
+          id: string
+          motivo: string
+          motivo_rejeicao: string | null
+          observacao: string | null
+          os_id: string
+          os_numero: number | null
+          solicitado_por: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
+          id?: string
+          motivo: string
+          motivo_rejeicao?: string | null
+          observacao?: string | null
+          os_id: string
+          os_numero?: number | null
+          solicitado_por?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          decidido_em?: string | null
+          decidido_por?: string | null
+          id?: string
+          motivo?: string
+          motivo_rejeicao?: string | null
+          observacao?: string | null
+          os_id?: string
+          os_numero?: number | null
+          solicitado_por?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_exclusao_solicitacoes_decidido_por_fkey"
+            columns: ["decidido_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_exclusao_solicitacoes_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_exclusao_solicitacoes_solicitado_por_fkey"
+            columns: ["solicitado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       os_historico: {
         Row: {
@@ -3312,6 +3395,10 @@ export type Database = {
           p_os_id: string
           p_tecnicos_apoio?: string[]
         }
+        Returns: undefined
+      }
+      excluir_os_definitivo: {
+        Args: { p_solicitacao_id: string }
         Returns: undefined
       }
     }
