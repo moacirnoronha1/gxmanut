@@ -75,6 +75,27 @@ function Dashboard() {
         <Button asChild><Link to="/ordens/nova">+ Nova OS</Link></Button>
       </div>
 
+      {mestre && exclusoesPendentes > 0 && (
+        <Link to="/exclusoes" className="block">
+          <Card className="border-destructive/50 bg-destructive/5">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="p-2 rounded-md bg-muted text-destructive">
+                <Trash2 className="size-5" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-destructive">{exclusoesPendentes}</div>
+                <div className="text-xs text-muted-foreground">
+                  EXCLUSÕES PENDENTES — {exclusoesPendentes}{" "}
+                  {exclusoesPendentes === 1 ? "exclusão aguardando" : "exclusões aguardando"}{" "}
+                  aprovação
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+      )}
+
+
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (
           <Card key={c.label}>
