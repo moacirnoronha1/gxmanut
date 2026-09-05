@@ -7,7 +7,9 @@ import { ordensQuery, statusOsQuery, urgenciasQuery, equipamentosQuery } from "@
 import { manutencoesQuery, mpExecucoesTodasQuery } from "@/lib/mp-queries";
 import { diffDias, hojeISO, statusManutencao } from "@/lib/mp-types";
 import { formatDateTime } from "@/lib/db-types";
-import { ClipboardList, AlertTriangle, CheckCircle2, Wrench } from "lucide-react";
+import { ClipboardList, AlertTriangle, CheckCircle2, Wrench, Trash2 } from "lucide-react";
+import { useSessaoUsuario } from "@/lib/sessao";
+import { exclusoesOSQuery } from "@/lib/exclusao-os";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({ meta: [{ title: "Painel — Manutenção Xica da Silva" }] }),
@@ -21,6 +23,9 @@ function Dashboard() {
   const { data: equipamentos = [] } = useQuery(equipamentosQuery());
   const { data: manutencoes = [] } = useQuery(manutencoesQuery());
   const { data: execucoes = [] } = useQuery(mpExecucoesTodasQuery());
+  const { mestre } = useSessaoUsuario();
+  const { data: exclusoes = [] } = useQuery({ ...exclusoesOSQuery(), enabled: mestre });
+  const exclusoesPendentes = exclusoes.filter((e) => e.status === "pendente").length;
 
   const statusMap = new Map(status.map((s) => [s.id, s]));
   const urgMap = new Map(urgencias.map((u) => [u.id, u]));
