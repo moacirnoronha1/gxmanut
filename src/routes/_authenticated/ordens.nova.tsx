@@ -117,6 +117,36 @@ function NovaOS() {
               <Label>Descrição do problema *</Label>
               <Textarea rows={4} value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder="Descreva o problema, quando começou, ruídos, sintomas..." />
             </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div>
+                <Label>Data da OS *</Label>
+                <Input type="date" value={dataOS} onChange={(e) => setDataOS(e.target.value)} />
+              </div>
+              <div>
+                <Label>Hora da OS *</Label>
+                <Input type="time" value={horaOS} onChange={(e) => setHoraOS(e.target.value)} />
+              </div>
+              <div>
+                <Label>Solicitante</Label>
+                <Input
+                  list="solicitantes-anteriores"
+                  value={solicitanteNome}
+                  onChange={(e) => setSolicitanteNome(e.target.value)}
+                  placeholder="Ex.: João – Cozinha"
+                />
+                <datalist id="solicitantes-anteriores">
+                  {solicitantes.map((s) => (
+                    <option key={s} value={s} />
+                  ))}
+                </datalist>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              A data e a hora acima são a data da ocorrência (pode ser retroativa). O sistema
+              registra separadamente quem cadastrou{nomeCompleto ? ` (${nomeCompleto})` : ""} e o
+              momento do cadastro.
+            </p>
+
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <Label>Setor</Label>
