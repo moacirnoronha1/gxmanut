@@ -208,9 +208,17 @@ function OSDetail() {
                 <Info label="Equipamento" value={eq?.nome ?? os.equipamento_nao_cadastrado} />
                 <Info label="Local" value={os.local} />
                 <Info label="Categoria" value={cat?.nome} />
-                <Info label="Solicitante" value={solic?.nome} />
+                <Info label="Solicitante" value={os.solicitante_nome ?? solic?.nome} />
                 <Info label="Técnico" value={tec?.nome ?? "—"} />
-                <Info label="Aberta em" value={formatDateTime(os.created_at)} />
+                <Info label="Data da OS" value={formatDateTime(os.data_ocorrencia ?? os.created_at)} />
+                <Info
+                  label="Registrada por"
+                  value={
+                    profiles.find((p) => p.id === (os.registrado_por ?? os.solicitante_id))?.nome
+                  }
+                />
+                <Info label="Registrada no sistema" value={formatDateTime(os.created_at)} />
+
                 <Info label="Iniciada em" value={formatDateTime(os.iniciada_em)} />
                 <Info label="Concluída em" value={formatDateTime(os.concluida_em)} />
                 <Info label="Equipamento parado" value={os.equipamento_parado ? "Sim" : "Não"} />
