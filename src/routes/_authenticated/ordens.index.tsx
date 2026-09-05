@@ -164,7 +164,7 @@ function OrdensList() {
                       {o.titulo}
                     </div>
                     <div className="truncate text-xs text-muted-foreground">
-                      {set?.nome ?? "—"} · {eq?.nome ?? o.equipamento_nao_cadastrado ?? "—"} · {formatDateTime(o.created_at)}
+                      {set?.nome ?? "—"} · {eq?.nome ?? o.equipamento_nao_cadastrado ?? "—"} · {formatDateTime(o.data_ocorrencia ?? o.created_at)}
                     </div>
                     <div className="truncate text-xs text-muted-foreground">
                       Em aberto há {tempoEmAberto(o.created_at, o.concluida_em)}

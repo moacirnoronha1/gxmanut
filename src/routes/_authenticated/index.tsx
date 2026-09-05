@@ -156,7 +156,7 @@ function Dashboard() {
                   <div className="min-w-0">
                     <div className="truncate font-medium">{o.titulo}</div>
                     <div className="truncate text-xs text-muted-foreground">
-                      {formatDateTime(o.created_at)}
+                      {formatDateTime(o.data_ocorrencia ?? o.created_at)}
                     </div>
                   </div>
                   <div className="flex gap-1 shrink-0">
