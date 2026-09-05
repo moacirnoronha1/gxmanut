@@ -29,6 +29,9 @@ function NovaOS() {
   const { data: urgencias = [] } = useQuery(urgenciasQuery());
   const { data: status = [] } = useQuery(statusOsQuery());
   const { data: categorias = [] } = useQuery(categoriasQuery());
+  const { data: solicitantes = [] } = useQuery(solicitantesUsadosQuery());
+  const { nomeCompleto } = useSessaoUsuario();
+
 
   const agora = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
