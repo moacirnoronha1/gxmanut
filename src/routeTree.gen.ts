@@ -20,6 +20,7 @@ import { Route as AuthenticatedNotificacoesIndexRouteImport } from './routes/_au
 import { Route as AuthenticatedManutencoesIndexRouteImport } from './routes/_authenticated/manutencoes.index'
 import { Route as AuthenticatedFornecedoresIndexRouteImport } from './routes/_authenticated/fornecedores.index'
 import { Route as AuthenticatedFerramentasIndexRouteImport } from './routes/_authenticated/ferramentas.index'
+import { Route as AuthenticatedExclusoesIndexRouteImport } from './routes/_authenticated/exclusoes.index'
 import { Route as AuthenticatedEstoqueIndexRouteImport } from './routes/_authenticated/estoque.index'
 import { Route as AuthenticatedEquipamentosIndexRouteImport } from './routes/_authenticated/equipamentos.index'
 import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated/configuracoes.index'
@@ -93,6 +94,12 @@ const AuthenticatedFerramentasIndexRoute =
   AuthenticatedFerramentasIndexRouteImport.update({
     id: '/ferramentas/',
     path: '/ferramentas/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedExclusoesIndexRoute =
+  AuthenticatedExclusoesIndexRouteImport.update({
+    id: '/exclusoes/',
+    path: '/exclusoes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedEstoqueIndexRoute =
@@ -185,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
   '/estoque/': typeof AuthenticatedEstoqueIndexRoute
+  '/exclusoes/': typeof AuthenticatedExclusoesIndexRoute
   '/ferramentas/': typeof AuthenticatedFerramentasIndexRoute
   '/fornecedores/': typeof AuthenticatedFornecedoresIndexRoute
   '/manutencoes/': typeof AuthenticatedManutencoesIndexRoute
@@ -210,6 +218,7 @@ export interface FileRoutesByTo {
   '/configuracoes': typeof AuthenticatedConfiguracoesIndexRoute
   '/equipamentos': typeof AuthenticatedEquipamentosIndexRoute
   '/estoque': typeof AuthenticatedEstoqueIndexRoute
+  '/exclusoes': typeof AuthenticatedExclusoesIndexRoute
   '/ferramentas': typeof AuthenticatedFerramentasIndexRoute
   '/fornecedores': typeof AuthenticatedFornecedoresIndexRoute
   '/manutencoes': typeof AuthenticatedManutencoesIndexRoute
@@ -237,6 +246,7 @@ export interface FileRoutesById {
   '/_authenticated/configuracoes/': typeof AuthenticatedConfiguracoesIndexRoute
   '/_authenticated/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
   '/_authenticated/estoque/': typeof AuthenticatedEstoqueIndexRoute
+  '/_authenticated/exclusoes/': typeof AuthenticatedExclusoesIndexRoute
   '/_authenticated/ferramentas/': typeof AuthenticatedFerramentasIndexRoute
   '/_authenticated/fornecedores/': typeof AuthenticatedFornecedoresIndexRoute
   '/_authenticated/manutencoes/': typeof AuthenticatedManutencoesIndexRoute
@@ -264,6 +274,7 @@ export interface FileRouteTypes {
     | '/configuracoes/'
     | '/equipamentos/'
     | '/estoque/'
+    | '/exclusoes/'
     | '/ferramentas/'
     | '/fornecedores/'
     | '/manutencoes/'
@@ -289,6 +300,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/equipamentos'
     | '/estoque'
+    | '/exclusoes'
     | '/ferramentas'
     | '/fornecedores'
     | '/manutencoes'
@@ -315,6 +327,7 @@ export interface FileRouteTypes {
     | '/_authenticated/configuracoes/'
     | '/_authenticated/equipamentos/'
     | '/_authenticated/estoque/'
+    | '/_authenticated/exclusoes/'
     | '/_authenticated/ferramentas/'
     | '/_authenticated/fornecedores/'
     | '/_authenticated/manutencoes/'
@@ -410,6 +423,13 @@ declare module '@tanstack/react-router' {
       path: '/ferramentas'
       fullPath: '/ferramentas/'
       preLoaderRoute: typeof AuthenticatedFerramentasIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/exclusoes/': {
+      id: '/_authenticated/exclusoes/'
+      path: '/exclusoes'
+      fullPath: '/exclusoes/'
+      preLoaderRoute: typeof AuthenticatedExclusoesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/estoque/': {
@@ -519,6 +539,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedConfiguracoesIndexRoute: typeof AuthenticatedConfiguracoesIndexRoute
   AuthenticatedEquipamentosIndexRoute: typeof AuthenticatedEquipamentosIndexRoute
   AuthenticatedEstoqueIndexRoute: typeof AuthenticatedEstoqueIndexRoute
+  AuthenticatedExclusoesIndexRoute: typeof AuthenticatedExclusoesIndexRoute
   AuthenticatedFerramentasIndexRoute: typeof AuthenticatedFerramentasIndexRoute
   AuthenticatedFornecedoresIndexRoute: typeof AuthenticatedFornecedoresIndexRoute
   AuthenticatedManutencoesIndexRoute: typeof AuthenticatedManutencoesIndexRoute
@@ -544,6 +565,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConfiguracoesIndexRoute: AuthenticatedConfiguracoesIndexRoute,
   AuthenticatedEquipamentosIndexRoute: AuthenticatedEquipamentosIndexRoute,
   AuthenticatedEstoqueIndexRoute: AuthenticatedEstoqueIndexRoute,
+  AuthenticatedExclusoesIndexRoute: AuthenticatedExclusoesIndexRoute,
   AuthenticatedFerramentasIndexRoute: AuthenticatedFerramentasIndexRoute,
   AuthenticatedFornecedoresIndexRoute: AuthenticatedFornecedoresIndexRoute,
   AuthenticatedManutencoesIndexRoute: AuthenticatedManutencoesIndexRoute,

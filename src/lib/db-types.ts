@@ -119,6 +119,10 @@ export interface OS {
   equipamento_id: string | null;
   equipamento_nao_cadastrado: string | null;
   solicitante_id: string;
+  solicitante_nome: string | null;
+  registrado_por: string | null;
+  data_ocorrencia: string;
+
   tecnico_id: string | null;
   urgencia_id: string | null;
   status_id: string | null;

@@ -15,6 +15,9 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { notificarOS } from "@/lib/push.functions";
 import { showDbError } from "@/lib/db-error";
+import { solicitantesUsadosQuery } from "@/lib/exclusao-os";
+import { useSessaoUsuario } from "@/lib/sessao";
+
 
 export const Route = createFileRoute("/_authenticated/ordens/nova")({
   head: () => ({ meta: [{ title: "Nova OS — Manutenção Xica da Silva" }] }),
@@ -29,9 +32,19 @@ function NovaOS() {
   const { data: urgencias = [] } = useQuery(urgenciasQuery());
   const { data: status = [] } = useQuery(statusOsQuery());
   const { data: categorias = [] } = useQuery(categoriasQuery());
+  const { data: solicitantes = [] } = useQuery(solicitantesUsadosQuery());
+  const { nomeCompleto } = useSessaoUsuario();
 
+
+  const agora = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [dataOS, setDataOS] = useState(
+    `${agora.getFullYear()}-${pad(agora.getMonth() + 1)}-${pad(agora.getDate())}`,
+  );
+  const [horaOS, setHoraOS] = useState(`${pad(agora.getHours())}:${pad(agora.getMinutes())}`);
+  const [solicitanteNome, setSolicitanteNome] = useState("");
   const [setorId, setSetorId] = useState<string>("");
   const [equipamentoId, setEquipamentoId] = useState<string>("nao");
   const [equipamentoLivre, setEquipamentoLivre] = useState("");
@@ -42,6 +55,7 @@ function NovaOS() {
   const [parado, setParado] = useState(false);
   const [risco, setRisco] = useState("nenhum");
   const [saving, setSaving] = useState(false);
+
 
   const equipsFiltrados = setorId
     ? equipamentos.filter((e) => e.setor_id === setorId)
@@ -72,8 +86,12 @@ function NovaOS() {
       data_desejada: dataDesejada || null,
       equipamento_parado: parado,
       risco,
+      data_ocorrencia: new Date(`${dataOS}T${horaOS || "00:00"}`).toISOString(),
+      solicitante_nome: solicitanteNome.trim() || null,
+      registrado_por: u.user.id,
       solicitante_id: u.user.id,
     };
+
     const { data, error } = await supabase.from("ordens_servico").insert(payload).select("id").single();
     setSaving(false);
     if (error) return showDbError(error);
@@ -105,6 +123,36 @@ function NovaOS() {
               <Label>Descrição do problema *</Label>
               <Textarea rows={4} value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder="Descreva o problema, quando começou, ruídos, sintomas..." />
             </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div>
+                <Label>Data da OS *</Label>
+                <Input type="date" value={dataOS} onChange={(e) => setDataOS(e.target.value)} />
+              </div>
+              <div>
+                <Label>Hora da OS *</Label>
+                <Input type="time" value={horaOS} onChange={(e) => setHoraOS(e.target.value)} />
+              </div>
+              <div>
+                <Label>Solicitante</Label>
+                <Input
+                  list="solicitantes-anteriores"
+                  value={solicitanteNome}
+                  onChange={(e) => setSolicitanteNome(e.target.value)}
+                  placeholder="Ex.: João – Cozinha"
+                />
+                <datalist id="solicitantes-anteriores">
+                  {solicitantes.map((s) => (
+                    <option key={s} value={s} />
+                  ))}
+                </datalist>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              A data e a hora acima são a data da ocorrência (pode ser retroativa). O sistema
+              registra separadamente quem cadastrou{nomeCompleto ? ` (${nomeCompleto})` : ""} e o
+              momento do cadastro.
+            </p>
+
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <Label>Setor</Label>
