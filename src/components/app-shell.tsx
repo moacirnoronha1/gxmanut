@@ -19,6 +19,7 @@ import {
   Bell,
   Boxes,
   Hammer,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +41,7 @@ import { minhasNotificacoesQuery } from "@/lib/notificacoes";
 import { AlertaUrgente } from "@/components/alerta-urgente";
 import { UserMenu } from "@/components/user-menu";
 import { useSessaoUsuario } from "@/lib/sessao";
+import { exclusoesOSQuery } from "@/lib/exclusao-os";
 
 const items = [
   { to: "/", label: "Painel", icon: LayoutDashboard },
@@ -80,6 +82,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { data: notifs = [] } = useQuery(minhasNotificacoesQuery());
   const naoLidas = notifs.filter((n) => !n.lida_em).length;
   const { nomeCompleto, username, perfilLabel, setor, mestre } = useSessaoUsuario();
+  const { data: exclusoes = [] } = useQuery({ ...exclusoesOSQuery(), enabled: mestre });
+  const exclusoesPendentes = exclusoes.filter((e) => e.status === "pendente").length;
 
   const isActive = (to: string) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
 
