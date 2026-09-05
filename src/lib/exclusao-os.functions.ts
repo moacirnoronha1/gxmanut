@@ -142,15 +142,8 @@ export const aprovarExclusaoOS = createServerFn({ method: "POST" })
     if (!pedido || pedido.status !== "pendente") throw new Error("Solicitação não encontrada ou já decidida.");
     const osId = pedido.os_id;
 
-    // Registros exclusivos da OS
-    const { data: execs } = await db.from("checklist_execucoes").select("id").eq("os_id", osId);
-    if (execs?.length) {
-      await db
-        .from("checklist_respostas")
-        .delete()
-        .in("execucao_id", execs.map((e) => e.id));
-      await db.from("checklist_execucoes").delete().eq("os_id", osId);
-    }
+    // Registros exclusivos da OS (checklists não são vinculados diretamente à OS)
+
     const { data: custos } = await db.from("os_custos").select("id").eq("os_id", osId);
     if (custos?.length) {
       await db
