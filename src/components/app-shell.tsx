@@ -120,6 +120,26 @@ export function AppShell({ children }: { children: ReactNode }) {
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
+                  {mestre && (
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive("/exclusoes")}
+                        tooltip="Solicitações de Exclusão"
+                      >
+                        <Link to="/exclusoes">
+                          <Trash2 />
+                          <span>Solicitações de Exclusão</span>
+                          {exclusoesPendentes > 0 && (
+                            <span className="ml-auto rounded-full bg-destructive px-1.5 text-[10px] font-bold text-destructive-foreground">
+                              {exclusoesPendentes}
+                            </span>
+                          )}
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )}
+
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
