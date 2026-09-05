@@ -363,6 +363,8 @@ function OSDetail() {
               <Button variant="destructive" className="w-full" onClick={cancelar}>
                 Cancelar OS
               </Button>
+              <SolicitarExclusaoOS osId={os.id} numero={os.numero} />
+
             </CardContent>
           </Card>
 
