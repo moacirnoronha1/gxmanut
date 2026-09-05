@@ -80,8 +80,12 @@ function NovaOS() {
       data_desejada: dataDesejada || null,
       equipamento_parado: parado,
       risco,
+      data_ocorrencia: new Date(`${dataOS}T${horaOS || "00:00"}`).toISOString(),
+      solicitante_nome: solicitanteNome.trim() || null,
+      registrado_por: u.user.id,
       solicitante_id: u.user.id,
     };
+
     const { data, error } = await supabase.from("ordens_servico").insert(payload).select("id").single();
     setSaving(false);
     if (error) return showDbError(error);
