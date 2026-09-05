@@ -15,6 +15,9 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { notificarOS } from "@/lib/push.functions";
 import { showDbError } from "@/lib/db-error";
+import { solicitantesUsadosQuery } from "@/lib/exclusao-os";
+import { useSessaoUsuario } from "@/lib/sessao";
+
 
 export const Route = createFileRoute("/_authenticated/ordens/nova")({
   head: () => ({ meta: [{ title: "Nova OS — Manutenção Xica da Silva" }] }),
