@@ -40,6 +40,8 @@ import { showDbError } from "@/lib/db-error";
 import { ArrowLeft } from "lucide-react";
 import { UsarPecaOS } from "@/components/usar-peca-os";
 import { EditarOS } from "@/components/editar-os";
+import { SolicitarExclusaoOS } from "@/components/solicitar-exclusao-os";
+
 
 type ExecForm = {
   diagnostico: string;
