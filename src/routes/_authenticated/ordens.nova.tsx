@@ -30,8 +30,15 @@ function NovaOS() {
   const { data: status = [] } = useQuery(statusOsQuery());
   const { data: categorias = [] } = useQuery(categoriasQuery());
 
+  const agora = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [dataOS, setDataOS] = useState(
+    `${agora.getFullYear()}-${pad(agora.getMonth() + 1)}-${pad(agora.getDate())}`,
+  );
+  const [horaOS, setHoraOS] = useState(`${pad(agora.getHours())}:${pad(agora.getMinutes())}`);
+  const [solicitanteNome, setSolicitanteNome] = useState("");
   const [setorId, setSetorId] = useState<string>("");
   const [equipamentoId, setEquipamentoId] = useState<string>("nao");
   const [equipamentoLivre, setEquipamentoLivre] = useState("");
@@ -42,6 +49,7 @@ function NovaOS() {
   const [parado, setParado] = useState(false);
   const [risco, setRisco] = useState("nenhum");
   const [saving, setSaving] = useState(false);
+
 
   const equipsFiltrados = setorId
     ? equipamentos.filter((e) => e.setor_id === setorId)
