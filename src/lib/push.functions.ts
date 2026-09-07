@@ -100,6 +100,16 @@ export const notificarOS = createServerFn({ method: "POST" })
     return notificarAberturaOS(data.osId);
   });
 
+/** Encerra todos os alertas/lembretes de uma OS concluída. */
+export const encerrarAlertasOS = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ osId: z.string().uuid() }).parse(input))
+  .handler(async ({ data }) => {
+    const { encerrarNotificacoesOS } = await import("./push.server");
+    return encerrarNotificacoesOS(data.osId);
+  });
+
+
 export const confirmarNotificacao = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
