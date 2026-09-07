@@ -145,7 +145,14 @@ function OSDetail() {
       },
       "OS concluída.",
     );
+    try {
+      await encerrarAlertas({ data: { osId: id } });
+      await qc.invalidateQueries({ queryKey: ["notificacoes", "me"] });
+    } catch {
+      /* a OS já foi concluída; os alertas também param pela verificação no servidor */
+    }
   }
+
 
   async function cancelar() {
     const motivo = prompt("Motivo do cancelamento:");
