@@ -457,19 +457,23 @@ type Config = {
   extrema_repeticao_min: number;
   mp_atraso_repetir_dias: number;
   os_nao_urgente_lembrete_diario: boolean;
+  notificar_conclusao: boolean;
 };
 
 async function getConfig(): Promise<Config> {
   const admin = await getAdmin();
   const { data } = await admin.from("notificacao_config").select("*").eq("id", true).maybeSingle();
-  return (data ?? {
+  return {
     urgente_reforco_min: 10,
     urgente_mestre_min: 20,
     extrema_repeticao_min: 5,
     mp_atraso_repetir_dias: 1,
     os_nao_urgente_lembrete_diario: true,
-  }) as Config;
+    notificar_conclusao: false,
+    ...((data ?? {}) as Partial<Config>),
+  } as Config;
 }
+
 
 const MIN = 60 * 1000;
 
