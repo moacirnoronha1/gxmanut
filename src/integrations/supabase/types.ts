@@ -2059,6 +2059,7 @@ export type Database = {
           extrema_repeticao_min: number
           id: boolean
           mp_atraso_repetir_dias: number
+          notificar_conclusao: boolean
           os_nao_urgente_lembrete_diario: boolean
           updated_at: string
           urgente_mestre_min: number
@@ -2068,6 +2069,7 @@ export type Database = {
           extrema_repeticao_min?: number
           id?: boolean
           mp_atraso_repetir_dias?: number
+          notificar_conclusao?: boolean
           os_nao_urgente_lembrete_diario?: boolean
           updated_at?: string
           urgente_mestre_min?: number
@@ -2077,6 +2079,7 @@ export type Database = {
           extrema_repeticao_min?: number
           id?: boolean
           mp_atraso_repetir_dias?: number
+          notificar_conclusao?: boolean
           os_nao_urgente_lembrete_diario?: boolean
           updated_at?: string
           urgente_mestre_min?: number
