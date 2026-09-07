@@ -654,13 +654,20 @@ export async function processarPendentesNaoUrgentes() {
   if (!cfg.os_nao_urgente_lembrete_diario) return 0;
   const hojeISO = new Date().toISOString().slice(0, 10);
 
+  const finais = await idsStatusFinais();
   const { data: abertas } = await admin
     .from("ordens_servico")
-    .select("id,numero,titulo,tecnico_id,setor_id,concluida_em,urgencias(nome),setores(responsavel_id)")
+    .select("id,numero,titulo,status_id,tecnico_id,setor_id,concluida_em,urgencias(nome),setores(responsavel_id)")
     .is("concluida_em", null)
     .limit(300);
 
-  const pendentes = ((abertas ?? []) as any[]).filter((o) => classificarUrgencia(o.urgencias?.nome) === "normal");
+  const pendentes = ((abertas ?? []) as any[]).filter(
+    (o) =>
+      classificarUrgencia(o.urgencias?.nome) === "normal" &&
+      !o.concluida_em &&
+      !(o.status_id && finais.includes(o.status_id)),
+  );
+
   if (!pendentes.length) return 0;
 
   const porUsuario = new Map<string, number>();
