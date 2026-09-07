@@ -65,7 +65,10 @@ function OSDetail() {
   const navigate = useNavigate();
   const qc = useQueryClient();
 
+  const encerrarAlertas = useServerFn(encerrarAlertasOS);
+
   const { data: os } = useQuery(osQuery(id));
+
   const { data: custos = [] } = useQuery(osCustosDetalhadosQuery(id));
   const { data: coments = [] } = useQuery(osComentariosQuery(id));
   const { data: hist = [] } = useQuery(osHistoricoQuery(id));
