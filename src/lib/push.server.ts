@@ -175,10 +175,113 @@ export async function enviarPushParaUsuario(
   return resultado;
 }
 
+/** Status finais (Concluída/Cancelada) configurados. */
+async function idsStatusFinais(): Promise<string[]> {
+  const admin = await getAdmin();
+  const { data } = await admin.from("status_os").select("id,nome,is_final");
+  return (data ?? [])
+    .filter((s: any) => s.is_final === true || String(s.nome ?? "").toLowerCase().includes("conclu"))
+    .map((s: any) => s.id as string);
+}
+
+/**
+ * Verificação obrigatória antes de qualquer envio ligado a uma OS:
+ * a OS existe, não foi excluída e não está concluída/cancelada.
+ */
+export async function osPodeNotificar(osId: string): Promise<boolean> {
+  const admin = await getAdmin();
+  const { data: os } = await admin
+    .from("ordens_servico")
+    .select("id,concluida_em,status_id")
+    .eq("id", osId)
+    .maybeSingle();
+  if (!os) return false;
+  if (os.concluida_em) return false;
+  const finais = await idsStatusFinais();
+  if (os.status_id && finais.includes(os.status_id as string)) return false;
+  return true;
+}
+
+/**
+ * Encerra tudo que estiver pendente para a OS: lembretes, alertas ativos,
+ * escalonamentos e reenvios. Opcionalmente envia UMA notificação de conclusão.
+ */
+export async function encerrarNotificacoesOS(osId: string) {
+  const admin = await getAdmin();
+  const agora = new Date().toISOString();
+
+  await admin
+    .from("notificacoes")
+    .update({ resolvida_em: agora, confirmada_em: agora, lida_em: agora })
+    .eq("os_id", osId)
+    .is("resolvida_em", null);
+
+  await admin
+    .from("ordens_servico")
+    .update({ escalonamento_nivel: 0, ultimo_alerta_em: agora, confirmada_em: agora })
+    .eq("id", osId);
+
+  const cfg = await getConfig();
+  if (!cfg.notificar_conclusao) return { encerrada: true, avisoEnviado: false };
+
+  const { data: os } = await admin
+    .from("ordens_servico")
+    .select("id,numero,titulo,tecnico_id,assumida_por,setor_id,setores(responsavel_id)")
+    .eq("id", osId)
+    .maybeSingle();
+  if (!os) return { encerrada: true, avisoEnviado: false };
+
+  const alvos = [
+    (os as any).tecnico_id,
+    (os as any).assumida_por,
+    (os as any).setores?.responsavel_id,
+    ...(await idsMestres()),
+  ].filter(Boolean) as string[];
+  if (!alvos.length) return { encerrada: true, avisoEnviado: false };
+
+  // Notificação única (não repete): grava direto, sem passar pela trava de OS concluída.
+  for (const userId of [...new Set(alvos)]) {
+    const { data: ja } = await admin
+      .from("notificacoes")
+      .select("id")
+      .eq("os_id", osId)
+      .eq("user_id", userId)
+      .eq("tipo", "os_concluida")
+      .limit(1);
+    if (ja?.length) continue;
+    const { data: criada } = await admin
+      .from("notificacoes")
+      .insert({
+        user_id: userId,
+        tipo: "os_concluida",
+        prioridade: "normal",
+        titulo: `OS #${(os as any).numero} concluída`,
+        mensagem: `${(os as any).titulo}\nAtendimento finalizado. Nenhum outro alerta será enviado para esta OS.`,
+        url: `/ordens/${osId}`,
+        os_id: osId,
+      })
+      .select("id")
+      .single();
+    await enviarPushParaUsuario(userId, {
+      titulo: `OS #${(os as any).numero} concluída`,
+      mensagem: `${(os as any).titulo}\nAtendimento finalizado.`,
+      url: `/ordens/${osId}`,
+      prioridade: "normal",
+      notificacaoId: criada?.id ?? null,
+      tipo: "os_concluida",
+      tag: `os-${(os as any).numero}-fim`,
+    });
+  }
+  return { encerrada: true, avisoEnviado: true };
+}
+
 /** Cria a notificação na central e dispara o push respeitando preferências e horário silencioso. */
 export async function notificarUsuarios(userIds: string[], n: NovaNotificacao) {
   const admin = await getAdmin();
+  // Trava obrigatória: OS concluída/cancelada/excluída nunca gera notificação.
+  if (n.os_id && !(await osPodeNotificar(n.os_id))) return [];
   const alvos = [...new Set(userIds.filter(Boolean))];
+
   const prioridade: Prioridade = n.prioridade ?? "normal";
   const resultados: { userId: string; enviados: number; falhas: number }[] = [];
 
