@@ -481,13 +481,14 @@ const MIN = 60 * 1000;
 export async function processarEscalonamentos() {
   const admin = await getAdmin();
   const cfg = await getConfig();
+  const finais = await idsStatusFinais();
   const agora = Date.now();
   let acoes = 0;
 
   const { data: abertas } = await admin
     .from("ordens_servico")
     .select(
-      "id,numero,titulo,tecnico_id,assumida_por,confirmada_em,concluida_em,created_at,escalonamento_nivel,ultimo_alerta_em,setor_id,equipamento_nao_cadastrado,urgencias(nome),setores(nome,responsavel_id),equipamentos(nome)",
+      "id,numero,titulo,status_id,tecnico_id,assumida_por,confirmada_em,concluida_em,created_at,escalonamento_nivel,ultimo_alerta_em,setor_id,equipamento_nao_cadastrado,urgencias(nome),setores(nome,responsavel_id),equipamentos(nome)",
     )
     .is("concluida_em", null)
     .not("notificada_em", "is", null)
@@ -495,8 +496,10 @@ export async function processarEscalonamentos() {
 
   for (const os of (abertas ?? []) as any[]) {
     if (os.confirmada_em || os.assumida_por) continue;
+    if (os.concluida_em || (os.status_id && finais.includes(os.status_id))) continue;
     const prioridade = classificarUrgencia(os.urgencias?.nome);
     if (prioridade === "normal") continue;
+
 
     const abertaHaMin = (agora - new Date(os.created_at).getTime()) / MIN;
     const ultimoAlerta = os.ultimo_alerta_em ? new Date(os.ultimo_alerta_em).getTime() : 0;
