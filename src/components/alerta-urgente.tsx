@@ -6,7 +6,7 @@ import type { Notificacao } from "@/lib/notificacoes";
 
 /** Aviso prioritário na tela + alerta sonoro para OS extremamente urgentes não confirmadas. */
 export function AlertaUrgente({ notificacoes }: { notificacoes: Notificacao[] }) {
-  const criticas = notificacoes.filter((n) => n.prioridade === "extrema" && !n.confirmada_em);
+  const criticas = notificacoes.filter((n) => n.prioridade === "extrema" && !n.confirmada_em && !n.resolvida_em);
   const [silenciado, setSilenciado] = useState(false);
   const tocado = useRef<string | null>(null);
 
