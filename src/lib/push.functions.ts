@@ -245,9 +245,11 @@ export const salvarConfigEscalonamento = createServerFn({ method: "POST" })
         extrema_repeticao_min: z.number().int().min(1).max(120),
         mp_atraso_repetir_dias: z.number().int().min(1).max(30),
         os_nao_urgente_lembrete_diario: z.boolean(),
+        notificar_conclusao: z.boolean().default(false),
       })
       .parse(input),
   )
+
   .handler(async ({ data, context }) => {
     const { data: perfil } = await context.supabase
       .from("profiles")
