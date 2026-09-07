@@ -100,6 +100,16 @@ export const notificarOS = createServerFn({ method: "POST" })
     return notificarAberturaOS(data.osId);
   });
 
+/** Encerra todos os alertas/lembretes de uma OS concluída. */
+export const encerrarAlertasOS = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ osId: z.string().uuid() }).parse(input))
+  .handler(async ({ data }) => {
+    const { encerrarNotificacoesOS } = await import("./push.server");
+    return encerrarNotificacoesOS(data.osId);
+  });
+
+
 export const confirmarNotificacao = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
@@ -235,9 +245,11 @@ export const salvarConfigEscalonamento = createServerFn({ method: "POST" })
         extrema_repeticao_min: z.number().int().min(1).max(120),
         mp_atraso_repetir_dias: z.number().int().min(1).max(30),
         os_nao_urgente_lembrete_diario: z.boolean(),
+        notificar_conclusao: z.boolean().default(false),
       })
       .parse(input),
   )
+
   .handler(async ({ data, context }) => {
     const { data: perfil } = await context.supabase
       .from("profiles")

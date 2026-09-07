@@ -121,5 +121,7 @@ export const configNotificacaoQuery = () =>
         extrema_repeticao_min: number;
         mp_atraso_repetir_dias: number;
         os_nao_urgente_lembrete_diario: boolean;
+        notificar_conclusao: boolean;
+
       }>(await supabase.from("notificacao_config").select("*").eq("id", true).single()),
   });

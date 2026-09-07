@@ -41,6 +41,9 @@ import { ArrowLeft } from "lucide-react";
 import { UsarPecaOS } from "@/components/usar-peca-os";
 import { EditarOS } from "@/components/editar-os";
 import { SolicitarExclusaoOS } from "@/components/solicitar-exclusao-os";
+import { useServerFn } from "@tanstack/react-start";
+import { encerrarAlertasOS } from "@/lib/push.functions";
+
 
 
 type ExecForm = {
@@ -62,7 +65,10 @@ function OSDetail() {
   const navigate = useNavigate();
   const qc = useQueryClient();
 
+  const encerrarAlertas = useServerFn(encerrarAlertasOS);
+
   const { data: os } = useQuery(osQuery(id));
+
   const { data: custos = [] } = useQuery(osCustosDetalhadosQuery(id));
   const { data: coments = [] } = useQuery(osComentariosQuery(id));
   const { data: hist = [] } = useQuery(osHistoricoQuery(id));
@@ -145,7 +151,14 @@ function OSDetail() {
       },
       "OS concluída.",
     );
+    try {
+      await encerrarAlertas({ data: { osId: id } });
+      await qc.invalidateQueries({ queryKey: ["notificacoes", "me"] });
+    } catch {
+      /* a OS já foi concluída; os alertas também param pela verificação no servidor */
+    }
   }
+
 
   async function cancelar() {
     const motivo = prompt("Motivo do cancelamento:");
