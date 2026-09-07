@@ -395,6 +395,29 @@ function NotificacoesConfig() {
 
           <Card>
             <CardHeader>
+              <CardTitle>Aviso de conclusão de OS (somente MOACIR)</CardTitle>
+              <CardDescription>
+                Ao concluir uma OS todos os alertas dela param imediatamente. Aqui você escolhe se deseja receber um
+                único aviso informando a conclusão.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center justify-between">
+              <Label htmlFor="conclusao" className="font-normal">Enviar aviso único de OS concluída</Label>
+              <Switch
+                id="conclusao"
+                checked={(config as any)?.notificar_conclusao ?? false}
+                onCheckedChange={(v) =>
+                  salvarCfg({ data: { ...(config as any), notificar_conclusao: v } }).then(() =>
+                    qc.invalidateQueries({ queryKey: ["notificacao_config"] }),
+                  )
+                }
+              />
+            </CardContent>
+          </Card>
+
+
+          <Card>
+            <CardHeader>
               <CardTitle>Dispositivos de todos os usuários</CardTitle>
               <CardDescription>Consulte e revogue aparelhos cadastrados.</CardDescription>
             </CardHeader>
