@@ -33,7 +33,6 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    ensureMaster({}).catch((e) => console.warn("bootstrap:", e));
     // Sessão local: evita erro de rede/refresh token inválido travando a tela.
     supabase.auth
       .getSession()
