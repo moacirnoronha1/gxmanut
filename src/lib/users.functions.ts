@@ -18,33 +18,39 @@ const usernameSchema = z.preprocess(
 
 // Public bootstrap: creates MOACIR if missing. Idempotent.
 export const ensureMasterUser = createServerFn({ method: "POST" }).handler(async () => {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const email = usernameToEmail(MASTER_USERNAME);
+  // Nunca lança: falha de rede aqui não pode derrubar a tela de login.
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const email = usernameToEmail(MASTER_USERNAME);
 
-  const { data: existing } = await supabaseAdmin
-    .from("profiles")
-    .select("id")
-    .eq("is_master", true)
-    .limit(1)
-    .maybeSingle();
-  if (existing) return { ok: true, created: false as const };
+    const { data: existing } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("is_master", true)
+      .limit(1)
+      .maybeSingle();
+    if (existing) return { ok: true, created: false };
 
-  const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
-    email,
-    password: MASTER_PASSWORD,
-    email_confirm: true,
-    user_metadata: {
-      username: MASTER_USERNAME,
-      nome_completo: "MOACIR",
-      is_master: true,
-      must_change_password: false,
-    },
-  });
-  if (error || !created.user) throw new Error(error?.message ?? "Falha ao criar usuário mestre");
+    const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password: MASTER_PASSWORD,
+      email_confirm: true,
+      user_metadata: {
+        username: MASTER_USERNAME,
+        nome_completo: "MOACIR",
+        is_master: true,
+        must_change_password: false,
+      },
+    });
+    if (error || !created.user) return { ok: false, created: false };
 
-  await supabaseAdmin.from("profiles").update({ is_master: true, username: MASTER_USERNAME, nome_completo: "MOACIR" }).eq("id", created.user.id);
-  await supabaseAdmin.from("user_roles").insert({ user_id: created.user.id, role: "mestre" });
-  return { ok: true, created: true as const };
+    await supabaseAdmin.from("profiles").update({ is_master: true, username: MASTER_USERNAME, nome_completo: "MOACIR" }).eq("id", created.user.id);
+    await supabaseAdmin.from("user_roles").insert({ user_id: created.user.id, role: "mestre" });
+    return { ok: true, created: true };
+  } catch (e) {
+    console.warn("ensureMasterUser:", e);
+    return { ok: false, created: false };
+  }
 });
 
 // Resolve username → synthetic email (client uses this for login).

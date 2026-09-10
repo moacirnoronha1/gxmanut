@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { ensureMasterUser, registrarAcesso } from "@/lib/users.functions";
+import { registrarAcesso } from "@/lib/users.functions";
 import { usernameToEmail } from "@/lib/username";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
@@ -25,7 +25,6 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const ensureMaster = useServerFn(ensureMasterUser);
   
   const registrarAcessoFn = useServerFn(registrarAcesso);
   const [username, setUsername] = useState("");
@@ -34,7 +33,6 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    ensureMaster({}).catch((e) => console.warn("bootstrap:", e));
     // Sessão local: evita erro de rede/refresh token inválido travando a tela.
     supabase.auth
       .getSession()
@@ -49,7 +47,7 @@ function AuthPage() {
         navigate({ to: "/", replace: true });
       })
       .catch(() => {});
-  }, [ensureMaster, navigate]);
+  }, [navigate]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
