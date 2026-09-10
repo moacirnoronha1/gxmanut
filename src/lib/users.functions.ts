@@ -2,13 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-const USER_DOMAIN = "xica.local";
+import { usernameToEmail } from "@/lib/username";
+
 const MASTER_USERNAME = "moacir";
 const MASTER_PASSWORD = "3101";
-
-function usernameToEmail(username: string): string {
-  return `${username.trim().toLowerCase()}@${USER_DOMAIN}`;
-}
 
 const usernameSchema = z.preprocess(
   (v) => (typeof v === "string" ? v.trim().toLowerCase().replace(/\s+/g, "") : v),

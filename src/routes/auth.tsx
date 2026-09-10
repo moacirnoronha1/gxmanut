@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { ensureMasterUser, resolveLoginEmail, registrarAcesso } from "@/lib/users.functions";
+import { ensureMasterUser, registrarAcesso } from "@/lib/users.functions";
+import { usernameToEmail } from "@/lib/username";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const ensureMaster = useServerFn(ensureMasterUser);
-  const resolve = useServerFn(resolveLoginEmail);
+  
   const registrarAcessoFn = useServerFn(registrarAcesso);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -58,13 +59,17 @@ function AuthPage() {
       const { data: current } = await supabase.auth.getSession();
       if (current.session) await supabase.auth.signOut().catch(() => {});
 
-      const { email } = await resolve({ data: { username } });
+      // E-mail interno é derivado do usuário no próprio navegador: sem depender de rede extra.
+      const email = usernameToEmail(username);
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
+        const rede = /load failed|failed to fetch|network|timeout/i.test(error.message);
         throw new Error(
           /invalid login/i.test(error.message)
             ? "Usuário ou senha inválidos."
-            : `Falha ao entrar: ${error.message}`,
+            : rede
+              ? "Sem conexão no momento. Verifique a internet e tente novamente."
+              : `Falha ao entrar: ${error.message}`,
         );
       }
       if (!data.session) throw new Error("Não foi possível iniciar a sessão. Tente novamente.");
