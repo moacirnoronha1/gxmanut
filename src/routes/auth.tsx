@@ -26,7 +26,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const ensureMaster = useServerFn(ensureMasterUser);
-  const resolve = useServerFn(resolveLoginEmail);
+  
   const registrarAcessoFn = useServerFn(registrarAcesso);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -59,7 +59,8 @@ function AuthPage() {
       const { data: current } = await supabase.auth.getSession();
       if (current.session) await supabase.auth.signOut().catch(() => {});
 
-      const { email } = await resolve({ data: { username } });
+      // E-mail interno é derivado do usuário no próprio navegador: sem depender de rede extra.
+      const email = usernameToEmail(username);
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         throw new Error(
