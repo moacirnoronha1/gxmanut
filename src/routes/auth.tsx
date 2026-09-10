@@ -63,10 +63,13 @@ function AuthPage() {
       const email = usernameToEmail(username);
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
+        const rede = /load failed|failed to fetch|network|timeout/i.test(error.message);
         throw new Error(
           /invalid login/i.test(error.message)
             ? "Usuário ou senha inválidos."
-            : `Falha ao entrar: ${error.message}`,
+            : rede
+              ? "Sem conexão no momento. Verifique a internet e tente novamente."
+              : `Falha ao entrar: ${error.message}`,
         );
       }
       if (!data.session) throw new Error("Não foi possível iniciar a sessão. Tente novamente.");
