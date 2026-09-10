@@ -47,7 +47,7 @@ function AuthPage() {
         navigate({ to: "/", replace: true });
       })
       .catch(() => {});
-  }, [ensureMaster, navigate]);
+  }, [navigate]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
