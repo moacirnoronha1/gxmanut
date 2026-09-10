@@ -25,7 +25,6 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const ensureMaster = useServerFn(ensureMasterUser);
   
   const registrarAcessoFn = useServerFn(registrarAcesso);
   const [username, setUsername] = useState("");
