@@ -3392,6 +3392,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      concluir_ordem_servico: {
+        Args: {
+          p_correcao?: string
+          p_diagnostico?: string
+          p_materiais_utilizados?: string
+          p_os_id: string
+          p_resultado_testes?: string
+          p_testes_realizados?: string
+        }
+        Returns: Json
+      }
       editar_ordem_servico: {
         Args: {
           p_alteracoes?: Json

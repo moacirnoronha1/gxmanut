@@ -109,6 +109,32 @@ export const encerrarAlertasOS = createServerFn({ method: "POST" })
     return encerrarNotificacoesOS(data.osId);
   });
 
+/** Conclui a OS e grava execução, usuário e horário em uma única operação no banco. */
+export const concluirOrdemServico = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({
+      osId: z.string().uuid(),
+      diagnostico: z.string().optional(),
+      correcao: z.string().optional(),
+      materiais: z.string().optional(),
+      testes: z.string().optional(),
+      resultado: z.string().optional(),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { data: resultado, error } = await context.supabase.rpc("concluir_ordem_servico", {
+      p_os_id: data.osId,
+      p_diagnostico: data.diagnostico,
+      p_correcao: data.correcao,
+      p_materiais_utilizados: data.materiais,
+      p_testes_realizados: data.testes,
+      p_resultado_testes: data.resultado,
+    });
+    if (error) throw new Error(error.message);
+    return resultado;
+  });
+
 
 export const confirmarNotificacao = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
