@@ -125,11 +125,11 @@ export const concluirOrdemServico = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: resultado, error } = await context.supabase.rpc("concluir_ordem_servico", {
       p_os_id: data.osId,
-      p_diagnostico: data.diagnostico ?? null,
-      p_correcao: data.correcao ?? null,
-      p_materiais_utilizados: data.materiais ?? null,
-      p_testes_realizados: data.testes ?? null,
-      p_resultado_testes: data.resultado ?? null,
+      p_diagnostico: data.diagnostico,
+      p_correcao: data.correcao,
+      p_materiais_utilizados: data.materiais,
+      p_testes_realizados: data.testes,
+      p_resultado_testes: data.resultado,
     });
     if (error) throw new Error(error.message);
     return resultado;
