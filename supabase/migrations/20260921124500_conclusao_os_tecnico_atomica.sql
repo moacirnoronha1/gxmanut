@@ -10,7 +10,7 @@ CREATE OR REPLACE FUNCTION public.concluir_ordem_servico(
 )
 RETURNS jsonb
 LANGUAGE plpgsql
-SECURITY DEFINER
+SECURITY INVOKER
 SET search_path TO 'public'
 AS $function$
 DECLARE
