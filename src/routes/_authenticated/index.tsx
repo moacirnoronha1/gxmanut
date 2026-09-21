@@ -10,6 +10,7 @@ import { formatDateTime } from "@/lib/db-types";
 import { ClipboardList, AlertTriangle, CheckCircle2, Wrench, Trash2 } from "lucide-react";
 import { useSessaoUsuario } from "@/lib/sessao";
 import { exclusoesOSQuery } from "@/lib/exclusao-os";
+import { osEstaAberta, osEstaFinalizada } from "@/lib/os-status";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({ meta: [{ title: "Painel — Manutenção Xica da Silva" }] }),
@@ -30,12 +31,12 @@ function Dashboard() {
   const statusMap = new Map(status.map((s) => [s.id, s]));
   const urgMap = new Map(urgencias.map((u) => [u.id, u]));
 
-  const abertas = ordens.filter((o) => !statusMap.get(o.status_id ?? "")?.is_final).length;
-  const finalizadas = ordens.filter((o) => statusMap.get(o.status_id ?? "")?.is_final).length;
+  const abertas = ordens.filter((o) => osEstaAberta(o, statusMap)).length;
+  const finalizadas = ordens.filter((o) => osEstaFinalizada(o, statusMap)).length;
   const criticas = ordens.filter((o) => {
     const u = urgMap.get(o.urgencia_id ?? "");
     const s = statusMap.get(o.status_id ?? "");
-    return u && !s?.is_final && (u.nome === "Crítica" || u.nome === "Alta");
+    return u && osEstaAberta(o, statusMap) && (u.nome === "Crítica" || u.nome === "Alta");
   }).length;
 
   const recentes = ordens.slice(0, 8);

@@ -12,6 +12,7 @@ import { minhasEquipesQuery, tempoEmAberto, nivelUrgencia } from "@/lib/equipe-o
 import { useSessaoUsuario } from "@/lib/sessao";
 import { formatDateTime } from "@/lib/db-types";
 import { AlertTriangle } from "lucide-react";
+import { osEstaAberta } from "@/lib/os-status";
 
 export const Route = createFileRoute("/_authenticated/ordens/")({
   head: () => ({
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/ordens/")({
   component: OrdensList,
 });
 
-type Aba = "disponiveis" | "minhas" | "todas";
+type Aba = "abertas" | "disponiveis" | "minhas" | "todas";
 
 function OrdensList() {
   const { data: ordens = [] } = useQuery(ordensQuery());
@@ -35,7 +36,7 @@ function OrdensList() {
   const { perfil } = useSessaoUsuario();
   const meuId = perfil?.id ?? "";
 
-  const [aba, setAba] = useState<Aba>("disponiveis");
+  const [aba, setAba] = useState<Aba>("abertas");
   const [q, setQ] = useState("");
   const [statusF, setStatusF] = useState<string>("all");
   const [urgF, setUrgF] = useState<string>("all");
@@ -46,21 +47,21 @@ function OrdensList() {
   const setorMap = new Map(setores.map((s) => [s.id, s]));
   const eqMap = new Map(equipamentos.map((e) => [e.id, e]));
 
-  const concluidaOuCancelada = (statusId: string | null) => {
-    const n = (statusMap.get(statusId ?? "")?.nome ?? "").toLowerCase();
-    return n.includes("conclu") || n.includes("cancel");
-  };
+  const abertas = useMemo(
+    () => ordens.filter((o) => osEstaAberta(o, statusMap)),
+    [ordens, status],
+  );
 
   const disponiveis = useMemo(
-    () => ordens.filter((o) => !o.assumida_por && !o.tecnico_id && !o.concluida_em && !concluidaOuCancelada(o.status_id)),
-    [ordens, status],
+    () => abertas.filter((o) => !o.assumida_por && !o.tecnico_id),
+    [abertas],
   );
   const minhas = useMemo(
     () => ordens.filter((o) => o.assumida_por === meuId || o.tecnico_id === meuId || minhasEquipes.includes(o.id)),
     [ordens, meuId, minhasEquipes],
   );
 
-  const base = aba === "disponiveis" ? disponiveis : aba === "minhas" ? minhas : ordens;
+  const base = aba === "abertas" ? abertas : aba === "disponiveis" ? disponiveis : aba === "minhas" ? minhas : ordens;
 
   const filtered = useMemo(() => {
     const lista = base.filter((o) => {
@@ -96,7 +97,8 @@ function OrdensList() {
       </div>
 
       <Tabs value={aba} onValueChange={(v) => setAba(v as Aba)}>
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid h-auto w-full grid-cols-2 sm:grid-cols-4">
+          <TabsTrigger value="abertas">Abertas ({abertas.length})</TabsTrigger>
           <TabsTrigger value="disponiveis">OS Disponíveis ({disponiveis.length})</TabsTrigger>
           <TabsTrigger value="minhas">Minhas OS ({minhas.length})</TabsTrigger>
           <TabsTrigger value="todas">Todas ({ordens.length})</TabsTrigger>
@@ -135,7 +137,9 @@ function OrdensList() {
           <div className="divide-y">
             {filtered.length === 0 && (
               <div className="p-8 text-center text-sm text-muted-foreground">
-                {aba === "disponiveis"
+                {aba === "abertas"
+                  ? "Nenhuma OS aberta no momento."
+                  : aba === "disponiveis"
                   ? "Nenhuma OS disponível no momento."
                   : aba === "minhas"
                     ? "Você ainda não assumiu nenhuma OS."

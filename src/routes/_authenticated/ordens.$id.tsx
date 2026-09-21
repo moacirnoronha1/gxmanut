@@ -42,7 +42,7 @@ import { UsarPecaOS } from "@/components/usar-peca-os";
 import { EditarOS } from "@/components/editar-os";
 import { SolicitarExclusaoOS } from "@/components/solicitar-exclusao-os";
 import { useServerFn } from "@tanstack/react-start";
-import { encerrarAlertasOS } from "@/lib/push.functions";
+import { concluirOrdemServico, encerrarAlertasOS } from "@/lib/push.functions";
 
 
 
@@ -66,6 +66,7 @@ function OSDetail() {
   const qc = useQueryClient();
 
   const encerrarAlertas = useServerFn(encerrarAlertasOS);
+  const concluirOS = useServerFn(concluirOrdemServico);
 
   const { data: os } = useQuery(osQuery(id));
 
@@ -138,24 +139,18 @@ function OSDetail() {
     );
   }
   async function concluir(form: ExecForm) {
-    const conc = status.find((x) => x.nome.toLowerCase().includes("conclu"));
-    await updateOS(
-      {
-        status_id: conc?.id ?? os!.status_id,
-        concluida_em: new Date().toISOString(),
-        diagnostico: form.diagnostico,
-        correcao: form.correcao,
-        materiais_utilizados: form.materiais,
-        testes_realizados: form.testes,
-        resultado_testes: form.resultado,
-      },
-      "OS concluída.",
-    );
     try {
+      await concluirOS({ data: { osId: id, ...form } });
+      toast.success("OS concluída.");
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["os", id] }),
+        qc.invalidateQueries({ queryKey: ["ordens_servico"] }),
+        qc.invalidateQueries({ queryKey: ["os_hist", id] }),
+      ]);
       await encerrarAlertas({ data: { osId: id } });
       await qc.invalidateQueries({ queryKey: ["notificacoes", "me"] });
-    } catch {
-      /* a OS já foi concluída; os alertas também param pela verificação no servidor */
+    } catch (error) {
+      showDbError({ message: error instanceof Error ? error.message : "Não foi possível concluir a OS." });
     }
   }
 
