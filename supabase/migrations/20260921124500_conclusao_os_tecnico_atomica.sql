@@ -45,14 +45,14 @@ BEGIN
   SELECT s.id INTO v_status_concluida
   FROM public.status_os s
   WHERE s.ativo = true AND s.is_final = true
-    AND lower(public.unaccent(s.nome)) = 'concluida'
+    AND lower(s.nome) IN ('concluída', 'concluida')
   ORDER BY s.ordem LIMIT 1;
 
   IF v_status_concluida IS NULL THEN
     SELECT s.id INTO v_status_concluida
     FROM public.status_os s
     WHERE s.ativo = true AND s.is_final = true
-      AND lower(public.unaccent(s.nome)) LIKE '%conclu%'
+      AND lower(s.nome) LIKE 'conclu%'
     ORDER BY s.ordem LIMIT 1;
   END IF;
 
