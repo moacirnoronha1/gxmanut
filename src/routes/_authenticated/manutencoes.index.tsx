@@ -61,7 +61,6 @@ function ManutencoesPage() {
   const { data: fornecedores = [] } = useQuery(fornecedoresQuery());
   const { data: profiles = [] } = useQuery(profilesQuery());
   const { data: me } = useQuery(myProfileQuery());
-  const { data: checklists = [] } = useQuery(checklistsQuery(form.equipamento_id === "none" ? undefined : form.equipamento_id));
 
   const perMap = useMemo(() => new Map(periodicidades.map((p) => [p.id, p])), [periodicidades]);
   const equipMap = useMemo(() => new Map(equipamentos.map((e) => [e.id, e])), [equipamentos]);
@@ -122,6 +121,7 @@ function ManutencoesPage() {
   const [open, setOpen] = useState(false);
   const [checklistOpen, setChecklistOpen] = useState(false);
   const [form, setForm] = useState(FORM_INICIAL);
+  const { data: checklists = [] } = useQuery(checklistsQuery(form.equipamento_id === "none" ? undefined : form.equipamento_id));
   const [lembretes, setLembretes] = useState<Lembrete[]>([{ dias_antes: 1, canais: ["painel"], destinatarios: ["tecnico"] }]);
   const perSel = perMap.get(form.periodicidade_id);
 
@@ -130,8 +130,15 @@ function ManutencoesPage() {
 
   async function salvar() {
     if (!form.nome.trim()) return toast.error("Informe o nome da manutenção.");
+    if (form.equipamento_id === "none") return toast.error("Selecione o equipamento.");
     if (!form.periodicidade_id) return toast.error("Escolha a periodicidade.");
-    const checklist = form.checklist.split("\n").map((s) => s.trim()).filter(Boolean);
+    let checklist = form.checklist.split("\n").map((s) => s.trim()).filter(Boolean);
+    if (form.checklist_id !== "none") {
+      const { data: itens, error: checklistError } = await supabase.from("checklist_itens")
+        .select("componente, pergunta").eq("checklist_id", form.checklist_id).order("ordem");
+      if (checklistError) return showDbError(checklistError, "checklist");
+      checklist = (itens ?? []).map((item) => item.componente ? `${item.componente}: ${item.pergunta}` : item.pergunta);
+    }
     const payload = {
       nome: form.nome.trim(),
       equipamento_id: sel(form.equipamento_id),

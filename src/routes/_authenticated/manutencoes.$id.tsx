@@ -329,12 +329,19 @@ function EditarPlano({ open, onOpenChange, mp, equipamentos, periodicidades, pro
     if (form.equipamento_id === "none") return toast.error("Selecione o equipamento.");
     if (form.periodicidade_id === "none") return toast.error("Defina a periodicidade.");
     setSalvando(true);
+    let checklist = form.checklist.split("\n").map((item) => item.trim()).filter(Boolean);
+    if (form.checklist_id !== "none") {
+      const { data: itens, error: checklistError } = await supabase.from("checklist_itens")
+        .select("componente, pergunta").eq("checklist_id", form.checklist_id).order("ordem");
+      if (checklistError) { setSalvando(false); return showDbError(checklistError, "checklist"); }
+      checklist = (itens ?? []).map((item) => item.componente ? `${item.componente}: ${item.pergunta}` : item.pergunta);
+    }
     const { error } = await supabase.from("manutencoes_periodicas").update({
       nome: form.nome.trim(), equipamento_id: form.equipamento_id,
       descricao: form.descricao.trim() || null, procedimento: form.procedimento.trim() || null,
       periodicidade_id: form.periodicidade_id, data_inicio: form.data_inicio || null,
       proxima_execucao: form.proxima_execucao || null, checklist_id: form.checklist_id === "none" ? null : form.checklist_id,
-      checklist: form.checklist.split("\n").map((item) => item.trim()).filter(Boolean),
+      checklist,
       materiais: form.materiais.trim() || null, observacoes: form.observacoes.trim() || null,
       tecnico_id: form.tecnico_id === "none" ? null : form.tecnico_id,
     }).eq("id", mp.id);
