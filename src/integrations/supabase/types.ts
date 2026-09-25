@@ -1609,10 +1609,60 @@ export type Database = {
         }
         Relationships: []
       }
+      manutencao_auditoria: {
+        Row: {
+          acao: string
+          created_at: string
+          detalhes: Json
+          entidade: string
+          id: string
+          manutencao_id: string | null
+          registro_id: string
+          usuario_id: string | null
+        }
+        Insert: {
+          acao: string
+          created_at?: string
+          detalhes?: Json
+          entidade: string
+          id?: string
+          manutencao_id?: string | null
+          registro_id: string
+          usuario_id?: string | null
+        }
+        Update: {
+          acao?: string
+          created_at?: string
+          detalhes?: Json
+          entidade?: string
+          id?: string
+          manutencao_id?: string | null
+          registro_id?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manutencao_auditoria_manutencao_id_fkey"
+            columns: ["manutencao_id"]
+            isOneToOne: false
+            referencedRelation: "manutencoes_periodicas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manutencao_auditoria_usuario_id_fkey"
+            columns: ["usuario_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       manutencoes_periodicas: {
         Row: {
+          atualizado_por: string | null
           categoria_id: string | null
           checklist: Json
+          checklist_id: string | null
           created_at: string
           criado_por: string | null
           data_inicio: string | null
@@ -1649,8 +1699,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          atualizado_por?: string | null
           categoria_id?: string | null
           checklist?: Json
+          checklist_id?: string | null
           created_at?: string
           criado_por?: string | null
           data_inicio?: string | null
@@ -1687,8 +1739,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          atualizado_por?: string | null
           categoria_id?: string | null
           checklist?: Json
+          checklist_id?: string | null
           created_at?: string
           criado_por?: string | null
           data_inicio?: string | null
@@ -1726,10 +1780,24 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "manutencoes_periodicas_atualizado_por_fkey"
+            columns: ["atualizado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "manutencoes_periodicas_categoria_id_fkey"
             columns: ["categoria_id"]
             isOneToOne: false
             referencedRelation: "categorias_problema"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manutencoes_periodicas_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "checklists"
             referencedColumns: ["id"]
           },
           {
@@ -1792,10 +1860,12 @@ export type Database = {
       }
       mp_execucoes: {
         Row: {
+          atualizado_por: string | null
           checklist_respostas: Json
           concluida_em: string | null
           correcao: string | null
           created_at: string
+          criado_por: string | null
           custo_total: number
           data_programada: string
           diagnostico: string | null
@@ -1819,10 +1889,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          atualizado_por?: string | null
           checklist_respostas?: Json
           concluida_em?: string | null
           correcao?: string | null
           created_at?: string
+          criado_por?: string | null
           custo_total?: number
           data_programada: string
           diagnostico?: string | null
@@ -1846,10 +1918,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          atualizado_por?: string | null
           checklist_respostas?: Json
           concluida_em?: string | null
           correcao?: string | null
           created_at?: string
+          criado_por?: string | null
           custo_total?: number
           data_programada?: string
           diagnostico?: string | null
@@ -1873,6 +1947,20 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "mp_execucoes_atualizado_por_fkey"
+            columns: ["atualizado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mp_execucoes_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "mp_execucoes_manutencao_id_fkey"
             columns: ["manutencao_id"]

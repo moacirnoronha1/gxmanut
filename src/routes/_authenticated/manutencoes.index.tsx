@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import { showDbError } from "@/lib/db-error";
 import { equipamentosQuery, setoresQuery, categoriasQuery, fornecedoresQuery, profilesQuery, myProfileQuery } from "@/lib/queries";
 import { periodicidadesQuery, manutencoesQuery } from "@/lib/mp-queries";
+import { checklistsQuery } from "@/lib/checklist-queries";
+import { ChecklistFormDialog } from "@/components/checklist-form";
 import {
   DIAS_SEMANA, REGRAS_MENSAIS, PRIORIDADES, SITUACOES, GERACAO_OS, CANAIS_ALERTA, DESTINATARIOS, ANTECEDENCIAS,
   diffDias, grupoPeriodicidade, hojeISO, statusManutencao, toISODate,
@@ -30,6 +32,8 @@ export const Route = createFileRoute("/_authenticated/manutencoes/")({
       { name: "description", content: "Cadastre, acompanhe e receba lembretes das manutenções preventivas periódicas." },
       { property: "og:title", content: "Manutenções Periódicas" },
       { property: "og:description", content: "Planejamento e acompanhamento das manutenções preventivas." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ManutencoesPage,
@@ -45,7 +49,7 @@ const FORM_INICIAL = {
   dias_semana: [] as number[], regra_mensal: "none", dia_mes: "", mes_ano: "",
   data_inicio: hojeISO(), primeira_execucao: hojeISO(), horario_preferencial: "",
   responsavel_id: "none", tecnico_id: "none", tecnico_substituto_id: "none",
-  tempo_estimado_min: "", prioridade: "normal", checklist: "", materiais: "", ferramentas: "",
+  tempo_estimado_min: "", prioridade: "normal", checklist_id: "none", checklist: "", materiais: "", ferramentas: "",
   fornecedor_id: "none", observacoes: "", situacao: "ativa", geracao_os: "lembrete",
 };
 
@@ -117,7 +121,9 @@ function ManutencoesPage() {
 
   // cadastro
   const [open, setOpen] = useState(false);
+  const [checklistOpen, setChecklistOpen] = useState(false);
   const [form, setForm] = useState(FORM_INICIAL);
+  const { data: checklists = [] } = useQuery(checklistsQuery(form.equipamento_id === "none" ? undefined : form.equipamento_id));
   const [lembretes, setLembretes] = useState<Lembrete[]>([{ dias_antes: 1, canais: ["painel"], destinatarios: ["tecnico"] }]);
   const perSel = perMap.get(form.periodicidade_id);
 
@@ -126,8 +132,15 @@ function ManutencoesPage() {
 
   async function salvar() {
     if (!form.nome.trim()) return toast.error("Informe o nome da manutenção.");
+    if (form.equipamento_id === "none") return toast.error("Selecione o equipamento.");
     if (!form.periodicidade_id) return toast.error("Escolha a periodicidade.");
-    const checklist = form.checklist.split("\n").map((s) => s.trim()).filter(Boolean);
+    let checklist = form.checklist.split("\n").map((s) => s.trim()).filter(Boolean);
+    if (form.checklist_id !== "none") {
+      const { data: itens, error: checklistError } = await supabase.from("checklist_itens")
+        .select("componente, pergunta").eq("checklist_id", form.checklist_id).order("ordem");
+      if (checklistError) return showDbError(checklistError, "checklist");
+      checklist = (itens ?? []).map((item) => item.componente ? `${item.componente}: ${item.pergunta}` : item.pergunta);
+    }
     const payload = {
       nome: form.nome.trim(),
       equipamento_id: sel(form.equipamento_id),
@@ -151,6 +164,7 @@ function ManutencoesPage() {
       tecnico_substituto_id: sel(form.tecnico_substituto_id),
       tempo_estimado_min: form.tempo_estimado_min ? Number(form.tempo_estimado_min) : null,
       prioridade: form.prioridade,
+      checklist_id: sel(form.checklist_id),
       checklist,
       materiais: nn(form.materiais),
       ferramentas: nn(form.ferramentas),
@@ -158,7 +172,6 @@ function ManutencoesPage() {
       observacoes: nn(form.observacoes),
       situacao: form.situacao,
       geracao_os: form.geracao_os,
-      criado_por: me?.id ?? null,
     };
     const { data, error } = await supabase.from("manutencoes_periodicas").insert(payload).select("id").single();
     if (error) return showDbError(error, "manutencao");
@@ -192,7 +205,7 @@ function ManutencoesPage() {
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="sm:col-span-2"><Label>Nome da manutenção *</Label><Input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} /></div>
                   <Campo label="Equipamento">
-                    <Select value={form.equipamento_id} onValueChange={(v) => setForm({ ...form, equipamento_id: v })}>
+                    <Select value={form.equipamento_id} onValueChange={(v) => setForm({ ...form, equipamento_id: v, checklist_id: "none" })}>
                       <SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger>
                       <SelectContent><SelectItem value="none">Nenhum</SelectItem>{equipamentos.map((e) => <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>)}</SelectContent>
                     </Select>
@@ -290,6 +303,16 @@ function ManutencoesPage() {
                     </Select>
                   </Campo>
                   <div className="sm:col-span-2"><Label>Checklist (um item por linha)</Label><Textarea rows={4} value={form.checklist} onChange={(e) => setForm({ ...form, checklist: e.target.value })} /></div>
+                  <div className="sm:col-span-2">
+                    <Label>Checklist do equipamento</Label>
+                    <div className="flex gap-2">
+                      <Select value={form.checklist_id} onValueChange={(v) => setForm({ ...form, checklist_id: v })} disabled={form.equipamento_id === "none"}>
+                        <SelectTrigger><SelectValue placeholder="Selecionar checklist" /></SelectTrigger>
+                        <SelectContent><SelectItem value="none">Sem vínculo</SelectItem>{checklists.map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}</SelectContent>
+                      </Select>
+                      <Button type="button" variant="outline" disabled={form.equipamento_id === "none"} onClick={() => { setOpen(false); setChecklistOpen(true); }}>Criar</Button>
+                    </div>
+                  </div>
                   <Campo label="Materiais necessários"><Textarea value={form.materiais} onChange={(e) => setForm({ ...form, materiais: e.target.value })} /></Campo>
                   <Campo label="Ferramentas necessárias"><Textarea value={form.ferramentas} onChange={(e) => setForm({ ...form, ferramentas: e.target.value })} /></Campo>
                   <div className="sm:col-span-2"><Label>Observações</Label><Textarea value={form.observacoes} onChange={(e) => setForm({ ...form, observacoes: e.target.value })} /></div>
@@ -332,6 +355,13 @@ function ManutencoesPage() {
               </div>
             </DialogContent>
           </Dialog>
+          {form.equipamento_id !== "none" && (
+            <ChecklistFormDialog
+              equipamentoId={form.equipamento_id}
+              open={checklistOpen}
+              onOpenChange={(value) => { setChecklistOpen(value); if (!value) setOpen(true); }}
+            />
+          )}
         </div>
       </div>
 

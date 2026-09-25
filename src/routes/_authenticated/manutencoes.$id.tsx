@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { showDbError } from "@/lib/db-error";
 import { equipamentosQuery, setoresQuery, profilesQuery, myProfileQuery, statusOsQuery } from "@/lib/queries";
-import { manutencaoQuery, mpExecucoesQuery, mpLembretesQuery, mpReagendamentosQuery, periodicidadesQuery } from "@/lib/mp-queries";
+import { manutencaoQuery, mpAuditoriaQuery, mpExecucoesQuery, mpLembretesQuery, mpReagendamentosQuery, periodicidadesQuery } from "@/lib/mp-queries";
+import { checklistsQuery } from "@/lib/checklist-queries";
+import { ChecklistFormDialog } from "@/components/checklist-form";
 import {
   ANTECEDENCIAS, CANAIS_ALERTA, DESTINATARIOS, SITUACOES, GERACAO_OS,
   calcularProximaData, diffDias, formatarSituacao, hojeISO, statusManutencao,
@@ -24,7 +26,14 @@ import {
 import { formatDate, formatDateTime, formatBRL } from "@/lib/db-types";
 
 export const Route = createFileRoute("/_authenticated/manutencoes/$id")({
-  head: () => ({ meta: [{ title: "Manutenção periódica — Manutenção Xica da Silva" }] }),
+  head: () => ({ meta: [
+    { title: "Manutenção preventiva — Manutenção Xica da Silva" },
+    { name: "description", content: "Acompanhe, edite, reagende e registre a execução da manutenção preventiva." },
+    { property: "og:title", content: "Manutenção preventiva — Manutenção Xica da Silva" },
+    { property: "og:description", content: "Detalhes e histórico da manutenção preventiva." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: DetalheManutencao,
 });
 
@@ -36,12 +45,17 @@ function DetalheManutencao() {
   const { data: execucoes = [] } = useQuery(mpExecucoesQuery(id));
   const { data: lembretes = [] } = useQuery(mpLembretesQuery(id));
   const { data: reags = [] } = useQuery(mpReagendamentosQuery(id));
+  const { data: auditoria = [] } = useQuery(mpAuditoriaQuery(id));
   const { data: periodicidades = [] } = useQuery(periodicidadesQuery());
   const { data: equipamentos = [] } = useQuery(equipamentosQuery());
   const { data: setores = [] } = useQuery(setoresQuery());
   const { data: profiles = [] } = useQuery(profilesQuery());
   const { data: status = [] } = useQuery(statusOsQuery());
   const { data: me } = useQuery(myProfileQuery());
+  const { data: checklists = [] } = useQuery(checklistsQuery(mp?.equipamento_id ?? undefined));
+  const [editarOpen, setEditarOpen] = useState(false);
+  const [checklistOpen, setChecklistOpen] = useState(false);
+  const [checklistEquipamentoId, setChecklistEquipamentoId] = useState<string | null>(null);
 
   const per = useMemo(() => periodicidades.find((p) => p.id === mp?.periodicidade_id), [periodicidades, mp]);
   const prof = (pid: string | null) => profiles.find((p) => p.id === pid)?.nome ?? "—";
@@ -53,6 +67,7 @@ function DetalheManutencao() {
       qc.invalidateQueries({ queryKey: ["mp_execucoes"] }),
       qc.invalidateQueries({ queryKey: ["mp_reag", id] }),
       qc.invalidateQueries({ queryKey: ["manutencoes_periodicas"] }),
+      qc.invalidateQueries({ queryKey: ["manutencao_auditoria", id] }),
     ]);
   };
 
@@ -126,6 +141,7 @@ function DetalheManutencao() {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => setEditarOpen(true)}>Editar plano</Button>
           {!emAberto && mp.situacao === "ativa" && <Button onClick={iniciar}>Iniciar manutenção</Button>}
           <Reagendar mpId={id} atual={mp.proxima_execucao} usuarioId={me?.id ?? null} onDone={refresh} />
           <Button variant="outline" onClick={() => void gerarOS(emAberto?.id)}>Gerar OS</Button>
@@ -135,6 +151,25 @@ function DetalheManutencao() {
           </Select>
         </div>
       </div>
+
+      <EditarPlano
+        open={editarOpen}
+        onOpenChange={setEditarOpen}
+        mp={mp}
+        equipamentos={equipamentos}
+        periodicidades={periodicidades}
+        profiles={profiles}
+        checklists={checklists}
+        onNovoChecklist={(equipamentoId) => { setEditarOpen(false); setChecklistEquipamentoId(equipamentoId); setChecklistOpen(true); }}
+        onDone={refresh}
+      />
+      {checklistEquipamentoId && (
+        <ChecklistFormDialog
+          equipamentoId={checklistEquipamentoId}
+          open={checklistOpen}
+          onOpenChange={(value) => { setChecklistOpen(value); if (!value) setEditarOpen(true); }}
+        />
+      )}
 
       <div className="grid gap-3 md:grid-cols-4">
         <Info titulo="Próxima execução" valor={formatDate(mp.proxima_execucao)} destaque={atrasada} />
@@ -216,6 +251,18 @@ function DetalheManutencao() {
             </CardContent>
           </Card>
           <Card>
+            <CardHeader className="py-3"><CardTitle className="text-base">Alterações do plano</CardTitle></CardHeader>
+            <CardContent className="p-0 divide-y">
+              {auditoria.length === 0 && <div className="p-6 text-center text-sm text-muted-foreground">Nenhuma alteração registrada.</div>}
+              {auditoria.map((a) => (
+                <div key={a.id} className="p-3 text-sm">
+                  <div className="font-medium">{rotuloAuditoria(a.entidade, a.acao)}</div>
+                  <div className="text-xs text-muted-foreground">{prof(a.usuario_id)} · {formatDateTime(a.created_at)}</div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+          <Card>
             <CardHeader className="py-3"><CardTitle className="text-base">Reagendamentos</CardTitle></CardHeader>
             <CardContent className="p-0 divide-y">
               {reags.length === 0 && <div className="p-6 text-center text-sm text-muted-foreground">Nenhum reagendamento.</div>}
@@ -234,6 +281,108 @@ function DetalheManutencao() {
   );
 }
 
+function rotuloAuditoria(entidade: string, acao: string) {
+  const nomes: Record<string, string> = {
+    manutencoes_periodicas: "Plano preventivo",
+    mp_execucoes: "Execução",
+    mp_reagendamentos: "Reagendamento",
+    mp_lembretes: "Lembrete",
+  };
+  return `${nomes[entidade] ?? entidade} ${acao === "insert" ? "criado" : "alterado"}`;
+}
+
+type EditarPlanoProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  mp: import("@/lib/mp-types").ManutencaoPeriodica;
+  equipamentos: { id: string; nome: string }[];
+  periodicidades: { id: string; nome: string }[];
+  profiles: { id: string; nome: string }[];
+  checklists: import("@/lib/checklists").Checklist[];
+  onNovoChecklist: (equipamentoId: string) => void;
+  onDone: () => Promise<void>;
+};
+
+function EditarPlano({ open, onOpenChange, mp, equipamentos, periodicidades, profiles, checklists, onNovoChecklist, onDone }: EditarPlanoProps) {
+  const [form, setForm] = useState({
+    nome: mp.nome,
+    equipamento_id: mp.equipamento_id ?? "none",
+    descricao: mp.descricao ?? "",
+    procedimento: mp.procedimento ?? "",
+    periodicidade_id: mp.periodicidade_id ?? "none",
+    data_inicio: mp.data_inicio ?? "",
+    proxima_execucao: mp.proxima_execucao ?? "",
+    checklist_id: mp.checklist_id ?? "none",
+    checklist: (mp.checklist ?? []).join("\n"),
+    materiais: mp.materiais ?? "",
+    observacoes: mp.observacoes ?? "",
+    tecnico_id: mp.tecnico_id ?? "none",
+  });
+  const [salvando, setSalvando] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    setForm({
+      nome: mp.nome, equipamento_id: mp.equipamento_id ?? "none", descricao: mp.descricao ?? "",
+      procedimento: mp.procedimento ?? "", periodicidade_id: mp.periodicidade_id ?? "none",
+      data_inicio: mp.data_inicio ?? "", proxima_execucao: mp.proxima_execucao ?? "",
+      checklist_id: mp.checklist_id ?? "none", checklist: (mp.checklist ?? []).join("\n"),
+      materiais: mp.materiais ?? "", observacoes: mp.observacoes ?? "", tecnico_id: mp.tecnico_id ?? "none",
+    });
+  }, [open, mp]);
+
+  async function salvar() {
+    if (!form.nome.trim()) return toast.error("Informe a atividade da manutenção.");
+    if (form.equipamento_id === "none") return toast.error("Selecione o equipamento.");
+    if (form.periodicidade_id === "none") return toast.error("Defina a periodicidade.");
+    setSalvando(true);
+    let checklist = form.checklist.split("\n").map((item) => item.trim()).filter(Boolean);
+    if (form.checklist_id !== "none") {
+      const { data: itens, error: checklistError } = await supabase.from("checklist_itens")
+        .select("componente, pergunta").eq("checklist_id", form.checklist_id).order("ordem");
+      if (checklistError) { setSalvando(false); return showDbError(checklistError, "checklist"); }
+      checklist = (itens ?? []).map((item) => item.componente ? `${item.componente}: ${item.pergunta}` : item.pergunta);
+    }
+    const { error } = await supabase.from("manutencoes_periodicas").update({
+      nome: form.nome.trim(), equipamento_id: form.equipamento_id,
+      descricao: form.descricao.trim() || null, procedimento: form.procedimento.trim() || null,
+      periodicidade_id: form.periodicidade_id, data_inicio: form.data_inicio || null,
+      proxima_execucao: form.proxima_execucao || null, checklist_id: form.checklist_id === "none" ? null : form.checklist_id,
+      checklist,
+      materiais: form.materiais.trim() || null, observacoes: form.observacoes.trim() || null,
+      tecnico_id: form.tecnico_id === "none" ? null : form.tecnico_id,
+    }).eq("id", mp.id);
+    setSalvando(false);
+    if (error) return showDbError(error, "editar manutenção");
+    await onDone();
+    onOpenChange(false);
+    toast.success("Manutenção preventiva atualizada.");
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[88vh] overflow-y-auto">
+        <DialogHeader><DialogTitle>Editar manutenção preventiva</DialogTitle></DialogHeader>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="sm:col-span-2"><Label>Atividade *</Label><Input value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} /></div>
+          <Campo label="Equipamento *"><Select value={form.equipamento_id} onValueChange={(v) => setForm({ ...form, equipamento_id: v, checklist_id: v === mp.equipamento_id ? form.checklist_id : "none" })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="none">Selecionar</SelectItem>{equipamentos.map((e) => <SelectItem key={e.id} value={e.id}>{e.nome}</SelectItem>)}</SelectContent></Select></Campo>
+          <Campo label="Periodicidade *"><Select value={form.periodicidade_id} onValueChange={(v) => setForm({ ...form, periodicidade_id: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="none">Selecionar</SelectItem>{periodicidades.map((p) => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}</SelectContent></Select></Campo>
+          <Campo label="Data de início"><Input type="date" value={form.data_inicio} onChange={(e) => setForm({ ...form, data_inicio: e.target.value })} /></Campo>
+          <Campo label="Próxima execução"><Input type="date" value={form.proxima_execucao} onChange={(e) => setForm({ ...form, proxima_execucao: e.target.value })} /></Campo>
+          <div className="sm:col-span-2"><Label>Descrição</Label><Textarea value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })} /></div>
+          <div className="sm:col-span-2"><Label>Atividade a ser realizada</Label><Textarea value={form.procedimento} onChange={(e) => setForm({ ...form, procedimento: e.target.value })} /></div>
+          <Campo label="Técnico responsável"><Select value={form.tecnico_id} onValueChange={(v) => setForm({ ...form, tecnico_id: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="none">Nenhum</SelectItem>{profiles.map((p) => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}</SelectContent></Select></Campo>
+          <div><Label>Checklist vinculado</Label><div className="flex gap-2"><Select value={form.checklist_id} onValueChange={(v) => setForm({ ...form, checklist_id: v })}><SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger><SelectContent><SelectItem value="none">Sem vínculo</SelectItem>{checklists.filter((c) => c.equipamento_id === form.equipamento_id).map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}</SelectContent></Select><Button type="button" variant="outline" onClick={() => onNovoChecklist(form.equipamento_id)} disabled={form.equipamento_id === "none"}>Novo</Button></div></div>
+          <div className="sm:col-span-2"><Label>Checklist rápido (um item por linha)</Label><Textarea value={form.checklist} onChange={(e) => setForm({ ...form, checklist: e.target.value })} /></div>
+          <div className="sm:col-span-2"><Label>Materiais necessários</Label><Textarea value={form.materiais} onChange={(e) => setForm({ ...form, materiais: e.target.value })} /></div>
+          <div className="sm:col-span-2"><Label>Observações</Label><Textarea value={form.observacoes} onChange={(e) => setForm({ ...form, observacoes: e.target.value })} /></div>
+          <div className="sm:col-span-2 flex justify-end"><Button onClick={salvar} disabled={salvando}>{salvando ? "Salvando…" : "Salvar alterações"}</Button></div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function Info({ titulo, valor, destaque }: { titulo: string; valor: string; destaque?: boolean }) {
   return (
     <Card><CardContent className="p-3">
@@ -241,6 +390,10 @@ function Info({ titulo, valor, destaque }: { titulo: string; valor: string; dest
       <div className={`font-medium ${destaque ? "text-red-600" : ""}`}>{valor}</div>
     </CardContent></Card>
   );
+}
+
+function Campo({ label, children }: { label: string; children: React.ReactNode }) {
+  return <div><Label>{label}</Label>{children}</div>;
 }
 
 function Bloco({ titulo, texto }: { titulo: string; texto: string | null }) {
