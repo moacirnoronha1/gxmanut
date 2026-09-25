@@ -41,7 +41,7 @@ export const Route = createFileRoute("/_authenticated/checklists/")({
 
 function ChecklistsPage() {
   const { mestre, roles } = useSessaoUsuario();
-  const podeGerenciar = mestre || roles.includes("admin") || roles.includes("gestor");
+  const podeGerenciar = mestre || roles.includes("admin") || roles.includes("gestor") || roles.includes("tecnico");
   const { data: equipamentos = [] } = useQuery(equipamentosQuery());
   const { data: checklists = [] } = useQuery(checklistsQuery());
   const { data: execucoes = [] } = useQuery(execucoesQuery());

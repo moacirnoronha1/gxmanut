@@ -158,7 +158,6 @@ function ManutencoesPage() {
       observacoes: nn(form.observacoes),
       situacao: form.situacao,
       geracao_os: form.geracao_os,
-      criado_por: me?.id ?? null,
     };
     const { data, error } = await supabase.from("manutencoes_periodicas").insert(payload).select("id").single();
     if (error) return showDbError(error, "manutencao");

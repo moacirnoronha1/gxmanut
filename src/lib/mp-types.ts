@@ -35,6 +35,7 @@ export interface ManutencaoPeriodica {
   tempo_estimado_min: number | null;
   prioridade: string;
   checklist: string[];
+  checklist_id: string | null;
   materiais: string | null;
   ferramentas: string | null;
   fornecedor_id: string | null;
@@ -45,6 +46,19 @@ export interface ManutencaoPeriodica {
   escalacao: unknown[];
   created_at: string;
   updated_at: string;
+  criado_por: string | null;
+  atualizado_por: string | null;
+}
+
+export interface MPAuditoria {
+  id: string;
+  entidade: string;
+  registro_id: string;
+  manutencao_id: string | null;
+  usuario_id: string | null;
+  acao: string;
+  detalhes: Record<string, unknown>;
+  created_at: string;
 }
 
 export interface MPLembrete {

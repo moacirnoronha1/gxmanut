@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Periodicidade, ManutencaoPeriodica, MPLembrete, MPExecucao, MPReagendamento } from "./mp-types";
+import type { Periodicidade, ManutencaoPeriodica, MPLembrete, MPExecucao, MPReagendamento, MPAuditoria } from "./mp-types";
 
 function unwrap<T>(res: { data: unknown; error: { message: string } | null }): T {
   if (res.error) throw new Error(res.error.message);
@@ -54,4 +54,12 @@ export const mpReagendamentosQuery = (id: string) =>
     queryKey: ["mp_reag", id],
     queryFn: async (): Promise<MPReagendamento[]> =>
       unwrap(await supabase.from("mp_reagendamentos").select("*").eq("manutencao_id", id).order("created_at", { ascending: false })),
+  });
+
+export const mpAuditoriaQuery = (id: string) =>
+  queryOptions({
+    queryKey: ["manutencao_auditoria", id],
+    queryFn: async (): Promise<MPAuditoria[]> =>
+      unwrap(await supabase.from("manutencao_auditoria").select("*").eq("manutencao_id", id).order("created_at", { ascending: false })),
+    enabled: !!id,
   });
