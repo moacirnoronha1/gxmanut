@@ -48,6 +48,7 @@ function DetalheManutencao() {
   const { data: checklists = [] } = useQuery(checklistsQuery(mp?.equipamento_id ?? undefined));
   const [editarOpen, setEditarOpen] = useState(false);
   const [checklistOpen, setChecklistOpen] = useState(false);
+  const [checklistEquipamentoId, setChecklistEquipamentoId] = useState<string | null>(null);
 
   const per = useMemo(() => periodicidades.find((p) => p.id === mp?.periodicidade_id), [periodicidades, mp]);
   const prof = (pid: string | null) => profiles.find((p) => p.id === pid)?.nome ?? "—";
@@ -152,14 +153,14 @@ function DetalheManutencao() {
         periodicidades={periodicidades}
         profiles={profiles}
         checklists={checklists}
-        onNovoChecklist={() => setChecklistOpen(true)}
+        onNovoChecklist={(equipamentoId) => { setEditarOpen(false); setChecklistEquipamentoId(equipamentoId); setChecklistOpen(true); }}
         onDone={refresh}
       />
-      {mp.equipamento_id && (
+      {checklistEquipamentoId && (
         <ChecklistFormDialog
-          equipamentoId={mp.equipamento_id}
+          equipamentoId={checklistEquipamentoId}
           open={checklistOpen}
-          onOpenChange={setChecklistOpen}
+          onOpenChange={(value) => { setChecklistOpen(value); if (!value) setEditarOpen(true); }}
         />
       )}
 
@@ -291,7 +292,7 @@ type EditarPlanoProps = {
   periodicidades: { id: string; nome: string }[];
   profiles: { id: string; nome: string }[];
   checklists: import("@/lib/checklists").Checklist[];
-  onNovoChecklist: () => void;
+  onNovoChecklist: (equipamentoId: string) => void;
   onDone: () => Promise<void>;
 };
 
@@ -357,7 +358,7 @@ function EditarPlano({ open, onOpenChange, mp, equipamentos, periodicidades, pro
           <div className="sm:col-span-2"><Label>Descrição</Label><Textarea value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })} /></div>
           <div className="sm:col-span-2"><Label>Atividade a ser realizada</Label><Textarea value={form.procedimento} onChange={(e) => setForm({ ...form, procedimento: e.target.value })} /></div>
           <Campo label="Técnico responsável"><Select value={form.tecnico_id} onValueChange={(v) => setForm({ ...form, tecnico_id: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="none">Nenhum</SelectItem>{profiles.map((p) => <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>)}</SelectContent></Select></Campo>
-          <div><Label>Checklist vinculado</Label><div className="flex gap-2"><Select value={form.checklist_id} onValueChange={(v) => setForm({ ...form, checklist_id: v })}><SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger><SelectContent><SelectItem value="none">Sem vínculo</SelectItem>{checklists.filter((c) => c.equipamento_id === form.equipamento_id).map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}</SelectContent></Select><Button type="button" variant="outline" onClick={onNovoChecklist} disabled={form.equipamento_id === "none"}>Novo</Button></div></div>
+          <div><Label>Checklist vinculado</Label><div className="flex gap-2"><Select value={form.checklist_id} onValueChange={(v) => setForm({ ...form, checklist_id: v })}><SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger><SelectContent><SelectItem value="none">Sem vínculo</SelectItem>{checklists.filter((c) => c.equipamento_id === form.equipamento_id).map((c) => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}</SelectContent></Select><Button type="button" variant="outline" onClick={() => onNovoChecklist(form.equipamento_id)} disabled={form.equipamento_id === "none"}>Novo</Button></div></div>
           <div className="sm:col-span-2"><Label>Checklist rápido (um item por linha)</Label><Textarea value={form.checklist} onChange={(e) => setForm({ ...form, checklist: e.target.value })} /></div>
           <div className="sm:col-span-2"><Label>Materiais necessários</Label><Textarea value={form.materiais} onChange={(e) => setForm({ ...form, materiais: e.target.value })} /></div>
           <div className="sm:col-span-2"><Label>Observações</Label><Textarea value={form.observacoes} onChange={(e) => setForm({ ...form, observacoes: e.target.value })} /></div>
@@ -375,6 +376,10 @@ function Info({ titulo, valor, destaque }: { titulo: string; valor: string; dest
       <div className={`font-medium ${destaque ? "text-red-600" : ""}`}>{valor}</div>
     </CardContent></Card>
   );
+}
+
+function Campo({ label, children }: { label: string; children: React.ReactNode }) {
+  return <div><Label>{label}</Label>{children}</div>;
 }
 
 function Bloco({ titulo, texto }: { titulo: string; texto: string | null }) {
