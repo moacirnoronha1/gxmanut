@@ -26,7 +26,14 @@ import {
 import { formatDate, formatDateTime, formatBRL } from "@/lib/db-types";
 
 export const Route = createFileRoute("/_authenticated/manutencoes/$id")({
-  head: () => ({ meta: [{ title: "Manutenção periódica — Manutenção Xica da Silva" }] }),
+  head: () => ({ meta: [
+    { title: "Manutenção preventiva — Manutenção Xica da Silva" },
+    { name: "description", content: "Acompanhe, edite, reagende e registre a execução da manutenção preventiva." },
+    { property: "og:title", content: "Manutenção preventiva — Manutenção Xica da Silva" },
+    { property: "og:description", content: "Detalhes e histórico da manutenção preventiva." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: DetalheManutencao,
 });
 

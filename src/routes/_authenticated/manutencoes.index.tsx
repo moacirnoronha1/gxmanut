@@ -32,6 +32,8 @@ export const Route = createFileRoute("/_authenticated/manutencoes/")({
       { name: "description", content: "Cadastre, acompanhe e receba lembretes das manutenções preventivas periódicas." },
       { property: "og:title", content: "Manutenções Periódicas" },
       { property: "og:description", content: "Planejamento e acompanhamento das manutenções preventivas." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ManutencoesPage,
