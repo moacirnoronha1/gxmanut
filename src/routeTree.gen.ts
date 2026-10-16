@@ -9,39 +9,39 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
-import { Route as AuthenticatedUsuariosIndexRouteImport } from './routes/_authenticated/usuarios.index'
-import { Route as AuthenticatedSetoresIndexRouteImport } from './routes/_authenticated/setores.index'
-import { Route as AuthenticatedOrdensIndexRouteImport } from './routes/_authenticated/ordens.index'
-import { Route as AuthenticatedNotificacoesIndexRouteImport } from './routes/_authenticated/notificacoes.index'
-import { Route as AuthenticatedManutencoesIndexRouteImport } from './routes/_authenticated/manutencoes.index'
-import { Route as AuthenticatedFornecedoresIndexRouteImport } from './routes/_authenticated/fornecedores.index'
-import { Route as AuthenticatedFerramentasIndexRouteImport } from './routes/_authenticated/ferramentas.index'
-import { Route as AuthenticatedExclusoesIndexRouteImport } from './routes/_authenticated/exclusoes.index'
-import { Route as AuthenticatedEstoqueIndexRouteImport } from './routes/_authenticated/estoque.index'
-import { Route as AuthenticatedEquipamentosIndexRouteImport } from './routes/_authenticated/equipamentos.index'
-import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated/configuracoes.index'
 import { Route as AuthenticatedChecklistsIndexRouteImport } from './routes/_authenticated/checklists.index'
-import { Route as AuthenticatedOrdensNovaRouteImport } from './routes/_authenticated/ordens.nova'
-import { Route as AuthenticatedOrdensIdRouteImport } from './routes/_authenticated/ordens.$id'
-import { Route as AuthenticatedManutencoesIdRouteImport } from './routes/_authenticated/manutencoes.$id'
-import { Route as AuthenticatedEstoqueIdRouteImport } from './routes/_authenticated/estoque.$id'
-import { Route as AuthenticatedEquipamentosIdRouteImport } from './routes/_authenticated/equipamentos.$id'
+import { Route as AuthenticatedConfiguracoesIndexRouteImport } from './routes/_authenticated/configuracoes.index'
 import { Route as AuthenticatedConfiguracoesNotificacoesRouteImport } from './routes/_authenticated/configuracoes.notificacoes'
-import { Route as ApiPublicHooksNotificacoesRouteImport } from './routes/api/public/hooks/notificacoes'
-import { Route as AuthenticatedChecklistsResultadoIdRouteImport } from './routes/_authenticated/checklists.resultado.$id'
+import { Route as AuthenticatedEquipamentosIndexRouteImport } from './routes/_authenticated/equipamentos.index'
+import { Route as AuthenticatedEquipamentosIdRouteImport } from './routes/_authenticated/equipamentos.$id'
+import { Route as AuthenticatedEstoqueIndexRouteImport } from './routes/_authenticated/estoque.index'
+import { Route as AuthenticatedEstoqueIdRouteImport } from './routes/_authenticated/estoque.$id'
+import { Route as AuthenticatedExclusoesIndexRouteImport } from './routes/_authenticated/exclusoes.index'
+import { Route as AuthenticatedFerramentasIndexRouteImport } from './routes/_authenticated/ferramentas.index'
+import { Route as AuthenticatedFornecedoresIndexRouteImport } from './routes/_authenticated/fornecedores.index'
+import { Route as AuthenticatedManutencoesIndexRouteImport } from './routes/_authenticated/manutencoes.index'
+import { Route as AuthenticatedManutencoesIdRouteImport } from './routes/_authenticated/manutencoes.$id'
+import { Route as AuthenticatedNotificacoesIndexRouteImport } from './routes/_authenticated/notificacoes.index'
+import { Route as AuthenticatedOrdensIndexRouteImport } from './routes/_authenticated/ordens.index'
+import { Route as AuthenticatedOrdensIdRouteImport } from './routes/_authenticated/ordens.$id'
+import { Route as AuthenticatedOrdensNovaRouteImport } from './routes/_authenticated/ordens.nova'
+import { Route as AuthenticatedSetoresIndexRouteImport } from './routes/_authenticated/setores.index'
+import { Route as AuthenticatedUsuariosIndexRouteImport } from './routes/_authenticated/usuarios.index'
 import { Route as AuthenticatedChecklistsExecutarIdRouteImport } from './routes/_authenticated/checklists.executar.$id'
+import { Route as AuthenticatedChecklistsResultadoIdRouteImport } from './routes/_authenticated/checklists.resultado.$id'
+import { Route as ApiPublicHooksNotificacoesRouteImport } from './routes/api/public/hooks/notificacoes'
 
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
@@ -54,64 +54,10 @@ const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedUsuariosIndexRoute =
-  AuthenticatedUsuariosIndexRouteImport.update({
-    id: '/usuarios/',
-    path: '/usuarios/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedSetoresIndexRoute =
-  AuthenticatedSetoresIndexRouteImport.update({
-    id: '/setores/',
-    path: '/setores/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedOrdensIndexRoute =
-  AuthenticatedOrdensIndexRouteImport.update({
-    id: '/ordens/',
-    path: '/ordens/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedNotificacoesIndexRoute =
-  AuthenticatedNotificacoesIndexRouteImport.update({
-    id: '/notificacoes/',
-    path: '/notificacoes/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedManutencoesIndexRoute =
-  AuthenticatedManutencoesIndexRouteImport.update({
-    id: '/manutencoes/',
-    path: '/manutencoes/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedFornecedoresIndexRoute =
-  AuthenticatedFornecedoresIndexRouteImport.update({
-    id: '/fornecedores/',
-    path: '/fornecedores/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedFerramentasIndexRoute =
-  AuthenticatedFerramentasIndexRouteImport.update({
-    id: '/ferramentas/',
-    path: '/ferramentas/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedExclusoesIndexRoute =
-  AuthenticatedExclusoesIndexRouteImport.update({
-    id: '/exclusoes/',
-    path: '/exclusoes/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedEstoqueIndexRoute =
-  AuthenticatedEstoqueIndexRouteImport.update({
-    id: '/estoque/',
-    path: '/estoque/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedEquipamentosIndexRoute =
-  AuthenticatedEquipamentosIndexRouteImport.update({
-    id: '/equipamentos/',
-    path: '/equipamentos/',
+const AuthenticatedChecklistsIndexRoute =
+  AuthenticatedChecklistsIndexRouteImport.update({
+    id: '/checklists/',
+    path: '/checklists/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedConfiguracoesIndexRoute =
@@ -120,26 +66,28 @@ const AuthenticatedConfiguracoesIndexRoute =
     path: '/configuracoes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedChecklistsIndexRoute =
-  AuthenticatedChecklistsIndexRouteImport.update({
-    id: '/checklists/',
-    path: '/checklists/',
+const AuthenticatedConfiguracoesNotificacoesRoute =
+  AuthenticatedConfiguracoesNotificacoesRouteImport.update({
+    id: '/configuracoes/notificacoes',
+    path: '/configuracoes/notificacoes',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedOrdensNovaRoute = AuthenticatedOrdensNovaRouteImport.update({
-  id: '/ordens/nova',
-  path: '/ordens/nova',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedOrdensIdRoute = AuthenticatedOrdensIdRouteImport.update({
-  id: '/ordens/$id',
-  path: '/ordens/$id',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedManutencoesIdRoute =
-  AuthenticatedManutencoesIdRouteImport.update({
-    id: '/manutencoes/$id',
-    path: '/manutencoes/$id',
+const AuthenticatedEquipamentosIndexRoute =
+  AuthenticatedEquipamentosIndexRouteImport.update({
+    id: '/equipamentos/',
+    path: '/equipamentos/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEquipamentosIdRoute =
+  AuthenticatedEquipamentosIdRouteImport.update({
+    id: '/equipamentos/$id',
+    path: '/equipamentos/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEstoqueIndexRoute =
+  AuthenticatedEstoqueIndexRouteImport.update({
+    id: '/estoque/',
+    path: '/estoque/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedEstoqueIdRoute = AuthenticatedEstoqueIdRouteImport.update({
@@ -147,28 +95,68 @@ const AuthenticatedEstoqueIdRoute = AuthenticatedEstoqueIdRouteImport.update({
   path: '/estoque/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedEquipamentosIdRoute =
-  AuthenticatedEquipamentosIdRouteImport.update({
-    id: '/equipamentos/$id',
-    path: '/equipamentos/$id',
+const AuthenticatedExclusoesIndexRoute =
+  AuthenticatedExclusoesIndexRouteImport.update({
+    id: '/exclusoes/',
+    path: '/exclusoes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedConfiguracoesNotificacoesRoute =
-  AuthenticatedConfiguracoesNotificacoesRouteImport.update({
-    id: '/configuracoes/notificacoes',
-    path: '/configuracoes/notificacoes',
+const AuthenticatedFerramentasIndexRoute =
+  AuthenticatedFerramentasIndexRouteImport.update({
+    id: '/ferramentas/',
+    path: '/ferramentas/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiPublicHooksNotificacoesRoute =
-  ApiPublicHooksNotificacoesRouteImport.update({
-    id: '/api/public/hooks/notificacoes',
-    path: '/api/public/hooks/notificacoes',
-    getParentRoute: () => rootRouteImport,
+const AuthenticatedFornecedoresIndexRoute =
+  AuthenticatedFornecedoresIndexRouteImport.update({
+    id: '/fornecedores/',
+    path: '/fornecedores/',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedChecklistsResultadoIdRoute =
-  AuthenticatedChecklistsResultadoIdRouteImport.update({
-    id: '/checklists/resultado/$id',
-    path: '/checklists/resultado/$id',
+const AuthenticatedManutencoesIndexRoute =
+  AuthenticatedManutencoesIndexRouteImport.update({
+    id: '/manutencoes/',
+    path: '/manutencoes/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedManutencoesIdRoute =
+  AuthenticatedManutencoesIdRouteImport.update({
+    id: '/manutencoes/$id',
+    path: '/manutencoes/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedNotificacoesIndexRoute =
+  AuthenticatedNotificacoesIndexRouteImport.update({
+    id: '/notificacoes/',
+    path: '/notificacoes/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrdensIndexRoute =
+  AuthenticatedOrdensIndexRouteImport.update({
+    id: '/ordens/',
+    path: '/ordens/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrdensIdRoute = AuthenticatedOrdensIdRouteImport.update({
+  id: '/ordens/$id',
+  path: '/ordens/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOrdensNovaRoute = AuthenticatedOrdensNovaRouteImport.update({
+  id: '/ordens/nova',
+  path: '/ordens/nova',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSetoresIndexRoute =
+  AuthenticatedSetoresIndexRouteImport.update({
+    id: '/setores/',
+    path: '/setores/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedUsuariosIndexRoute =
+  AuthenticatedUsuariosIndexRouteImport.update({
+    id: '/usuarios/',
+    path: '/usuarios/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedChecklistsExecutarIdRoute =
@@ -176,6 +164,18 @@ const AuthenticatedChecklistsExecutarIdRoute =
     id: '/checklists/executar/$id',
     path: '/checklists/executar/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedChecklistsResultadoIdRoute =
+  AuthenticatedChecklistsResultadoIdRouteImport.update({
+    id: '/checklists/resultado/$id',
+    path: '/checklists/resultado/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const ApiPublicHooksNotificacoesRoute =
+  ApiPublicHooksNotificacoesRouteImport.update({
+    id: '/api/public/hooks/notificacoes',
+    path: '/api/public/hooks/notificacoes',
+    getParentRoute: () => rootRouteImport,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -348,18 +348,18 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/': {
@@ -376,74 +376,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPerfilRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/usuarios/': {
-      id: '/_authenticated/usuarios/'
-      path: '/usuarios'
-      fullPath: '/usuarios/'
-      preLoaderRoute: typeof AuthenticatedUsuariosIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/setores/': {
-      id: '/_authenticated/setores/'
-      path: '/setores'
-      fullPath: '/setores/'
-      preLoaderRoute: typeof AuthenticatedSetoresIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/ordens/': {
-      id: '/_authenticated/ordens/'
-      path: '/ordens'
-      fullPath: '/ordens/'
-      preLoaderRoute: typeof AuthenticatedOrdensIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/notificacoes/': {
-      id: '/_authenticated/notificacoes/'
-      path: '/notificacoes'
-      fullPath: '/notificacoes/'
-      preLoaderRoute: typeof AuthenticatedNotificacoesIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/manutencoes/': {
-      id: '/_authenticated/manutencoes/'
-      path: '/manutencoes'
-      fullPath: '/manutencoes/'
-      preLoaderRoute: typeof AuthenticatedManutencoesIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/fornecedores/': {
-      id: '/_authenticated/fornecedores/'
-      path: '/fornecedores'
-      fullPath: '/fornecedores/'
-      preLoaderRoute: typeof AuthenticatedFornecedoresIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/ferramentas/': {
-      id: '/_authenticated/ferramentas/'
-      path: '/ferramentas'
-      fullPath: '/ferramentas/'
-      preLoaderRoute: typeof AuthenticatedFerramentasIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/exclusoes/': {
-      id: '/_authenticated/exclusoes/'
-      path: '/exclusoes'
-      fullPath: '/exclusoes/'
-      preLoaderRoute: typeof AuthenticatedExclusoesIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/estoque/': {
-      id: '/_authenticated/estoque/'
-      path: '/estoque'
-      fullPath: '/estoque/'
-      preLoaderRoute: typeof AuthenticatedEstoqueIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/equipamentos/': {
-      id: '/_authenticated/equipamentos/'
-      path: '/equipamentos'
-      fullPath: '/equipamentos/'
-      preLoaderRoute: typeof AuthenticatedEquipamentosIndexRouteImport
+    '/_authenticated/checklists/': {
+      id: '/_authenticated/checklists/'
+      path: '/checklists'
+      fullPath: '/checklists/'
+      preLoaderRoute: typeof AuthenticatedChecklistsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/configuracoes/': {
@@ -453,39 +390,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConfiguracoesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/checklists/': {
-      id: '/_authenticated/checklists/'
-      path: '/checklists'
-      fullPath: '/checklists/'
-      preLoaderRoute: typeof AuthenticatedChecklistsIndexRouteImport
+    '/_authenticated/configuracoes/notificacoes': {
+      id: '/_authenticated/configuracoes/notificacoes'
+      path: '/configuracoes/notificacoes'
+      fullPath: '/configuracoes/notificacoes'
+      preLoaderRoute: typeof AuthenticatedConfiguracoesNotificacoesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/ordens/nova': {
-      id: '/_authenticated/ordens/nova'
-      path: '/ordens/nova'
-      fullPath: '/ordens/nova'
-      preLoaderRoute: typeof AuthenticatedOrdensNovaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/ordens/$id': {
-      id: '/_authenticated/ordens/$id'
-      path: '/ordens/$id'
-      fullPath: '/ordens/$id'
-      preLoaderRoute: typeof AuthenticatedOrdensIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/manutencoes/$id': {
-      id: '/_authenticated/manutencoes/$id'
-      path: '/manutencoes/$id'
-      fullPath: '/manutencoes/$id'
-      preLoaderRoute: typeof AuthenticatedManutencoesIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/estoque/$id': {
-      id: '/_authenticated/estoque/$id'
-      path: '/estoque/$id'
-      fullPath: '/estoque/$id'
-      preLoaderRoute: typeof AuthenticatedEstoqueIdRouteImport
+    '/_authenticated/equipamentos/': {
+      id: '/_authenticated/equipamentos/'
+      path: '/equipamentos'
+      fullPath: '/equipamentos/'
+      preLoaderRoute: typeof AuthenticatedEquipamentosIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/equipamentos/$id': {
@@ -495,25 +411,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEquipamentosIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/configuracoes/notificacoes': {
-      id: '/_authenticated/configuracoes/notificacoes'
-      path: '/configuracoes/notificacoes'
-      fullPath: '/configuracoes/notificacoes'
-      preLoaderRoute: typeof AuthenticatedConfiguracoesNotificacoesRouteImport
+    '/_authenticated/estoque/': {
+      id: '/_authenticated/estoque/'
+      path: '/estoque'
+      fullPath: '/estoque/'
+      preLoaderRoute: typeof AuthenticatedEstoqueIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/hooks/notificacoes': {
-      id: '/api/public/hooks/notificacoes'
-      path: '/api/public/hooks/notificacoes'
-      fullPath: '/api/public/hooks/notificacoes'
-      preLoaderRoute: typeof ApiPublicHooksNotificacoesRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/estoque/$id': {
+      id: '/_authenticated/estoque/$id'
+      path: '/estoque/$id'
+      fullPath: '/estoque/$id'
+      preLoaderRoute: typeof AuthenticatedEstoqueIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/checklists/resultado/$id': {
-      id: '/_authenticated/checklists/resultado/$id'
-      path: '/checklists/resultado/$id'
-      fullPath: '/checklists/resultado/$id'
-      preLoaderRoute: typeof AuthenticatedChecklistsResultadoIdRouteImport
+    '/_authenticated/exclusoes/': {
+      id: '/_authenticated/exclusoes/'
+      path: '/exclusoes'
+      fullPath: '/exclusoes/'
+      preLoaderRoute: typeof AuthenticatedExclusoesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ferramentas/': {
+      id: '/_authenticated/ferramentas/'
+      path: '/ferramentas'
+      fullPath: '/ferramentas/'
+      preLoaderRoute: typeof AuthenticatedFerramentasIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/fornecedores/': {
+      id: '/_authenticated/fornecedores/'
+      path: '/fornecedores'
+      fullPath: '/fornecedores/'
+      preLoaderRoute: typeof AuthenticatedFornecedoresIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/manutencoes/': {
+      id: '/_authenticated/manutencoes/'
+      path: '/manutencoes'
+      fullPath: '/manutencoes/'
+      preLoaderRoute: typeof AuthenticatedManutencoesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/manutencoes/$id': {
+      id: '/_authenticated/manutencoes/$id'
+      path: '/manutencoes/$id'
+      fullPath: '/manutencoes/$id'
+      preLoaderRoute: typeof AuthenticatedManutencoesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notificacoes/': {
+      id: '/_authenticated/notificacoes/'
+      path: '/notificacoes'
+      fullPath: '/notificacoes/'
+      preLoaderRoute: typeof AuthenticatedNotificacoesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ordens/': {
+      id: '/_authenticated/ordens/'
+      path: '/ordens'
+      fullPath: '/ordens/'
+      preLoaderRoute: typeof AuthenticatedOrdensIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ordens/$id': {
+      id: '/_authenticated/ordens/$id'
+      path: '/ordens/$id'
+      fullPath: '/ordens/$id'
+      preLoaderRoute: typeof AuthenticatedOrdensIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ordens/nova': {
+      id: '/_authenticated/ordens/nova'
+      path: '/ordens/nova'
+      fullPath: '/ordens/nova'
+      preLoaderRoute: typeof AuthenticatedOrdensNovaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/setores/': {
+      id: '/_authenticated/setores/'
+      path: '/setores'
+      fullPath: '/setores/'
+      preLoaderRoute: typeof AuthenticatedSetoresIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/usuarios/': {
+      id: '/_authenticated/usuarios/'
+      path: '/usuarios'
+      fullPath: '/usuarios/'
+      preLoaderRoute: typeof AuthenticatedUsuariosIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/checklists/executar/$id': {
@@ -522,6 +508,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/checklists/executar/$id'
       preLoaderRoute: typeof AuthenticatedChecklistsExecutarIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/checklists/resultado/$id': {
+      id: '/_authenticated/checklists/resultado/$id'
+      path: '/checklists/resultado/$id'
+      fullPath: '/checklists/resultado/$id'
+      preLoaderRoute: typeof AuthenticatedChecklistsResultadoIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/hooks/notificacoes': {
+      id: '/api/public/hooks/notificacoes'
+      path: '/api/public/hooks/notificacoes'
+      fullPath: '/api/public/hooks/notificacoes'
+      preLoaderRoute: typeof ApiPublicHooksNotificacoesRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
