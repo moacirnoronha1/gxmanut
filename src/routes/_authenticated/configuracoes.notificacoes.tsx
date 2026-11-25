@@ -50,8 +50,8 @@ function NotificacoesConfig() {
   const { data: perfil } = useQuery(myProfileQuery());
   const { data: devices = [] } = useQuery(meusDispositivosQuery());
   const { data: prefs } = useQuery(minhasPreferenciasQuery());
-  const { data: config } = useQuery(configNotificacaoQuery());
   const mestre = !!perfil?.is_master;
+  const { data: config } = useQuery({ ...configNotificacaoQuery(), enabled: mestre });
   const { data: todos = [] } = useQuery({ ...todosDispositivosQuery(), enabled: mestre });
 
   const testar = useServerFn(enviarNotificacaoTeste);
