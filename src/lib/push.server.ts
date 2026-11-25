@@ -568,19 +568,31 @@ export async function processarManutencoes() {
     .limit(300);
 
   const mestres = await idsMestres();
+  const listaMps = (mps ?? []) as any[];
+  if (!listaMps.length) return 0;
 
-  for (const mp of (mps ?? []) as any[]) {
+  const mpIds = listaMps.map((mp) => mp.id as string);
+  const { data: todosLembretes } = await admin
+    .from("mp_lembretes")
+    .select("*")
+    .in("manutencao_id", mpIds)
+    .eq("ativo", true);
+
+  const lembretesPorMp = new Map<string, any[]>();
+  for (const l of (todosLembretes ?? []) as any[]) {
+    const arr = lembretesPorMp.get(l.manutencao_id) ?? [];
+    arr.push(l);
+    lembretesPorMp.set(l.manutencao_id, arr);
+  }
+
+  for (const mp of listaMps) {
     const prevista = new Date(`${mp.proxima_execucao}T12:00:00Z`);
     const diffDias = Math.round((prevista.getTime() - new Date(`${hojeISO}T12:00:00Z`).getTime()) / (24 * 60 * MIN));
     const equipamento = mp.equipamentos?.nome ?? "—";
     const setor = mp.setores?.nome ?? "—";
     const url = `/manutencoes/${mp.id}`;
 
-    const { data: lembretes } = await admin
-      .from("mp_lembretes")
-      .select("*")
-      .eq("manutencao_id", mp.id)
-      .eq("ativo", true);
+    const lembretes = lembretesPorMp.get(mp.id) ?? [];
 
     const base: string[] = [];
     if (mp.tecnico_id) base.push(mp.tecnico_id);

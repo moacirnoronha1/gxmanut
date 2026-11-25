@@ -79,7 +79,9 @@ export const todosDispositivosQuery = () =>
 export const minhasNotificacoesQuery = () =>
   queryOptions({
     queryKey: ["notificacoes", "me"],
-    refetchInterval: 30_000,
+    refetchInterval: 120_000,
+    refetchIntervalInBackground: false,
+    staleTime: 60_000,
     queryFn: async (): Promise<Notificacao[]> => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return [];
