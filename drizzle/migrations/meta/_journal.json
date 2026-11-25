@@ -8,6 +8,13 @@
       "when": 1795599630834,
       "tag": "0000_tighten_rls_selected_findings",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795600239287,
+      "tag": "0001_create_expediente_config",
+      "breakpoints": true
     }
   ]
 }

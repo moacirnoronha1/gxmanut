@@ -42,6 +42,8 @@ import { AlertaUrgente } from "@/components/alerta-urgente";
 import { UserMenu } from "@/components/user-menu";
 import { useSessaoUsuario } from "@/lib/sessao";
 import { exclusoesOSQuery } from "@/lib/exclusao-os";
+import { BloqueioExpediente } from "@/components/bloqueio-expediente";
+import { estaForaDoExpediente, expedienteConfigQuery, formatarHoraCurta } from "@/lib/expediente";
 
 const items = [
   { to: "/", label: "Painel", icon: LayoutDashboard },
@@ -79,10 +81,21 @@ export function AppShell({ children }: { children: ReactNode }) {
   const qc = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { dark, toggle } = useDark();
-  const { data: notifs = [] } = useQuery(minhasNotificacoesQuery());
+  const { nomeCompleto, username, perfilLabel, setor, mestre, carregando } = useSessaoUsuario();
+  const { data: expediente } = useQuery(expedienteConfigQuery());
+  const [agora, setAgora] = useState(() => new Date());
+
+  useEffect(() => {
+    const id = window.setInterval(() => setAgora(new Date()), 30_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const foraDoExpediente = estaForaDoExpediente(expediente, agora);
+  const bloqueado = !carregando && !mestre && foraDoExpediente;
+
+  const { data: notifs = [] } = useQuery({ ...minhasNotificacoesQuery(), enabled: !bloqueado });
   const naoLidas = notifs.filter((n) => !n.lida_em).length;
-  const { nomeCompleto, username, perfilLabel, setor, mestre } = useSessaoUsuario();
-  const { data: exclusoes = [] } = useQuery({ ...exclusoesOSQuery(), enabled: mestre });
+  const { data: exclusoes = [] } = useQuery({ ...exclusoesOSQuery(), enabled: mestre && !bloqueado });
   const exclusoesPendentes = exclusoes.filter((e) => e.status === "pendente").length;
 
   const isActive = (to: string) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
@@ -92,6 +105,17 @@ export function AppShell({ children }: { children: ReactNode }) {
     qc.clear();
     await supabase.auth.signOut();
     router.navigate({ to: "/auth", replace: true });
+  }
+
+  if (bloqueado && expediente) {
+    return (
+      <BloqueioExpediente
+        config={expediente}
+        agora={agora}
+        nomeUsuario={nomeCompleto}
+        onSignOut={handleSignOut}
+      />
+    );
   }
 
   return (
@@ -203,6 +227,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             <UserMenu />
           </header>
           <main className="flex-1 p-4 md:p-6 overflow-x-hidden">
+            {mestre && foraDoExpediente && expediente && (
+              <div className="mb-4 rounded-md border bg-muted/60 px-3 py-2 text-xs text-muted-foreground">
+                Fora do expediente ({formatarHoraCurta(expediente.hora_fim)} às{" "}
+                {formatarHoraCurta(expediente.hora_inicio)}): acesso bloqueado para a equipe e
+                liberado para o Usuário Mestre.
+              </div>
+            )}
             <AlertaUrgente notificacoes={notifs} />
             {children}
           </main>

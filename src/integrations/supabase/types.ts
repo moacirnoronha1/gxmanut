@@ -1405,6 +1405,47 @@ export type Database = {
           },
         ]
       }
+      expediente_config: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          atualizado_por: string | null
+          hora_fim: string
+          hora_inicio: string
+          id: number
+          mensagem: string
+          timezone: string
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          atualizado_por?: string | null
+          hora_fim?: string
+          hora_inicio?: string
+          id?: number
+          mensagem?: string
+          timezone?: string
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          atualizado_por?: string | null
+          hora_fim?: string
+          hora_inicio?: string
+          id?: number
+          mensagem?: string
+          timezone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expediente_config_atualizado_por_fkey"
+            columns: ["atualizado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ferramenta_emprestimos: {
         Row: {
           created_at: string

@@ -12,6 +12,7 @@ import { CategoriasCustoCard } from "@/components/categorias-custo";
 import { Button } from "@/components/ui/button";
 import { BellRing } from "lucide-react";
 import { PermissoesEdicaoOS } from "@/components/permissoes-edicao-os";
+import { ConfigExpediente } from "@/components/config-expediente";
 
 export const Route = createFileRoute("/_authenticated/configuracoes/")({
   head: () => ({ meta: [{ title: "Configurações — Manutenção Xica da Silva" }] }),
@@ -95,6 +96,7 @@ function Config() {
         </Card>
         <CategoriasCustoCard categorias={custoCategorias} />
         <PermissoesEdicaoOS />
+        <ConfigExpediente />
       </div>
     </div>
   );
